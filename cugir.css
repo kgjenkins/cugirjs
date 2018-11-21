@@ -47,7 +47,7 @@ dd { margin:0 0 1em 1em }
 
 body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#fff ; color:#000 ; font-size:100% }
 
-#head { position:fixed ; top:0 ; height:108px ; width:98% ; padding:6px 1% ; background:#fff ; color:#000 ; z-index:99 }
+#head { xposition:fixed ; xtop:0 ; xheight:108px ; width:98% ; padding:6px 1% ; background:#fff ; color:#000 ; z-index:99 }
 
 #search { float:left }
 #search img { vertical-align:middle ; height:100px ; }
@@ -57,20 +57,22 @@ body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#ff
 #menu a { background:#8fc349; color:#fff ; padding:1em }
 
 
+#body { margin:108px 1em 0 }
+#categories a { margin-left:1em ; cursor:pointer }
 
-
+#searchSummary { margin:1em ; padding:2px 0 ; background:#ff0 }
+#searchSummary .q { color:##8fc349 ; font-weight:bold }
 
 
 
 
 /* old embellish css */
 
-#searchSummary { margin-left:3em ; color:#fff ; padding:2px 0 }
-#searchSummary .q { color:#ff0 ; font-weight:bold }
 
 
 
-#body { margin-top:84px }
+
+
 
 table#results { width:100% ; background:#000 }
 

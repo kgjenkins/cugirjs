@@ -5,8 +5,10 @@
 <title>cugirjs</title>
 <link rel='stylesheet' type='text/css' href='cugir.css'>
 <link rel='icon' type='image/png' href='image/bell.png'>
-<script src='lib/jquery-3.2.1.min.js'></script>
+<script src='lib/jquery-3.3.1.min.js'></script>
 <script src='lib/leaflet/leaflet.js'></script>
+<script src='lib/json-filter.js'></script>
+<script src='cugirjson.js'></script>
 <script src='cugir.js'></script>
 </head>
 <body>
@@ -14,7 +16,7 @@
     <div id="search">
       <img src="image/cugir-logo.png" />
       <input id="q" type="text" autofocus />
-      <button type="button">search</button>
+      <button id="searchButton" type="button">search</button>
     </div>
     <div id="menu">
       <a href="#about">About</a>
