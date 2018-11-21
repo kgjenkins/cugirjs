@@ -1,0 +1,136 @@
+/* reset */
+
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strong, sub, sup, var, b, u, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video { margin:0 ; padding:0 ; border:0 ; font-size:100% ; font:inherit ; vertical-align:baseline }
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display:block }
+body { line-height:1 }
+ol, ul { list-style:none }
+blockquote, q { quotes:none }
+blockquote:before, blockquote:after, q:before, q:after { content:'' ; content:none }
+table { border-collapse:collapse ; border-spacing:0 }
+
+
+/* general styles */
+
+a { color:#00c ; text-decoration:none }
+a:hover, a:focus { text-decoration:underline }
+a:visited { color:#00c }
+body { font-family:Arial, sans-serif }
+blockquote { margin:0.5em 1em ; padding:0.5em ; border:1px solid #ddd ; background:#eee ; border-radius:4px }
+blockquote blockquote { border:1px solid #ccd ; background:#dde }
+blockquote blockquote blockquote { border:1px solid #cdc ; background:#ded }
+code { font-family:"Lucida Console", monospace }
+em, i { font-style:italic }
+strong, b { font-weight:bold }
+h1,h2,h3,h4,h5,h6 { font-weight:bold ; padding:0 ; margin:0 }
+h1 { font-size:125% }
+h2 { font-size:115% ; margin-bottom:0.3em }
+h3 { font-size:110% ; margin-bottom:0.3em }
+h4 { font-size:108% }
+h5 { font-size:105% }
+h6 { font-size:100% }
+hr { margin:1em 0 }
+img { border:0 }
+input,textarea,select { font-family:Arial, sans-serif ; font-size:100% ; margin:0 ; border:2px inset }
+input,textarea { padding:1px 2px }
+p { margin:0.5em 0 }
+pre { margin:0.5em 1em ; padding:0.5em ; border:1px solid #ddd ; background:#f8f8ee ; border-radius:4px }
+code { color:#840 ; font-size:85% }
+td, th { vertical-align:top ; text-align:left }
+th { font-weight:bold }
+ul { margin:0 0 1em ; list-style-type:disc ; padding:0 0 0 1em }
+ol { margin:0 0 1em ; list-style-type:decimal ; padding:0 0 0 1em }
+dl { margin:0 0 1em ; list-style-type:disc ; padding:0 0 0 1em }
+dd { margin:0 0 1em 1em }
+
+
+/* cugirjs */
+
+body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#fff ; color:#000 ; font-size:100% }
+
+#head { position:fixed ; top:0 ; height:108px ; width:98% ; padding:6px 1% ; background:#fff ; color:#000 ; z-index:99 }
+
+#search { float:left }
+#search img { vertical-align:middle ; height:100px ; }
+#search img:hover { cursor:pointer ; opacity:0.7 }
+#search input { margin-left:2em ; width:20em }
+#menu { float:right }
+#menu a { background:#8fc349; color:#fff ; padding:1em }
+
+
+
+
+
+
+
+
+/* old embellish css */
+
+#searchSummary { margin-left:3em ; color:#fff ; padding:2px 0 }
+#searchSummary .q { color:#ff0 ; font-weight:bold }
+
+
+
+#body { margin-top:84px }
+
+table#results { width:100% ; background:#000 }
+
+table#results thead tr.fixed { position:absolute ; z-index:99 ; background:#639 ; xheight:30px }
+table#results thead tr.notfixed { opacity:0 ; xheight:30px }
+
+table#results > thead th { padding:4px 6px ; white-space:nowrap }
+table#results > thead th:hover { background:#467 ; cursor:pointer }
+/* thick top border to prevent first row from hiding behind header row */
+xtable#results > tbody > tr:first-child { border-top:30px solid #000 }
+table#results > tbody > tr:hover { cursor:pointer ; background:#234 }
+table#results > tbody > tr.active { background:#8cf ; color:#000 ! important }
+table#results > tbody > tr.competavailable { color:#fa6 }
+table#results > tbody > tr.unavailable { color:#f66 }
+table#results > tbody > tr > td { padding:2px 6px ; white-space:nowrap ; overflow:hidden }
+
+#details { background:#468 ; color:#fff ; width:95% ; margin:2px 2% ; padding:1em 1% ; position:absolute ; white-space:normal ; box-shadow:0 12px 12px rgba(0,0,0,0.8) }
+#details:hover { cursor:default }
+#details table { color:#fff }
+#details td { padding:0 6px }
+#details a { color:#fff }
+#details a:hover {color:#88f }
+#details ul { list-style-type:none }
+#details li.available, #details li.competavailable, #details li.unavailable { color:#000 ; text-align:center ; border-radius:0.5em ; padding:0.2em ; margin-bottom:0.5em }
+#details li.available { background:#6c6 }
+#details li.competavailable { background:#fa6 }
+#details li.unavailable { background:#f66 }
+
+#details button { float:right }
+
+#modal { position:fixed ; z-index:100 ; left:0 ; top:0 ; width:100% ; height:100% ; background:#000 ; overflow-y:auto }
+#modal form { padding:3em ; width:46em ; text-align:center }
+#modal form th { width:6em ; text-align:right ; padding:3px 6px }
+#modal form td { padding:3px 6px }
+#modal form input, #modal form textarea { width:40em ; background:#444 ; color:#fff ; border:0 ; padding:3px 6px }
+#modal form input[readonly] { color:#888 }
+#modal form textarea { height:4em }
+#modal form table#concertsongs { width:100% }
+#modal form table#concertsongs th { text-align:left ; width:auto }
+#modal form table#concertsongs td { vertical-align:middle }
+#modal form input[type=checkbox] { width:auto ; transform:scale(1.3) }
+#modal form button { margin:1em 2em ; border:3px solid #888 }
+#modal form button:focus {border:3px solid #00f }
+
+#songinfo { width:28em }
+#songinfo th { width:6em ; text-align:right ; color:#ccc ; padding:3px 6px ; font-weight:normal }
+#songinfo td { width:20em ; padding:3px 6px }
+
+#history { width:12em ; margin:0 3px }
+#history ul { padding:0 ; margin:0 }
+#history li.accepted { color:#ff0 }
+
+#statistics { width:8em }
+#statistics ul { margin:0.5em }
+
+#images { width:156px ; margin:0 3px }
+#images img { height:192px ; width:144px ; margin:3px 6px }
+
+.request { color:#ff0 ; margin-left:3px }
+
+.concert ul.performances { float:left }
+.concert ul.performers { float:left }
+
