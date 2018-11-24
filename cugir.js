@@ -42,12 +42,15 @@ function cleanData(cugirjson){
     item.dct_references_s = JSON.parse(item.dct_references_s);
     var item2 = {
       title: item.dc_title_s,
-      creator: item.dc_creator_sm,
+      author: item.dc_creator_sm,
+      publisher: item.dc_publisher_sm,
       description: item.dc_description_s,
-      place: item.dct_spatial_sm,
       category: item.cugir_category_sm,
       subject: item.dc_subject_sm,
+      place: item.dct_spatial_sm,
       year: item.dct_temporal_sm,
+      format: item.dc_format_s,
+      geom_type: item.layer_geom_type_s,
       filesize: item.cugir_filesize_s,
       metadata: item.dct_references_s['http://www.w3.org/1999/xhtml'],
       layerid: item.layer_id_s,
@@ -188,9 +191,12 @@ function mouseoutResultItem(e){
 function clickResultItem(e){
   $('#results li.selected').removeClass('selected');
   var li = $(e.currentTarget).toggleClass('selected');
+  var scrollto = li.offset().top - 120; // 108 = #head css height
+  $('html').stop().animate({scrollTop:scrollto}, 500);
   //li.find('.details').slideToggle(1000);
   var item = li.data('item');
   clearMap();
+  renderItemBbox(item);
   if (item.wms) {
     var layer = L.tileLayer.wms(item.wms, {
       layers: item.layerid,
@@ -213,14 +219,14 @@ function itemDetails(item){
   var table = $('<table>').appendTo(details);
   var properties = [
     'author',
+    //'publisher' is generally redundant with author
     'description',
     'collection',
-    'place',
     'category',
     'subject',
+    'place',
     'year',
-    'filesize',
-    'metadata'
+    'filesize'
   ];
   for (var i=0; i<properties.length; i++) {
     var p = properties[i];
@@ -229,6 +235,32 @@ function itemDetails(item){
     var tr = $('<tr>').appendTo(table);
     $('<th>').text(p).appendTo(tr);
     $('<td>').text(v).appendTo(tr);
+  }
+
+  // ADVISORY NOTE IF NO WMS IMAGE IS AVAILABLE
+  if (! item.wms) {
+    var tr = $('<tr class="advisory">').appendTo(table);
+    $('<th>').text('note').appendTo(tr);
+    $('<td>').text('No preview available for '+item.format+' file format.')
+      .appendTo(tr);
+  }
+
+  // METADATA
+  var tr = $('<tr>').appendTo(table);
+  $('<th>').text('more details').appendTo(tr);
+  var td = $('<td>').appendTo(tr);
+  $('<a>').attr('href', item.metadata).attr('target', '_blank').text('see full metadata').appendTo(td);
+
+  // DOWNLOAD
+  if (item.category.indexOf('index map')>-1) {
+    // index map, special download options
+  }
+  else {
+    // not an index map, normal download options
+    var tr = $('<tr>').appendTo(table);
+    $('<th>').text('download').appendTo(tr);
+    var td = $('<td>').appendTo(tr);
+    $('<a>').attr('href', item.download).text(item.format).appendTo(td);
   }
   return details;
 }
