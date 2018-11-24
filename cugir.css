@@ -57,21 +57,29 @@ body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#ff
 #menu a { background:#8fc349; color:#fff ; padding:1em }
 
 
-#body { position:absolute ; top:116px ; margin:0 1% ; width:48% }
-#map { position:fixed ; left:50% ; top:116px ; margin:0 1% ; width:48% ; height:75% }
+#map { position:fixed ; left:0 ; top:116px ; margin:0 1% ; width:48% ; height:75% }
+#body { position:absolute ; left:50% ; top:116px ; margin-right:1% }
 
 #categories { text-align:center }
 #categories a { cursor:pointer ; line-height:1.5em }
 #categories .count { margin-right:2em ; color:#888 ; font-size:86% }
 
-#searchSummary { margin:1em ; padding:1em ; background:#fff }
+#searchSummary { margin:1em ; background:#fff }
 #searchSummary .q { color:#8fc349 ; font-weight:bold }
 
-#results { list-style-type:none }
+#results { list-style-type:none ; padding:0 ; margin:0 }
 #results li { padding:0.5em }
 #results li:hover { background:#ccf }
 #results .title { font-size:120% ; font-weight:bold ; color:#e68742 }
-#results .description { max-height:3em ; overflow:hidden }
+#results .brief { max-height:3em ; overflow:hidden }
+#results .details { display:none }
+
+#results li.selected { background:#ffc ! important ; border:1px solid #888 }
+#results li.selected .brief { display:none }
+#results li.selected .details { display:block }
+
+#results .details th { width:6em ; text-align:right ; color:#888 ; padding:3px 6px ; font-weight:normal }
+#results .details td { padding:3px 6px }
 
 /* old embellish css */
 

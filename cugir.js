@@ -3,9 +3,10 @@ var map;
 
 $(document).ready(function(){
   cugirjson = cleanData(cugirjson);
-  showHome();
   map = setupMap();
-  $(document).on('click', '#searchButton', clickSearchButton);
+  showHome();
+  $(document).on('click', 'img#logo', resetPage);
+  $(document).on('submit', 'form#search', submitQuery);
   $(document).on('click', '#results li', clickResultItem);
   $(document).on('mouseover', '#results li', mouseoverResultItem);
   $(document).on('mouseout', '#results li', mouseoutResultItem);
@@ -21,8 +22,9 @@ function setupMap(){
       console.log(e.latlng);
     });
   var osm = L.tileLayer.colorFilter('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+    isBasemap: true,
     maxZoom: 19,
-    opacity: 0.5,
+    opacity: 0.3,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
     filter: [
       'brightness:60%',
@@ -60,9 +62,14 @@ function cleanData(cugirjson){
   return data;
 }
 
+function resetPage() {
+  $('#q').val('');
+  showHome();
+}
+
 function bbox(solr_geom) {
-  // solr_geom is like "ENVELOPE(minx, maxx, maxy, miny)"
-  [minx, maxx, maxy, miny] = solr_geom.match(/(-?\d+\.\d*)/g);
+  // return leaflet bbox for solr_geom values like "ENVELOPE(minx, maxx, maxy, miny)"
+  [minx, maxx, maxy, miny] = solr_geom.match(/(-?\d+\.?\d*)/g);
   return [
     [ parseFloat(miny), parseFloat(minx) ],
     [ parseFloat(maxy), parseFloat(maxx) ]
@@ -70,6 +77,7 @@ function bbox(solr_geom) {
 }
 
 function showHome() {
+  clearMap();
   var catstat = stats('category');
   var categories = Object.keys(catstat);
   categories = categories.sort(function(a,b){
@@ -93,14 +101,15 @@ function clickCategory(e){
   search('category="'+category+'"');
 }
 
-function clickSearchButton(e){
+function submitQuery(e){
   var q = $('#q').val();
   search(q);
+  e.preventDefault();
 }
 
 function clearMap(){
   var layers = map.eachLayer(function(layer){
-    if (layer.options.isBbox) {
+    if (! layer.options.isBasemap) {
       layer.remove();
     }
   });
@@ -120,48 +129,68 @@ function search(q){
     var item = results[i];
     if (! bounds) {
       bounds = L.latLngBounds(item.bbox);
-      console.log(bounds);
     }
     bounds.extend(item.bbox);
     renderResult(item).appendTo(ul);
   }
   ul.appendTo('#body');
-  console.log(bounds);
   map.flyToBounds(bounds);
+}
+
+var bbox_default_style = {
+  color: '#222',
+  opacity: 0.5,
+  weight: 1,
+  fillColor: '#080',
+  fillOpacity: 0.05,
+  isBbox: true
+};
+
+var bbox_active_style = {
+  color:'#00f',
+  opacity:0.7,
+  weight:4,
+  fillColor:'#88f',
+  fillOpacity:0.5
 }
 
 function renderResult(item){
   var li = $('<li>').data('item', item);
   $('<div class="title">').text(item.title).appendTo(li);
-  $('<div class="description">').text(item.description).appendTo(li);
+  $('<div class="brief">').text(item.description).appendTo(li);
+  itemDetails(item).appendTo(li);
   $('<span>').text(item.creator+'. ').prependTo(li.find('.description'));
-  // add bbox to map
-  var bbox = L.rectangle(item.bbox, { 
-    color: '#888',
-    weight: 1,
-    opacity: 0.5,
-    fillOpacity: 0.2,
-    isBbox: true
-  }).addTo(map);
-  li.data('bbox', bbox);
+  var bboxlayer = renderItemBbox(item);
+  li.data('bbox', bboxlayer);
   return li;
+}
+
+function renderItemBbox(item){
+  // add bbox to map
+  var layer = L.rectangle(item.bbox, bbox_default_style).addTo(map);
+  return layer;
 }
 
 function mouseoverResultItem(e){
   var item = $(e.currentTarget);
   var bbox = item.data('bbox');
-  bbox.bringToFront().setStyle({ color:'#00f', weight:3, opacity:0.5, fillOpacity:0.2 });
+  if (bbox) {
+    bbox.bringToFront().setStyle(bbox_active_style);
+  }
 }
 
 function mouseoutResultItem(e){
   var item = $(e.currentTarget);
   var bbox = item.data('bbox');
-  bbox.setStyle({color:'#888', weight:1, opacity:0.5, fillOpacity:0.2 });
+  bbox.setStyle(bbox_default_style);
 }
 
 function clickResultItem(e){
-  var li = $(e.currentTarget);
+  $('#results li.selected').removeClass('selected');
+  var li = $(e.currentTarget).toggleClass('selected');
+  //li.find('.details').slideToggle(1000);
   var item = li.data('item');
+  clearMap();
   if (item.wms) {
     var layer = L.tileLayer.wms(item.wms, {
       layers: item.layerid,
@@ -170,10 +199,40 @@ function clickResultItem(e){
       attribution: "CUGIR"
     });
     li.data('layer', layer);
-    layer.addTo(map);
+    layer.addTo(map).bringToFront();
   }
-  map.flyToBounds(item.bbox);
+  else {
+    var bboxlayer = renderItemBbox(item);
+    bboxlayer.setStyle(bbox_active_style);
+  }
+  map.flyToBounds(item.bbox, { duration:2 });
 }
+
+function itemDetails(item){
+  var details = $('<div class="details">');
+  var table = $('<table>').appendTo(details);
+  var properties = [
+    'author',
+    'description',
+    'collection',
+    'place',
+    'category',
+    'subject',
+    'year',
+    'filesize',
+    'metadata'
+  ];
+  for (var i=0; i<properties.length; i++) {
+    var p = properties[i];
+    var v = item[p];
+    if (!v) continue;
+    var tr = $('<tr>').appendTo(table);
+    $('<th>').text(p).appendTo(tr);
+    $('<td>').text(v).appendTo(tr);
+  }
+  return details;
+}
+
 
 function stats(property){
   var seen = {}
