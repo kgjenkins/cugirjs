@@ -108,7 +108,8 @@ function showHome() {
   });
   $('#body').html('\
     <div class="home">\
-      <h1>Welcome to CUGIR!</h1>\
+      <h1>Welcome to CUGIR.js!</h1>\
+      <p style="color:#fff ; background:#f00 ; padding:1em">This is an EXPERIMENTAL javascript interface to <a href="https://cugir.library.cornell.edu/" style="color:#ff0 ; font-weight:bold ; text-decoration:underline">CUGIR</a>.</p>\
       <p>Explore and discover New York State data and metadata related to:</p>\
       <div id="categories"></div>\
     </div>\
