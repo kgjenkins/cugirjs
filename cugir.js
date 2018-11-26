@@ -5,8 +5,11 @@ $(document).ready(function(){
   cugirjson = cleanData(cugirjson);
   map = setupMap();
   $(document).on('click', 'img#logo', resetPage);
-  $(document).on('submit', 'form#search', submitQuery);
   $(document).on('click', '#results li', clickResultItem);
+  $(document).on('click', 'button.prev', clickPrevButton);
+  $(document).on('click', 'button.next', clickNextButton);
+  $(document).on('click', '#backToSearch', backToSearch);
+  $(document).on('submit', 'form#search', submitQuery);
   $(document).on('mouseover', '#results li', mouseoverResultItem);
   $(document).on('mouseout', '#results li', mouseoutResultItem);
   interpretHash();
@@ -135,6 +138,14 @@ function clearMap(){
   });
 }
 
+function escapeForHash(q){
+  var hash = escape(q.replace(/\//g, '//'))
+    .replace(/%20/g, '+')
+    .replace(/%3A/g, ':')
+    .replace(/%3D/g, '=');
+  return hash;
+}
+
 function search(q){
   if (q.length == 0) {
     showHome();
@@ -142,17 +153,16 @@ function search(q){
   }
   // remove superfluous quotes around single words
   q = q.replace(/"(\w+)"/g, '$1');
-  // add q to the URL hash
-  location.hash = escape(q.replace(/\//g, '//')).replace(/%20/g, '+').replace(/%3A/g, ':').replace(/%3D/g, '=');
+  location.hash = escapeForHash(q);
   $('#q').val(q);
   var results = filter(cugirjson, q);
   $('#body').html('');
   clearMap();
   var bounds;
-  $('<div id="searchSummary">').text(Object.keys(results).length + ' matches for ').append(
+  $('<div id="nav">').text(Object.keys(results).length + ' matches for ').append(
     $('<span>').addClass('q').text(q)
   ).appendTo('#body');
-  var ul = $('<ul id="results">');
+  var ul = $('<ul id="results">').data('q', q);
   for (var i in results) {
     var item = results[i];
     if (! bounds) {
@@ -162,7 +172,7 @@ function search(q){
     renderResult(item).appendTo(ul);
   }
   ul.appendTo('#body');
-  $('html').stop().animate({scrollTop:0}, 0);
+  $('html').scrollTop(0);
   if ($('#results li').length == 1) {
     // expand details if only one item
     $('#results li').click();
@@ -217,8 +227,8 @@ function renderItemBbox(item){
 
 function mouseoverResultItem(e){
   var item = $(e.currentTarget);
-  if (item.is('.selected')) {
-    // ignore mouseover if item is already selected
+  if ($('#results li.selected').length > 0) {
+    // ignore mouseover if any item is selected (in detail view)
     return;
   }
   var bbox = item.data('bbox');
@@ -233,37 +243,79 @@ function mouseoutResultItem(e){
   bbox.setStyle(bbox_default_style);
 }
 
+function backToSearch(){
+  var q = $('#results').data('q');
+  var scroll = $('#results').data('scroll')-120;
+  $('#q').val(q);
+  search(q);
+  $('html').scrollTop(scroll);
+}
+
 function clickResultItem(e){
+  // clear the selection
   $('#results li.selected').removeClass('selected');
-  var li = $(e.currentTarget).toggleClass('selected');
-  var scrollto = li.offset().top - 120; // 108 = #head css height
-  $('html').stop().animate({scrollTop:scrollto}, 500);
+
+  // select the clicked item and show it
+  var li = $(e.currentTarget).addClass('selected').show();
+
+  // remember current scroll position
+  $('#results').data('scroll', li.offset().top);
+
+  // go to top of page
+  $('html').scrollTop(0);
   var item = li.data('item');
 
   // add cugir id to the URL hash
   location.hash = 'id='+item.id;
 
   clearMap();
-  map
-    .flyToBounds(item.bbox, { duration:1 })
-    // wait until we finish flying before drawing the
-    // bbox (otherwise it looks awful) and the
-    // WMS image (otherwise it requests intermediate tiles during the flyto)
-    // WMS seems to actually display more quickly with this technique.
-    .once('moveend', function(){
-      var bboxlayer = renderItemBbox(item);
-      bboxlayer.setStyle(bbox_selected_style);
-      if (item.wms) {
-        var layer = L.tileLayer.wms(item.wms, {
-          layers: item.layerid,
-          format: 'image/png',
-          transparent: true,
-          tiled:true
-        });
-        li.data('layer', layer);
-        layer.addTo(map).bringToFront();
-      }
+  $('#results li:not(.selected)').hide();
+
+  var nav = $('#nav').html('');
+  $('<button class="prev">')
+    .text('« previous')
+    .appendTo(nav);
+  nav.append( $('#results li').index(li) + 1);
+  nav.append(' of ');
+  nav.append( $('#results li').length );
+  $('<button class="next">')
+    .text('next »')
+    .appendTo(nav);
+  $('<a id="newSearch">')
+    .text('New Search')
+    .appendTo(nav);
+  $('<a id="backToSearch">')
+    .text('Back to Search')
+    .attr('href', '#'+ escapeForHash($('#results').data('q')))
+    .appendTo(nav);
+
+  map.flyToBounds(item.bbox, { duration:1 });
+  var bboxlayer = renderItemBbox(item);
+  bboxlayer.setStyle(bbox_selected_style);
+  if (item.wms) {
+    var layer = L.tileLayer.wms(item.wms, {
+      layers: item.layerid,
+      format: 'image/png',
+      transparent: true,
+      tiled:true
     });
+    li.data('layer', layer);
+    layer.addTo(map).bringToFront();
+  }
+}
+
+function clickPrevButton(){
+  var prev = $('#results li.selected').prev();
+  if (prev) {
+    prev.click();
+  }
+}
+
+function clickNextButton(){
+  var next = $('#results li.selected').next();
+  if (next) {
+    next.click();
+  }
 }
 
 function mapClick(e){
@@ -310,7 +362,7 @@ function itemDetails(item){
   if (! item.wms) {
     var tr = $('<tr class="alert">').prependTo(table);
     $('<th>').text('note').appendTo(tr);
-    $('<td>').text('No map preview is available for '+item.format+' file format.')
+    $('<td>').text('Map previews are not available for the '+item.format+' file format.')
       .appendTo(tr);
   }
 
@@ -330,7 +382,7 @@ function downloadSection(item){
     .addClass('download')
     .attr('target', '_blank')
     .attr('href', item.download)
-    .text(item.format + (isIndexMap ? ' (index map)' : '') )
+    .text(item.format + (isIndexMap ? ' (index map only)' : '') )
     .appendTo(div);
 
   // addl_downloads

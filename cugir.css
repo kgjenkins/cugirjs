@@ -13,7 +13,7 @@ table { border-collapse:collapse ; border-spacing:0 }
 
 a { color:#00c ; text-decoration:none }
 a:hover, a:focus { text-decoration:underline }
-xa:visited { color:#00c }
+a:visited { color:inherit }
 body { font-family:Arial, sans-serif }
 blockquote { margin:0.5em 1em ; padding:0.5em ; border:1px solid #ddd ; background:#eee ; border-radius:4px }
 blockquote blockquote { border:1px solid #ccd ; background:#dde }
@@ -61,14 +61,20 @@ body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#ff
 
 #map { position:fixed ; left:0 ; top:116px ; margin:0 1% ; width:48% ; height:75% ; background:#fff }
 #body { position:absolute ; left:50% ; top:116px ; margin-right:1% }
-#body a, #body a:visited { color:#e68742 }
+#body a { color:#e68742 }
+
 
 .home { font-size:150% ; text-align:center }
 #categories a { cursor:pointer ; line-height:1.5em ; white-space:nowrap }
 #categories .count { margin-right:2em ; color:#888 ; font-size:86% }
 
-#searchSummary { margin:1em ; background:#fff }
-#searchSummary .q { color:#8fc349 ; font-weight:bold }
+#nav { margin:1em ; background:#fff }
+#nav .q { color:#8fc349 ; font-weight:bold }
+#nav button { color:#8fc349 ; background:#fff ; border:0 ; margin:0 1em }
+#nav button:hover { cursor:pointer }
+#nav a { float:right ; background:#12b3c5 ; border-color:#109eae ; color:#fff ; border-radius:4px ; padding:3px 1em ; margin-left:0.5em }
+#nav a:hover { background:#0e8996 ; border-color:#0b6b76 ; text-decoration:none }
+
 
 #results { list-style-type:none ; padding:0 ; margin:0 }
 #results li { padding:0.5em ; background:#eee ; margin-bottom:0.5em }
