@@ -33,7 +33,7 @@ function setupMap(){
     center: [43,-76],
     zoom: 6
   });
-  var osm = L.tileLayer.colorFilter('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+  var osm = L.tileLayer.colorFilter('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     isBasemap: true,
     maxZoom: 19,
     opacity: 1,
