@@ -6013,7 +6013,7 @@ cugirjson = [
     "dct_provenance_s":"Cornell",
     "dct_references_s":"{\"http://schema.org/downloadUrl\":\"https://s3.amazonaws.com/cugir-data/00/90/01/cugir-009001.zip\",\"http://www.opengis.net/cat/csw/csdgm\":\"https://s3.amazonaws.com/cugir-data/00/90/01/fgdc.xml\",\"http://www.w3.org/1999/xhtml\":\"https://s3.amazonaws.com/cugir-data/00/90/01/fgdc.html\",\"http://www.opengis.net/def/serviceType/ogc/wfs\":\"https://cugir.library.cornell.edu/geoserver/cugir/wfs\",\"http://www.opengis.net/def/serviceType/ogc/wms\":\"https://cugir.library.cornell.edu/geoserver/cugir/wms\"}",
     "cugir_addl_downloads_s":"{}",
-    "layer_id_s":"cugir009001-index-image",
+    "layer_id_s":"cugir009001",
     "layer_slug_s":"cugir-009001",
     "dc_type_s":"Dataset",
     "dc_format_s":"Shapefile",
