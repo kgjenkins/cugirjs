@@ -13,7 +13,7 @@ table { border-collapse:collapse ; border-spacing:0 }
 
 a { color:#00c ; text-decoration:none }
 a:hover, a:focus { text-decoration:underline }
-a:visited { color:#00c }
+xa:visited { color:#00c }
 body { font-family:Arial, sans-serif }
 blockquote { margin:0.5em 1em ; padding:0.5em ; border:1px solid #ddd ; background:#eee ; border-radius:4px }
 blockquote blockquote { border:1px solid #ccd ; background:#dde }
@@ -45,6 +45,8 @@ dd { margin:0 0 1em 1em }
 
 /* cugirjs */
 
+.alert { color:#00f ; font-weight:bold }
+
 body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#fff ; color:#000 ; font-size:100% }
 
 #head { position:fixed ; top:0 ; height:108px ; width:98% ; padding:6px 1% ; background:#fff ; color:#000 ; z-index:99 }
@@ -53,57 +55,48 @@ body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#ff
 #search img { vertical-align:middle ; height:100px ; }
 #search img:hover { cursor:pointer ; opacity:0.7 }
 #search input { margin-left:2em ; width:20em }
-#menu { float:right }
-#menu a { background:#8fc349; color:#fff ; padding:1em }
+#menu { position:absolute ; top:6px ; right:1em }
+#menu a { background:#8fc349; color:#fff ; padding:6px 1em }
 
 
-#map { position:fixed ; left:0 ; top:116px ; margin:0 1% ; width:48% ; height:75% }
+#map { position:fixed ; left:0 ; top:116px ; margin:0 1% ; width:48% ; height:75% ; background:#fff }
 #body { position:absolute ; left:50% ; top:116px ; margin-right:1% }
+#body a, #body a:visited { color:#e68742 }
 
-#categories { text-align:center }
-#categories a { cursor:pointer ; line-height:1.5em }
+.home { font-size:150% ; text-align:center }
+#categories a { cursor:pointer ; line-height:1.5em ; white-space:nowrap }
 #categories .count { margin-right:2em ; color:#888 ; font-size:86% }
 
 #searchSummary { margin:1em ; background:#fff }
 #searchSummary .q { color:#8fc349 ; font-weight:bold }
 
 #results { list-style-type:none ; padding:0 ; margin:0 }
-#results li { padding:0.5em }
+#results li { padding:0.5em ; background:#eee ; margin-bottom:0.5em }
 #results li:hover { background:#ddf ; cursor:pointer }
 #results .title { font-size:120% ; font-weight:bold ; color:#e68742 }
 #results .brief { max-height:3em ; overflow:hidden }
 #results .details { display:none }
 
-#results li.selected { background:#ffc ! important ; border:1px solid #888 }
+#results li.selected { background:#fff ! important ; border:1px solid #888 }
+#results li.selected:hover { cursor:default }
 #results li.selected .brief { display:none }
 #results li.selected .details { display:block }
 
-#results .details tr.advisory { color:#00f ; font-weight:bold }
+#results .details p { margin:0 0 0.5em }
+#results .details table { margin:0.5em 0 }
 #results .details th { width:6em ; text-align:right ; color:#888 ; padding:3px 6px ; font-weight:normal }
 #results .details td { padding:3px 6px }
+#results .details a.download { background:#12b3c5 ; border-color:#109eae ; color:#fff ; border-radius:4px ; margin-right:1em ; padding:3px 1em }
+#results .details a.download:hover { background:#0e8996 ; border-color:#0b6b76 ; text-decoration:none }
+
+
+
+
+
+
 
 /* old embellish css */
 
-
-
-
-
-
-
-table#results { width:100% ; background:#000 }
-
-table#results thead tr.fixed { position:absolute ; z-index:99 ; background:#639 ; xheight:30px }
-table#results thead tr.notfixed { opacity:0 ; xheight:30px }
-
-table#results > thead th { padding:4px 6px ; white-space:nowrap }
-table#results > thead th:hover { background:#467 ; cursor:pointer }
-/* thick top border to prevent first row from hiding behind header row */
-xtable#results > tbody > tr:first-child { border-top:30px solid #000 }
-table#results > tbody > tr:hover { cursor:pointer ; background:#234 }
-table#results > tbody > tr.active { background:#8cf ; color:#000 ! important }
-table#results > tbody > tr.competavailable { color:#fa6 }
-table#results > tbody > tr.unavailable { color:#f66 }
-table#results > tbody > tr > td { padding:2px 6px ; white-space:nowrap ; overflow:hidden }
 
 #details { background:#468 ; color:#fff ; width:95% ; margin:2px 2% ; padding:1em 1% ; position:absolute ; white-space:normal ; box-shadow:0 12px 12px rgba(0,0,0,0.8) }
 #details:hover { cursor:default }
@@ -112,10 +105,7 @@ table#results > tbody > tr > td { padding:2px 6px ; white-space:nowrap ; overflo
 #details a { color:#fff }
 #details a:hover {color:#88f }
 #details ul { list-style-type:none }
-#details li.available, #details li.competavailable, #details li.unavailable { color:#000 ; text-align:center ; border-radius:0.5em ; padding:0.2em ; margin-bottom:0.5em }
-#details li.available { background:#6c6 }
-#details li.competavailable { background:#fa6 }
-#details li.unavailable { background:#f66 }
+
 
 #details button { float:right }
 

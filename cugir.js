@@ -4,34 +4,42 @@ var map;
 $(document).ready(function(){
   cugirjson = cleanData(cugirjson);
   map = setupMap();
-  showHome();
   $(document).on('click', 'img#logo', resetPage);
   $(document).on('submit', 'form#search', submitQuery);
   $(document).on('click', '#results li', clickResultItem);
   $(document).on('mouseover', '#results li', mouseoverResultItem);
   $(document).on('mouseout', '#results li', mouseoutResultItem);
+  interpretHash();
 });
+
+function interpretHash(){
+  var hash = location.hash;
+  if (!hash) {
+    showHome();
+    return;
+  }
+  // search for whatever is after the #
+  search(hash.slice(1));
+}
 
 function setupMap(){
   map = L.map('map', {
-      fadeAnimation:false,
-      center: [43,-76],
-      zoom: 6
-    })
-    .on('click', function(e) {
-      console.log(e.latlng);
-    });
+    fadeAnimation:false,
+    center: [43,-76],
+    zoom: 6
+  });
   var osm = L.tileLayer.colorFilter('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     isBasemap: true,
     maxZoom: 19,
-    opacity: 0.3,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
+    opacity: 1,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
     filter: [
-      'brightness:60%',
-      'contrast:400%',
-      'saturate:150%'
+      'brightness:75%',
+      'contrast:200%',
+      'saturate:200%'
     ]
   }).addTo(map);
+  map.on('click', mapClick);
   return map;
 }
 
@@ -41,10 +49,12 @@ function cleanData(cugirjson){
     var item = cugirjson[i];
     item.dct_references_s = JSON.parse(item.dct_references_s);
     var item2 = {
+      id: item.layer_slug_s,
       title: item.dc_title_s,
       author: item.dc_creator_sm,
       publisher: item.dc_publisher_sm,
       description: item.dc_description_s,
+      collection: item.dct_isPartOf_sm,
       category: item.cugir_category_sm,
       subject: item.dc_subject_sm,
       place: item.dct_spatial_sm,
@@ -57,7 +67,7 @@ function cleanData(cugirjson){
       wms: item.dct_references_s['http://www.opengis.net/def/serviceType/ogc/wms'],
       wfs: item.dct_references_s['http://www.opengis.net/def/serviceType/ogc/wfs'],
       download: item.dct_references_s['http://schema.org/downloadUrl'],
-      addl_downloads: item.cugir_addl_downloads_s,
+      addl_downloads: JSON.parse(item.cugir_addl_downloads_s),
       bbox: bbox(item.solr_geom)
     };
     data.push(item2);
@@ -80,6 +90,7 @@ function bbox(solr_geom) {
 }
 
 function showHome() {
+  location.hash = '';
   clearMap();
   var catstat = stats('category');
   var categories = Object.keys(catstat);
@@ -88,7 +99,13 @@ function showHome() {
     else if (a>b) return 1;
     else return 0;
   });
-  $('#body').html('<h1>Welcome to CUGIR!</h1><p>Explore and discover New York State data and metadata related to:</p><div id="categories"></div>');
+  $('#body').html('\
+    <div class="home">\
+      <h1>Welcome to CUGIR!</h1>\
+      <p>Explore and discover New York State data and metadata related to:</p>\
+      <div id="categories"></div>\
+    </div>\
+  ');
   for (var i=0; i<categories.length; i++) {
     $('<a>')
       .text(categories[i])
@@ -119,6 +136,14 @@ function clearMap(){
 }
 
 function search(q){
+  if (q.length == 0) {
+    showHome();
+    return;
+  }
+  // remove superfluous quotes around single words
+  q = q.replace(/"(\w+)"/g, '$1');
+  // add q to the URL hash
+  location.hash = escape(q.replace(/\//g, '//')).replace(/%20/g, '+').replace(/%3A/g, ':').replace(/%3D/g, '=');
   $('#q').val(q);
   var results = filter(cugirjson, q);
   $('#body').html('');
@@ -137,15 +162,23 @@ function search(q){
     renderResult(item).appendTo(ul);
   }
   ul.appendTo('#body');
-  map.flyToBounds(bounds);
+  $('html').stop().animate({scrollTop:0}, 0);
+  if ($('#results li').length == 1) {
+    // expand details if only one item
+    $('#results li').click();
+    return;
+  }
+  if (bounds) {
+    map.flyToBounds(bounds, { duration:1 });
+  }
 }
 
 var bbox_default_style = {
   color: '#222',
-  opacity: 0.5,
+  opacity: 1,
   weight: 1,
-  fillColor: '#080',
-  fillOpacity: 0.05,
+  fillColor: '#fff',
+  fillOpacity: 0,
   isBbox: true
 };
 
@@ -155,6 +188,14 @@ var bbox_active_style = {
   weight:4,
   fillColor:'#88f',
   fillOpacity:0.5
+}
+
+var bbox_selected_style = {
+  color:'#00f',
+  opacity:0.7,
+  weight:4,
+  fillColor:'#88f',
+  fillOpacity:0
 }
 
 function renderResult(item){
@@ -176,9 +217,13 @@ function renderItemBbox(item){
 
 function mouseoverResultItem(e){
   var item = $(e.currentTarget);
+  if (item.is('.selected')) {
+    // ignore mouseover if item is already selected
+    return;
+  }
   var bbox = item.data('bbox');
   if (bbox) {
-    bbox.bringToFront().setStyle(bbox_active_style);
+    bbox.setStyle(bbox_active_style).bringToFront();
   }
 }
 
@@ -193,25 +238,37 @@ function clickResultItem(e){
   var li = $(e.currentTarget).toggleClass('selected');
   var scrollto = li.offset().top - 120; // 108 = #head css height
   $('html').stop().animate({scrollTop:scrollto}, 500);
-  //li.find('.details').slideToggle(1000);
   var item = li.data('item');
+
+  // add cugir id to the URL hash
+  location.hash = 'id='+item.id;
+
   clearMap();
-  renderItemBbox(item);
-  if (item.wms) {
-    var layer = L.tileLayer.wms(item.wms, {
-      layers: item.layerid,
-      format: 'image/png',
-      transparent: true,
-      attribution: "CUGIR"
+  map
+    .flyToBounds(item.bbox, { duration:1 })
+    // wait until we finish flying before drawing the
+    // bbox (otherwise it looks awful) and the
+    // WMS image (otherwise it requests intermediate tiles during the flyto)
+    // WMS seems to actually display more quickly with this technique.
+    .once('moveend', function(){
+      var bboxlayer = renderItemBbox(item);
+      bboxlayer.setStyle(bbox_selected_style);
+      if (item.wms) {
+        var layer = L.tileLayer.wms(item.wms, {
+          layers: item.layerid,
+          format: 'image/png',
+          transparent: true,
+          tiled:true
+        });
+        li.data('layer', layer);
+        layer.addTo(map).bringToFront();
+      }
     });
-    li.data('layer', layer);
-    layer.addTo(map).bringToFront();
-  }
-  else {
-    var bboxlayer = renderItemBbox(item);
-    bboxlayer.setStyle(bbox_active_style);
-  }
-  map.flyToBounds(item.bbox, { duration:2 });
+}
+
+function mapClick(e){
+  console.log(e);
+  var latlng = e.latlng;
 }
 
 function itemDetails(item){
@@ -234,35 +291,90 @@ function itemDetails(item){
     if (!v) continue;
     var tr = $('<tr>').appendTo(table);
     $('<th>').text(p).appendTo(tr);
-    $('<td>').text(v).appendTo(tr);
-  }
-
-  // ADVISORY NOTE IF NO WMS IMAGE IS AVAILABLE
-  if (! item.wms) {
-    var tr = $('<tr class="advisory">').appendTo(table);
-    $('<th>').text('note').appendTo(tr);
-    $('<td>').text('No preview available for '+item.format+' file format.')
-      .appendTo(tr);
+    $('<td>').html(linkify(p, v)).appendTo(tr);
   }
 
   // METADATA
   var tr = $('<tr>').appendTo(table);
   $('<th>').text('more details').appendTo(tr);
   var td = $('<td>').appendTo(tr);
-  $('<a>').attr('href', item.metadata).attr('target', '_blank').text('see full metadata').appendTo(td);
+  $('<a>').attr('href', item.metadata).attr('target', '_blank').text('metadata').appendTo(td);
 
   // DOWNLOAD
-  if (item.category.indexOf('index map')>-1) {
-    // index map, special download options
+  var tr = $('<tr>').prependTo(table);
+  $('<th>').text('download').appendTo(tr);
+  var td = $('<td>').appendTo(tr);
+  td.append(downloadSection(item));
+
+  // ALERT IF NO WMS IMAGE IS AVAILABLE
+  if (! item.wms) {
+    var tr = $('<tr class="alert">').prependTo(table);
+    $('<th>').text('note').appendTo(tr);
+    $('<td>').text('No map preview is available for '+item.format+' file format.')
+      .appendTo(tr);
   }
-  else {
-    // not an index map, normal download options
-    var tr = $('<tr>').appendTo(table);
-    $('<th>').text('download').appendTo(tr);
-    var td = $('<td>').appendTo(tr);
-    $('<a>').attr('href', item.download).text(item.format).appendTo(td);
-  }
+
   return details;
+}
+
+function downloadSection(item){
+  var div = $('<div>');
+  var isIndexMap = item.category.indexOf('index map')>-1;
+  if (isIndexMap) {
+    $('<p class="alert">')
+      .text('This is an index map.  Please select a feature on the map to download the corresponding data subset.')
+      .appendTo(div);
+  }
+  // main download file
+  $('<a>')
+    .addClass('download')
+    .attr('target', '_blank')
+    .attr('href', item.download)
+    .text(item.format + (isIndexMap ? ' (index map)' : '') )
+    .appendTo(div);
+
+  // addl_downloads
+  if (item.addl_downloads) {
+    for (var k in item.addl_downloads) {
+      $('<a>')
+        .addClass('download')
+        .attr('target', '_blank')
+        .attr('href', item.addl_downloads[k])
+        .text(k)
+        .appendTo(div);
+    }
+  }
+  return div;
+}
+
+function downloadsByIndexMap(item){
+
+}
+
+function linkify(p, v){
+  if (p==='collection' || p==='category' || p==='place') {
+    // make sure v is an array
+    if (! Array.isArray(v)) {
+      v = [v];
+    }
+    var div = $('<div>');
+    var count = 0;
+    for (var i=0; i<v.length; i++) {
+      var vi = v[i];
+      if (count++) {
+        div.append(', ');
+      }
+      $('<a>')
+        .attr('href', "javascript:search('"+p+'="'+vi+'"'+"')")
+        .text(vi)
+        .appendTo(div);
+    }
+    return div;
+  }
+  else if (Array.isArray(v)) {
+    return v.join(', ');
+  }
+  return v;
 }
 
 
