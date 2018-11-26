@@ -324,6 +324,9 @@ function clickNextButton(){
 }
 
 function mapClick(e){
+  // TODO rewrite this to search a bbox of the entire pixel (or 9)
+  // currently, it's very difficult to click a point unless zoomed way in
+  // 
   var selected = $('#results li.selected');
   // make sure we have a wms layer
   if (selected.length<1) return;
@@ -364,7 +367,6 @@ function mapClick(e){
       else {
         // if not an index map, remove any other selected features
         map.eachLayer(function(layer){
-          console.log(layer);
           if (layer.options.isSelection) {
             layer.remove();
           }
@@ -373,7 +375,7 @@ function mapClick(e){
 
       // show feature and info
       var layer = L.geoJSON(data, {
-        //display as little circles
+        //display pointns as little circles
         pointToLayer: function(point, latlng) {
           return L.circleMarker(latlng);
         },
@@ -392,7 +394,7 @@ function mapClick(e){
 
 function popupInfo(properties){
   $('table.featureInfo').remove();
-  var table = $('<table class="featureInfo">').appendTo('#map');
+  var table = $('<table class="featureInfo">').appendTo('body');
   for (var p in properties) {
     var v = properties[p];
     var tr = $('<tr>').appendTo(table);
