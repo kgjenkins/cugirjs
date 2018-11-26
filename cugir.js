@@ -13,6 +13,7 @@ $(document).ready(function(){
   $(document).on('submit', 'form#search', submitQuery);
   $(document).on('mouseover', '#results li', mouseoverResultItem);
   $(document).on('mouseout', '#results li', mouseoutResultItem);
+  $(document).on('keydown', listenForEsc);
   interpretHash();
 });
 
@@ -24,6 +25,12 @@ function interpretHash(){
   }
   // search for whatever is after the #
   search(hash.slice(1));
+}
+
+function listenForEsc(e){
+  if (e.key=='Escape') {
+    $('#featureInfo').remove();
+  }
 }
 
 function setupMap(){
@@ -109,7 +116,7 @@ function showHome() {
   $('#body').html('\
     <div class="home">\
       <h1>Welcome to CUGIR.js!</h1>\
-      <p style="color:#fff ; background:#f00 ; padding:1em">This is an EXPERIMENTAL javascript interface to <a href="https://cugir.library.cornell.edu/" style="color:#ff0 ; font-weight:bold ; text-decoration:underline">CUGIR</a>.</p>\
+      <p style="color:#fff ; background:#f00 ; padding:1em">This is an EXPERIMENTAL javascript interface to <a href="https://cugir.library.cornell.edu/" style="color:#fc0 ; font-weight:bold ; text-decoration:underline">CUGIR</a>.</p>\
       <p>Explore and discover New York State data and metadata related to:</p>\
       <div id="categories"></div>\
     </div>\
@@ -141,7 +148,7 @@ function clearMap(){
       layer.remove();
     }
   });
-  $('table.featureInfo').remove();
+  $('#featureInfo').remove();
 }
 
 function escapeForHash(q){
@@ -349,9 +356,8 @@ function mapClick(e){
     url: url,
     dataType: 'json',
     success: function(data,status,xhr){
-      console.log(status);
+
       var properties = data.features[0].properties;
-      console.log(properties);
 
       // is this for an index map?
       var subset = $('#results li.selected .subset');
@@ -394,8 +400,11 @@ function mapClick(e){
 }
 
 function popupInfo(properties){
-  $('table.featureInfo').remove();
-  var table = $('<table class="featureInfo">').appendTo('body');
+  $('#featureInfo').remove();
+  var div = $('<div id="featureInfo">').appendTo('body');
+  var table = $('<table>')
+    .html('<tr class="head"><th>Attribute</th><th>Value</th></tr>')
+    .appendTo(div);
   for (var p in properties) {
     var v = properties[p];
     var tr = $('<tr>').appendTo(table);
