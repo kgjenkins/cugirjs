@@ -136,6 +136,7 @@ function clearMap(){
       layer.remove();
     }
   });
+  $('table.featureInfo').remove();
 }
 
 function escapeForHash(q){
@@ -201,10 +202,9 @@ var bbox_active_style = {
 }
 
 var bbox_selected_style = {
-  color:'#00f',
+  color:'#e68742',
   opacity:0.7,
   weight:4,
-  fillColor:'#88f',
   fillOpacity:0
 }
 
@@ -340,19 +340,42 @@ function mapClick(e){
     url: url,
     dataType: 'json',
     success: function(data,status,xhr){
-      L.geoJSON(data, {
-        style: bbox_active_style
-      }).addTo(map);
+      console.log(status);
       var properties = data.features[0].properties;
       console.log(properties);
-      var subset = $('#results li.selected .subset');
-      if (subset.children().length==0) {
-        subset.append('Selected data subsets: ');
-      }
-      subset
-        .append(subsetDownload(properties))
-        .append(' ');
 
+      // is this for an index map?
+      var subset = $('#results li.selected .subset');
+      if (subset.length>0) {
+        // add text before the first selected subset
+        if (subset.children().length==0) {
+          subset.append('Selected data subsets: ');
+        }
+        // add subset download button
+        subset
+          .append(subsetDownload(properties))
+          .append(' ');
+      }
+      else {
+        // if not an index map, remove any other selected features
+        map.eachLayer(function(layer){
+          console.log(layer);
+          if (layer.options.isSelection) {
+            layer.remove();
+          }
+        });
+      }
+
+      // show feature and info
+      var layer = L.geoJSON(data, {
+        //display as little circles
+        pointToLayer: function(point, latlng) {
+          return L.circleMarker(latlng);
+        },
+        style: bbox_active_style,
+        isSelection: true
+      }).addTo(map);
+      popupInfo(properties);
     },
     error: function(xhr, status, error){
       console.log(xhr);
@@ -360,6 +383,17 @@ function mapClick(e){
       console.log(error);
     }
   });
+}
+
+function popupInfo(properties){
+  $('table.featureInfo').remove();
+  var table = $('<table class="featureInfo">').appendTo('#map');
+  for (var p in properties) {
+    var v = properties[p];
+    var tr = $('<tr>').appendTo(table);
+    $('<th>').text(p).appendTo(tr);
+    $('<td>').text(v).appendTo(tr);
+  }
 }
 
 function subsetDownload(p){

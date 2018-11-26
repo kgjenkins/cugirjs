@@ -60,6 +60,7 @@ body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#ff
 
 
 #map { position:fixed ; left:0 ; top:116px ; margin:0 1% ; width:48% ; height:75% ; background:#fff }
+
 #body { position:absolute ; left:50% ; top:116px ; margin-right:1% }
 #body a { color:#e68742 }
 
@@ -96,6 +97,9 @@ body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#ff
 #results .details a.download { background:#12b3c5 ; border-color:#109eae ; color:#fff ; border-radius:4px ; margin:6px 1em 6px 0 ; padding:3px 1em ; white-space:nowrap }
 #results .details a.download:hover { background:#0e8996 ; border-color:#0b6b76 ; text-decoration:none }
 
+table.featureInfo { position:fixed ; left:1% ; top:120px ; z-index:9999 ; background:#fff ; border:3px solid #00f ; box-shadow:6px 6px 12px rgba(0,0,0,0.5) }
+table.featureInfo th { width:5em ; text-align:right ; color:#888 ; padding:3px 6px ; font-weight:normal }
+table.featureInfo td { padding:3px 6px }
 
 
 
