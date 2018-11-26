@@ -340,7 +340,7 @@ function mapClick(e){
     bbox: [lat,lng,lat,lng].join(','),
     outputFormat: 'json'
   };
-  var url = 'http://alteriseculo.com/proxy/?url=' + encodeURIComponent(item.wfs + L.Util.getParamString(params));
+  var url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(item.wfs + L.Util.getParamString(params));
   $.ajax({
     url: url,
     dataType: 'json',
