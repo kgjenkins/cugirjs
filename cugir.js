@@ -319,8 +319,58 @@ function clickNextButton(){
 }
 
 function mapClick(e){
-  console.log(e);
-  var latlng = e.latlng;
+  var selected = $('#results li.selected');
+  // make sure we have a wms layer
+  if (selected.length<1) return;
+  var item = selected.data('item');
+  var lat = e.latlng.lat;
+  var lng = e.latlng.lng;
+  // https://cugir.library.cornell.edu/geoserver/cugirwfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cugir008186&srsName=EPSG:4326&bbox=42.1634,-76.5687,42.1634,-76.5687&outputFormat=json
+  params = {
+    service: 'WFS',
+    version: '2.0.0',
+    request: 'GetFeature',
+    typeNames: 'cugir:' + item.layerid,
+    srs: 'EPSG:4326',
+    bbox: [lat,lng,lat,lng].join(','),
+    outputFormat: 'json'
+  };
+  var url = 'http://alteriseculo.com/proxy/?url=' + encodeURIComponent(item.wfs + L.Util.getParamString(params));
+  $.ajax({
+    url: url,
+    dataType: 'json',
+    success: function(data,status,xhr){
+      L.geoJSON(data, {
+        style: bbox_active_style
+      }).addTo(map);
+      var properties = data.features[0].properties;
+      console.log(properties);
+      var subset = $('#results li.selected .subset');
+      if (subset.children().length==0) {
+        subset.append('Selected data subsets: ');
+      }
+      subset
+        .append(subsetDownload(properties))
+        .append(' ');
+
+    },
+    error: function(xhr, status, error){
+      console.log(xhr);
+      console.log(status);
+      console.log(error);
+    }
+  });
+}
+
+function subsetDownload(p){
+  // TODO simplify this by switching to standard openindexmaps properties
+  var label = p.name || p.usgs_name || p.title || p.countyname;
+  var a =  $('<a>')
+    .addClass('download')
+    .attr('target', '_blank')
+    .attr('href', p.download)
+    .text( label );
+  return a;
 }
 
 function itemDetails(item){
@@ -374,8 +424,9 @@ function downloadSection(item){
   var isIndexMap = item.category.indexOf('index map')>-1;
   if (isIndexMap) {
     $('<p class="alert">')
-      .text('This is an index map.  Please select a feature on the map to download the corresponding data subset.')
+      .text('This is an index map.  Please select features on the map to display the corresponding download links.')
       .appendTo(div);
+    $('<div class="subset">').appendTo(div);
   }
   // main download file
   $('<a>')
@@ -397,10 +448,6 @@ function downloadSection(item){
     }
   }
   return div;
-}
-
-function downloadsByIndexMap(item){
-
 }
 
 function linkify(p, v){
