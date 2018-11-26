@@ -9,6 +9,7 @@ $(document).ready(function(){
   $(document).on('click', 'button.prev', clickPrevButton);
   $(document).on('click', 'button.next', clickNextButton);
   $(document).on('click', '#backToSearch', backToSearch);
+  $(document).on('click', '#newSearch', showHome);
   $(document).on('submit', 'form#search', submitQuery);
   $(document).on('mouseover', '#results li', mouseoverResultItem);
   $(document).on('mouseout', '#results li', mouseoutResultItem);
@@ -28,6 +29,7 @@ function interpretHash(){
 function setupMap(){
   map = L.map('map', {
     fadeAnimation:false,
+    // TODO set to max bounds of all data
     center: [43,-76],
     zoom: 6
   });
@@ -95,6 +97,8 @@ function bbox(solr_geom) {
 function showHome() {
   location.hash = '';
   clearMap();
+  // TODO set to max bounds of all data
+  map.setView([43,-76], 6);
   var catstat = stats('category');
   var categories = Object.keys(catstat);
   categories = categories.sort(function(a,b){
@@ -283,6 +287,7 @@ function clickResultItem(e){
     .appendTo(nav);
   $('<a id="newSearch">')
     .text('New Search')
+    .attr('href', '#')
     .appendTo(nav);
   $('<a id="backToSearch">')
     .text('Back to Search')
