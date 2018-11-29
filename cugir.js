@@ -364,7 +364,7 @@ function mapClick(e){
       if (subset.length>0) {
         // add text before the first selected subset
         if (subset.children().length==0) {
-          subset.append('Selected data subsets: ');
+          subset.append('Selected data subsets:<br>');
         }
         // add subset download button
         subset
