@@ -59,9 +59,9 @@ body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#ff
 #menu a { background:#8fc349; color:#fff ; padding:6px 1em }
 
 
-#map { position:fixed ; left:0 ; top:128px ; margin:0 1% ; width:38% ; height:75% ; background:#fff }
+#map { position:fixed ; left:0 ; top:128px ; margin:0 0.5% ; width:39% ; height:75% ; background:#fff }
 
-#body { position:absolute ; left:40% ; top:128px ; margin-right:1% }
+#body { position:absolute ; left:40% ; top:128px ; margin-right:0.5% }
 #body.info { left:60% }
 #body a { color:#e68742 }
 
@@ -94,12 +94,12 @@ body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#ff
 #results .details table { margin:0.5em 0 }
 #results .details th { width:6em ; text-align:right ; color:#888 ; padding:3px 6px ; font-weight:normal }
 #results .details td { padding:3px 6px }
-#results .details .subset { margin-bottom:1.5em ; line-height:2em }
-#results .details a.download { background:#12b3c5 ; border-color:#109eae ; color:#fff ; border-radius:4px ; margin:6px 1em 6px 0 ; padding:3px 1em ; white-space:nowrap }
-#results .details a.download:hover { background:#0e8996 ; border-color:#0b6b76 ; text-decoration:none }
+#results .details .downloads .subset { margin-bottom:1.5em }
+#results .details .downloads a { background:#12b3c5 ; border-color:#109eae ; color:#fff ; border-radius:4px ; margin:6px 1em 6px 0 ; padding:3px 1em ; white-space:nowrap ; line-height:2em }
+#results .details .downloads a:hover { background:#0e8996 ; border-color:#0b6b76 ; text-decoration:none }
 
 
-#info { position:absolute ; left:40% ; top:128px ; width:19%; background:#fff ; border:3px solid #00f ; margin-bottom:3em ; overflow-y:auto }
+#info { position:absolute ; left:40% ; top:128px ; width:19%; background:#fff ; border:3px solid #00f ; margin-bottom:3em ; overflow-y:auto ; word-break:break-all }
 #info table { width:100% }
 #info tr.head th { font-weight:bold ; color:#000 ; background:#ccf ; text-align:center }
 #info button.close { float:right }

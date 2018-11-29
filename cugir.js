@@ -504,21 +504,24 @@ function itemDetails(item){
 }
 
 function downloadSection(item){
-  var div = $('<div>');
+  var div = $('<div class="downloads">');
   var isIndexMap = item.category.indexOf('index map')>-1;
   if (isIndexMap) {
     $('<p class="alert">')
-      .text('This is an index map.  Please select features on the map to display the corresponding download links.')
+      .text('This is an index map.  Please select features on the map to get the download links for the actual data.')
       .appendTo(div);
     $('<div class="subset">').appendTo(div);
   }
+  var indextext = isIndexMap ? ' index map' : '';
+
   // main download file
   $('<a>')
     .addClass('download')
     .attr('target', '_blank')
     .attr('href', item.download)
-    .text(item.format + (isIndexMap ? ' (index map only)' : '') )
+    .text(item.format + ' (original' + indextext + ')')
     .appendTo(div);
+  div.append(' ');
 
   // addl_downloads
   if (item.addl_downloads) {
@@ -527,10 +530,62 @@ function downloadSection(item){
         .addClass('download')
         .attr('target', '_blank')
         .attr('href', item.addl_downloads[k])
-        .text(k)
+        .text(k + ' (original' + indextext + ')')
         .appendTo(div);
+      div.append(' ');
     }
   }
+
+  // generated downloads
+  if (item.wfs) {
+    // generate geojson if there isn't already such a download
+    if (item.format !== 'GeoJSON'
+        && ! item.addl_downloads['GeoJSON']) {
+      var params = {
+        service: 'WFS',
+        version: '2.0.0',
+        request: 'GetFeature',
+        typeNames: 'cugir:' + item.layerid,
+        maxFeatures: 999999,
+        srs: 'EPSG:4326',
+        outputFormat: 'json'
+      };
+      $('<a>')
+        .text('GeoJSON (generated' + indextext + ')')
+        .addClass('download')
+        .attr('target', '_blank')
+        .attr('href', item.wfs + L.Util.getParamString(params))
+        .appendTo(div);
+      div.append(' ');
+    }
+
+    // generate kml if there isn't already such a download
+    if (item.format !== 'KML'
+        && ! item.addl_downloads['KML']) {
+      params = {
+        service: 'WMS',
+        version: '1.1.0',
+        request: 'GetMap',
+        layers: 'cugir:' + item.layerid,
+        maxFeatures: 999999,
+        srs: 'EPSG:4326',
+        // we have to flip yx -> xy
+        bbox: item.bbox[0][1] + ',' + item.bbox[0][0] + ',' + item.bbox[1][1] + ',' + item.bbox[1][0],
+        height: 1, // height/width are required, but don't matter
+        width: 1,
+        format: 'application/vnd.google-earth.kmz+xml'
+      };
+      $('<a>')
+        .text('KML (generated' + indextext + ')')
+        .addClass('download')
+        .attr('target', '_blank')
+        .attr('href', item.wms + L.Util.getParamString(params))
+        .appendTo(div);
+      div.append(' ');
+    }
+  }
+
+
   return div;
 }
 
