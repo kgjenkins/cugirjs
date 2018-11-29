@@ -59,9 +59,10 @@ body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#ff
 #menu a { background:#8fc349; color:#fff ; padding:6px 1em }
 
 
-#map { position:fixed ; left:0 ; top:128px ; margin:0 1% ; width:48% ; height:75% ; background:#fff }
+#map { position:fixed ; left:0 ; top:128px ; margin:0 1% ; width:38% ; height:75% ; background:#fff }
 
-#body { position:absolute ; left:50% ; top:128px ; margin-right:1% }
+#body { position:absolute ; left:40% ; top:128px ; margin-right:1% }
+#body.info { left:60% }
 #body a { color:#e68742 }
 
 
@@ -97,11 +98,14 @@ body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#ff
 #results .details a.download { background:#12b3c5 ; border-color:#109eae ; color:#fff ; border-radius:4px ; margin:6px 1em 6px 0 ; padding:3px 1em ; white-space:nowrap }
 #results .details a.download:hover { background:#0e8996 ; border-color:#0b6b76 ; text-decoration:none }
 
-#featureInfo { position:fixed ; left:40% ; bottom:0 ; background:#fff ; border:3px solid #00f ; box-shadow:6px 6px 12px rgba(0,0,0,0.5) ; margin-bottom:3em ; max-height:65% ; overflow-y:auto ; overflow-x:hidden }
-/* TODO make #featureInfo same height as map? */
-#featureInfo tr.head th { font-weight:bold ; color:#000 ; background:#ccf ; text-align:center }
-#featureInfo th { width:5em ; text-align:right ; color:#888 ; padding:3px 6px ; font-weight:normal ; border:1px solid #888 }
-#featureInfo td { padding:3px 6px ; border:1px solid #888 }
+
+#info { position:absolute ; left:40% ; top:128px ; width:19%; background:#fff ; border:3px solid #00f ; margin-bottom:3em ; overflow-y:auto }
+#info table { width:100% }
+#info tr.head th { font-weight:bold ; color:#000 ; background:#ccf ; text-align:center }
+#info button.close { float:right }
+#info button.close:hover { background:#ccc ; cursor:pointer }
+#info th { width:5em ; text-align:right ; color:#888 ; padding:3px 6px ; font-weight:normal ; border:1px solid #888 }
+#info td { padding:3px 6px ; border:1px solid #888 }
 
 
 

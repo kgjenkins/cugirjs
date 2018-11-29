@@ -10,6 +10,7 @@ $(document).ready(function(){
   $(document).on('click', 'button.next', clickNextButton);
   $(document).on('click', '#backToSearch', backToSearch);
   $(document).on('click', '#newSearch', showHome);
+  $(document).on('click', '#info button.close', closeInfo);
   $(document).on('submit', 'form#search', submitQuery);
   $(document).on('mouseover', '#results li', mouseoverResultItem);
   $(document).on('mouseout', '#results li', mouseoutResultItem);
@@ -29,8 +30,13 @@ function interpretHash(){
 
 function listenForEsc(e){
   if (e.key=='Escape') {
-    $('#featureInfo').remove();
+    closeInfo();
   }
+}
+
+function closeInfo(){
+  $('#info').remove();
+  $('#body').removeClass('info');
 }
 
 function setupMap(){
@@ -51,7 +57,7 @@ function setupMap(){
       'saturate:200%'
     ]
   }).addTo(map);
-  map.on('click', mapClick);
+  map.on('click', clickMap);
   return map;
 }
 
@@ -94,7 +100,11 @@ function resetPage() {
 
 function bbox(solr_geom) {
   // return leaflet bbox for solr_geom values like "ENVELOPE(minx, maxx, maxy, miny)"
-  [minx, maxx, maxy, miny] = solr_geom.match(/(-?\d+\.?\d*)/g);
+  var m = solr_geom.match(/(-?\d+\.?\d*)/g);
+  var minx = m[0];
+  var maxx = m[1];
+  var maxy = m[2];
+  var miny = m[3];
   return [
     [ parseFloat(miny), parseFloat(minx) ],
     [ parseFloat(maxy), parseFloat(maxx) ]
@@ -148,7 +158,7 @@ function clearMap(){
       layer.remove();
     }
   });
-  $('#featureInfo').remove();
+  closeInfo();
 }
 
 function escapeForHash(q){
@@ -219,6 +229,15 @@ var bbox_selected_style = {
   weight:4,
   fillOpacity:0
 }
+
+var bbox_unavailable_style = {
+  color:'#f00',
+  opacity:0.7,
+  weight:4,
+  fillColor:'#f88',
+  fillOpacity:0.5
+}
+
 
 function renderResult(item){
   var li = $('<li>').data('item', item);
@@ -331,7 +350,7 @@ function clickNextButton(){
   }
 }
 
-function mapClick(e){
+function clickMap(e){
   // TODO rewrite this to search a bbox of the entire pixel (or 9)
   // currently, it's very difficult to click a point unless zoomed way in
   // 
@@ -362,14 +381,16 @@ function mapClick(e){
       // is this for an index map?
       var subset = $('#results li.selected .subset');
       if (subset.length>0) {
-        // add text before the first selected subset
-        if (subset.children().length==0) {
-          subset.append('Selected data subsets:<br>');
+        if (properties.download != 'no data') {
+          // add text before the first selected subset
+          if (subset.children().length==0) {
+            subset.append('Selected data subsets:<br>');
+          }
+          // add subset download button
+          subset
+            .append(subsetDownload(properties))
+            .append(' ');
         }
-        // add subset download button
-        subset
-          .append(subsetDownload(properties))
-          .append(' ');
       }
       else {
         // if not an index map, remove any other selected features
@@ -382,14 +403,17 @@ function mapClick(e){
 
       // show feature and info
       var layer = L.geoJSON(data, {
-        //display pointns as little circles
+        //display points as little circles
         pointToLayer: function(point, latlng) {
           return L.circleMarker(latlng);
         },
         style: bbox_active_style,
         isSelection: true
       }).addTo(map);
-      popupInfo(properties);
+      if (properties.download == 'no data') {
+        layer.setStyle(bbox_unavailable_style);
+      }
+      showInfo(properties);
     },
     error: function(xhr, status, error){
       console.log(xhr);
@@ -399,18 +423,27 @@ function mapClick(e){
   });
 }
 
-function popupInfo(properties){
-  $('#featureInfo').remove();
-  var div = $('<div id="featureInfo">').appendTo('body');
+function showInfo(properties){
+  $('#body').addClass('info');
+  $('#info').remove();
+  var info = $('<div id="info">').appendTo('body');
   var table = $('<table>')
-    .html('<tr class="head"><th>Attribute</th><th>Value</th></tr>')
-    .appendTo(div);
+    .html('<tr class="head"><th>Attribute</th><th>Value<button class="close">X</button></th></tr>')
+    .appendTo(info);
   for (var p in properties) {
-    var v = properties[p];
     var tr = $('<tr>').appendTo(table);
     $('<th>').text(p).appendTo(tr);
-    $('<td>').text(v).appendTo(tr);
+    var v = properties[p];
+    // linkify urls
+    if (typeof(v)=='string' && (v.startsWith('http') || v.startsWith('ftp')) ) {
+      v = $('<a>')
+        .attr('href', v)
+        .attr('target', '_blank')
+        .text(v);
+    }
+    $('<td>').html(v).appendTo(tr);
   }
+  console.log(properties);
 }
 
 function subsetDownload(p){

@@ -27,9 +27,7 @@
       <a href="https://cul-it.github.io/cugir-help/">Help</a>
     </div>
   </div>
-  <div id="map">
-  </div>
-  <div id="body">
-  </div>
+  <div id="map"></div>
+  <div id="body"></div>
 </body>
 </html>
