@@ -351,15 +351,19 @@ function clickNextButton(){
 }
 
 function clickMap(e){
-  // TODO rewrite this to search a bbox of the entire pixel (or 9)
-  // currently, it's very difficult to click a point unless zoomed way in
-  // 
   var selected = $('#results li.selected');
   // make sure we have a wms layer
   if (selected.length<1) return;
   var item = selected.data('item');
-  var lat = e.latlng.lat;
-  var lng = e.latlng.lng;
+
+  // get generous bbox for the clicked point (+/- 3 pixels)
+  var bounds = map.getBounds();
+  var pixelsize = (bounds._northEast.lat - bounds._southWest.lat) / map.getSize().y;
+  var x1 = e.latlng.lng - pixelsize*3;
+  var x2 = e.latlng.lng + pixelsize*3;
+  var y1 = e.latlng.lat - pixelsize*3;
+  var y2 = e.latlng.lat + pixelsize*3;
+
   // https://cugir.library.cornell.edu/geoserver/cugirwfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cugir008186&srsName=EPSG:4326&bbox=42.1634,-76.5687,42.1634,-76.5687&outputFormat=json
   params = {
     service: 'WFS',
@@ -367,7 +371,7 @@ function clickMap(e){
     request: 'GetFeature',
     typeNames: 'cugir:' + item.layerid,
     srs: 'EPSG:4326',
-    bbox: [lat,lng,lat,lng].join(','),
+    bbox: [y1,x1,y2,x2].join(','),
     outputFormat: 'json'
   };
   var url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(item.wfs + L.Util.getParamString(params));
