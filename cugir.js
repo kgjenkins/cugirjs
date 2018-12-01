@@ -355,6 +355,10 @@ function clickMap(e){
   // make sure we have a wms layer
   if (selected.length<1) return;
   var item = selected.data('item');
+  if (item.geom_type=='Raster') {
+    clickRaster(e);
+    return
+  }
 
   // get generous bbox for the clicked point (+/- 3 pixels)
   var bounds = map.getBounds();
@@ -437,6 +441,56 @@ function clickMap(e){
       showInfo(properties);
     },
     error: function(xhr, status, error){
+      console.log(xhr);
+      console.log(status);
+      console.log(error);
+    }
+  });
+}
+
+function clickRaster(e){
+  var item = $('#results li.selected').data('item');
+  var bounds = map.getBounds();
+  var x1 = bounds._southWest.lng;
+  var x2 = bounds._northEast.lng;
+  var y1 = bounds._southWest.lat;
+  var y2 = bounds._northEast.lat;
+  var size = map.getSize();
+  params = {
+    service: 'WMS',
+    version: '1.1.1',
+    request: 'GetFeatureInfo',
+    layers: 'cugir:' + item.layerid,
+    query_layers: 'cugir:' + item.layerid,
+    srs: 'EPSG:4326',
+    bbox: [x1,y1,x2,y2].join(','),
+    width: size.x,
+    height: size.y,
+    info_format: 'application/json',
+    x: parseInt(e.layerPoint.x),
+    y: parseInt(e.layerPoint.y)
+  };
+  var url = item.wms + L.Util.getParamString(params);
+  url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(url);
+  $.ajax({
+    url: url,
+    dataType: 'json',
+    success: function(data,status,xhr){
+      // remove any existing highlighted point
+      map.eachLayer(function(layer){
+        if (layer.options.isSelection) {
+          layer.remove();
+        }
+      });
+      // show feature and info
+      var layer = L.circleMarker(e.latlng, {
+        style: bbox_active_style,
+        isSelection: true
+      }).addTo(map);
+      var properties = data.features[0].properties;
+      showInfo(properties);
+    },
+    error: function (xhr, status, error) {
       console.log(xhr);
       console.log(status);
       console.log(error);
