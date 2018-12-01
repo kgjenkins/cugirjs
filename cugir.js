@@ -379,8 +379,25 @@ function clickMap(e){
     url: url,
     dataType: 'json',
     success: function(data,status,xhr){
+      if (data.features.length==0) {
+        // no features found
+        return;
+      }
 
-      var properties = data.features[0].properties;
+      // WFS bbox query returns potential matches (based on feature bbox)
+      // so check for real point-in-polygon matches
+      var match;
+      if (data.features[0].geometry.type.indexOf('Polygon')>-1) {
+        var matches = leafletPip.pointInLayer(e.latlng, L.geoJSON(data), true);
+        if (matches.length == 0) return;
+        // use first match only
+        match = matches[0].feature;
+      }
+      else {
+        // use first match only
+        match = data.features[0];
+      }
+      var properties = match.properties;
 
       // is this for an index map?
       var subset = $('#results li.selected .subset');
@@ -406,7 +423,7 @@ function clickMap(e){
       }
 
       // show feature and info
-      var layer = L.geoJSON(data, {
+      var layer = L.geoJSON(match, {
         //display points as little circles
         pointToLayer: function(point, latlng) {
           return L.circleMarker(latlng);
@@ -447,7 +464,6 @@ function showInfo(properties){
     }
     $('<td>').html(v).appendTo(tr);
   }
-  console.log(properties);
 }
 
 function subsetDownload(p){

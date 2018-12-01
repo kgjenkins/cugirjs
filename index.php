@@ -10,6 +10,7 @@
 <script src='lib/jquery-3.3.1.min.js'></script>
 <script src='lib/leaflet/leaflet.js'></script>
 <script src="lib/leaflet/leaflet-tilelayer-colorfilter.min.js"></script>
+<script src='lib/leaflet/leaflet-pip.js'></script>
 <script src='lib/json-filter.js'></script>
 <script src='cugirjson.js'></script>
 <script src='cugir.js?t=<?php echo time() ?>'></script>
