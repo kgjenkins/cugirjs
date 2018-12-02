@@ -82,6 +82,7 @@ body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#ff
 #results { list-style-type:none ; padding:0 ; margin:0 }
 #results li { padding:0.5em ; background:#eee ; margin-bottom:0.5em }
 #results li:hover { background:#ddf ; cursor:pointer }
+#results li.hover { background:#ddf }
 #results .title { font-size:120% ; font-weight:bold ; color:#e68742 }
 #results .brief { max-height:3em ; overflow:hidden }
 #results .details { display:none }

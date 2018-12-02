@@ -25,7 +25,7 @@ function interpretHash(){
     return;
   }
   // search for whatever is after the #
-  search(hash.slice(1));
+  search(unescapeHash(hash.slice(1)));
 }
 
 function listenForEsc(e){
@@ -161,6 +161,12 @@ function clearMap(){
   closeInfo();
 }
 
+function unescapeHash(h){
+  var h = unescape(h)
+    .replace(/\+/g, ' ');
+  return h;
+}
+
 function escapeForHash(q){
   var hash = escape(q.replace(/\//g, '//'))
     .replace(/%20/g, '+')
@@ -189,7 +195,7 @@ function search(q){
       bounds = L.latLngBounds(item.bbox);
     }
     bounds.extend(item.bbox);
-    renderResult(item).appendTo(ul);
+    renderResult(item).prependTo(ul);
   }
   ul.appendTo('#body');
   $('html').scrollTop(0);
@@ -242,8 +248,9 @@ function rankResults(results){
     }
     result_list.push(item);
   }
+  // sort lowest first
   result_list.sort(function(a,b){
-    return a._spatialscore < b._spatialscore ? 1 : -1;
+    return a._spatialscore > b._spatialscore ? 1 : -1;
   });
   return result_list;
 }
@@ -289,6 +296,7 @@ function renderResult(item){
   itemDetails(item).appendTo(li);
   $('<span>').text(item.creator+'. ').prependTo(li.find('.description'));
   var bboxlayer = renderItemBbox(item);
+  bboxlayer.options.li = li;
   li.data('bbox', bboxlayer);
   return li;
 }
@@ -395,14 +403,43 @@ function clickNextButton(){
 }
 
 function clickMap(e){
+  // Does the map show a selected item?
+  var selected = $('#results li.selected');
+  if (selected.length>0) {
+    // Is it raster?
+    if (selected.data('item').geom_type=='Raster') {
+      clickRasterMap(e);
+    }
+    else{
+      clickVectorMap(e);
+    }
+  }
+  // Does the map show result bboxes?
+  else if ($('#results li').length>0) {
+    clickResultsMap(e);
+  }
+}
+
+function clickResultsMap(e){
+  // forget about any previously-clicked item
+  var olditem = $('#results li.hover').removeClass('hover');
+  if (olditem.length>0) {
+    olditem.data('bbox').setStyle(bbox_default_style);
+  }
+
+  // highlight the clicked bbox and corresponding item
+  var layer = map.getLayerAt(e.layerPoint);
+  var li = layer.options.li.mouseover().addClass('hover');
+  $('html').scrollTop(li.offset().top-128);
+  // move to back so that other results can be clicked
+  layer.bringToBack();
+}
+
+function clickVectorMap(e){
   var selected = $('#results li.selected');
   // make sure we have a wms layer
   if (selected.length<1) return;
   var item = selected.data('item');
-  if (item.geom_type=='Raster') {
-    clickRaster(e);
-    return
-  }
 
   // get generous bbox for the clicked point (+/- 3 pixels)
   var bounds = map.getBounds();
@@ -492,7 +529,7 @@ function clickMap(e){
   });
 }
 
-function clickRaster(e){
+function clickRasterMap(e){
   var item = $('#results li.selected').data('item');
   var bounds = map.getBounds();
   var x1 = bounds._southWest.lng;
