@@ -170,10 +170,6 @@ function escapeForHash(q){
 }
 
 function search(q){
-  if (q.length == 0) {
-    showHome();
-    return;
-  }
   // remove superfluous quotes around single words
   q = q.replace(/"(\w+)"/g, '$1');
   location.hash = escapeForHash(q);
@@ -287,7 +283,7 @@ var bbox_unavailable_style = {
 
 function renderResult(item){
   var li = $('<li>').data('item', item);
-  $('<div>').text(item._spatialscore).appendTo(li);
+  //$('<div>').text(item._spatialscore).appendTo(li);
   $('<div class="title">').text(item.title).appendTo(li);
   $('<div class="brief">').text(item.description).appendTo(li);
   itemDetails(item).appendTo(li);
