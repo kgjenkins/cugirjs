@@ -42,10 +42,9 @@ function closeInfo(){
 function setupMap(){
   map = L.map('map', {
     fadeAnimation:false,
-    // TODO set to max bounds of all data
-    center: [43,-76],
-    zoom: 6
   });
+  // zoom to NYS
+  map.fitBounds([[40.5,-80],[45,-71.8]])
   var osm = L.tileLayer.colorFilter('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     isBasemap: true,
     maxZoom: 21,
@@ -114,8 +113,9 @@ function bbox(solr_geom) {
 function showHome() {
   location.hash = '';
   clearMap();
+  // zoom to NYS
   // TODO set to max bounds of all data
-  map.setView([43,-76], 6);
+  map.fitBounds([[40.5,-80],[45,-71.8]])
   var catstat = stats('category');
   var categories = Object.keys(catstat);
   categories = categories.sort(function(a,b){
@@ -179,6 +179,7 @@ function search(q){
   location.hash = escapeForHash(q);
   $('#q').val(q);
   var results = filter(cugirjson, q);
+  results = rankResults(results);
   $('#body').html('');
   clearMap();
   var bounds;
@@ -202,8 +203,53 @@ function search(q){
     return;
   }
   if (bounds) {
-    map.flyToBounds(bounds, { duration:1 });
+    $('<button id="zoom">')
+      .text('Zoom to search results')
+      .click(function(){
+        map.flyToBounds(bounds, { duration:1 });
+      })
+      .appendTo('#nav');
   }
+}
+
+function rankResults(results){
+  var limit = $('#limitToMap').is(':checked');
+  var b = map.getBounds();
+  var mx1 = b.getWest();
+  var my1 = b.getSouth();
+  var mx2 = b.getEast();
+  var my2 = b.getNorth();
+  var map_area = (mx2-mx1)*(my2-my1);
+  var result_list = [];
+  for (var i in results) {
+    var item = results[i];
+    var ix1 = item.bbox[0][1];
+    var iy1 = item.bbox[0][0];
+    var ix2 = item.bbox[1][1];
+    var iy2 = item.bbox[1][0];
+    var item_area = (ix2-ix1)*(iy2-iy1);
+    var intersect_x = Math.min(mx2,ix2)-Math.max(mx1,ix1)
+    var intersect_y = Math.min(my2,iy2)-Math.max(my1,iy1);
+    var intersect_area = 0;
+    if (intersect_x < 0 || intersect_y < 0) {
+      // no overlap
+
+      // omit from results?
+      if (limit) continue;
+
+      // rank by distance to map bounds
+      item._spatialscore = -1 * Math.sqrt( Math.pow(intersect_x, 2) + Math.pow(intersect_y, 2) );
+    }
+    else {
+      intersect_area = intersect_x * intersect_y;
+      item._spatialscore = intersect_area / map_area * intersect_area / item_area;
+    }
+    result_list.push(item);
+  }
+  result_list.sort(function(a,b){
+    return a._spatialscore < b._spatialscore ? 1 : -1;
+  });
+  return result_list;
 }
 
 var bbox_default_style = {
@@ -241,6 +287,7 @@ var bbox_unavailable_style = {
 
 function renderResult(item){
   var li = $('<li>').data('item', item);
+  $('<div>').text(item._spatialscore).appendTo(li);
   $('<div class="title">').text(item.title).appendTo(li);
   $('<div class="brief">').text(item.description).appendTo(li);
   itemDetails(item).appendTo(li);
@@ -489,9 +536,7 @@ function clickRaster(e){
         isSelection: true
       }).addTo(map);
       var properties = data.features[0].properties;
-      console.log(properties);
       var value = properties.GRAY_INDEX;
-      console.log(value);
       layer.bindTooltip(''+value, {permanent:true});
     },
     error: function (xhr, status, error) {

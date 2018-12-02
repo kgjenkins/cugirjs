@@ -50,11 +50,11 @@ dd { margin:0 0 1em 1em }
 body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#fff ; color:#000 ; font-size:100% }
 
 #head { position:fixed ; top:0 ; height:108px ; width:98% ; padding:6px 1% ; background:#fc0 ; color:#000 ; z-index:99 }
+#head img { vertical-align:middle ; height:100px }
+#head img:hover { cursor:pointer ; opacity:0.7 }
 
-#search { float:left }
-#search img { vertical-align:middle ; height:100px ; }
-#search img:hover { cursor:pointer ; opacity:0.7 }
-#search input { margin-left:2em ; width:20em }
+#search { position:absolute ; left:340px ; top:2em ; line-height:2em }
+#search input[type=text] { width:20em }
 #menu { position:absolute ; top:6px ; right:1em }
 #menu a { background:#8fc349; color:#fff ; padding:6px 1em }
 
@@ -74,6 +74,7 @@ body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#ff
 #nav .q { color:#8fc349 ; font-weight:bold }
 #nav button { color:#8fc349 ; background:#fff ; border:0 ; margin:0 1em }
 #nav button:hover { cursor:pointer }
+#nav button#zoom { float:right }
 #nav a { float:right ; background:#12b3c5 ; border-color:#109eae ; color:#fff ; border-radius:4px ; padding:3px 1em ; margin-left:0.5em }
 #nav a:hover { background:#0e8996 ; border-color:#0b6b76 ; text-decoration:none }
 

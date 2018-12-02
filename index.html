@@ -17,10 +17,12 @@
 </head>
 <body>
   <div id="head">
+    <img id="logo" src="image/cugir-logo.png" />
     <form id="search">
-      <img id="logo" src="image/cugir-logo.png" />
       <input id="q" type="text" autofocus />
       <button id="searchButton" type="submit">search</button>
+      <br>
+      <input id="limitToMap" type="checkbox" /> limit results to map extent
     </form>
     <div id="menu">
       <a href="#about">About</a>
