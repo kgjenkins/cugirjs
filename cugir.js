@@ -48,7 +48,7 @@ function setupMap(){
   });
   var osm = L.tileLayer.colorFilter('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     isBasemap: true,
-    maxZoom: 19,
+    maxZoom: 21,
     opacity: 1,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
     filter: [
@@ -329,7 +329,8 @@ function clickResultItem(e){
       layers: item.layerid,
       format: 'image/png',
       transparent: true,
-      tiled:true
+      tiled: true,
+      maxZoom: 21 // default 18 is not enough
     });
     li.data('layer', layer);
     layer.addTo(map).bringToFront();
