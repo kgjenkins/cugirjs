@@ -548,8 +548,8 @@ function clickRasterMap(e){
     width: size.x,
     height: size.y,
     info_format: 'application/json',
-    x: parseInt(e.layerPoint.x),
-    y: parseInt(e.layerPoint.y)
+    x: parseInt(e.containerPoint.x),
+    y: parseInt(e.containerPoint.y)
   };
   var url = item.wms + L.Util.getParamString(params);
   url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(url);
