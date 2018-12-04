@@ -569,7 +569,7 @@ function clickRasterMap(e){
         isSelection: true
       }).addTo(map);
       var properties = data.features[0].properties;
-      var value = properties.GRAY_INDEX;
+      var value = properties.GRAY_INDEX || properties.PALETTE_INDEX;
       layer.bindTooltip(''+value, {permanent:true});
     },
     error: function (xhr, status, error) {
