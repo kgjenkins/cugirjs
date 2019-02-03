@@ -61,6 +61,7 @@ function setupMap(){
 }
 
 function cleanData(cugirjson){
+  cugirjson = cugirjson.response.docs;
   var data = [];
   for (var i=0; i<cugirjson.length; i++) {
     var item = cugirjson[i];
