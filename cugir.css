@@ -71,13 +71,12 @@ body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#ff
 #categories .count { margin-right:2em ; color:#888 ; font-size:86% }
 
 #nav { margin:1em ; background:#fff }
-#nav .q { color:#8fc349 ; font-weight:bold }
-#nav button { color:#8fc349 ; background:#fff ; border:0 ; margin:0 1em }
-#nav button:hover { cursor:pointer }
+#nav .q { color:#080 ; font-weight:bold }
+#nav button { color:#fff ; background:#12b3c5 ; border:1px solid #109eae ; border-radius:4px ; padding:3px 1em ; margin:0 1em 0 0.5em }
+#nav button:hover { cursor:pointer ; background:#0e8996 ; border-color:#0b6b76 }
+#nav button.next, #nav button.prev { color:#8fc349 ; background:#fff ; border:0 ; padding:0 ; margin:0 1em }
+#nav button.next:hover, #nav button.prev:hover { background:#fff ; color:#080 }
 #nav button#zoom { float:right }
-#nav a { float:right ; background:#12b3c5 ; border-color:#109eae ; color:#fff ; border-radius:4px ; padding:3px 1em ; margin-left:0.5em }
-#nav a:hover { background:#0e8996 ; border-color:#0b6b76 ; text-decoration:none }
-
 
 #results { list-style-type:none ; padding:0 ; margin:0 }
 #results li { padding:0.5em ; background:#eee ; margin-bottom:0.5em }

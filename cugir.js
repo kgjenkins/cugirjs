@@ -84,6 +84,7 @@ function cleanData(cugirjson){
       layerid: item.layer_id_s,
       wms: item.dct_references_s['http://www.opengis.net/def/serviceType/ogc/wms'],
       wfs: item.dct_references_s['http://www.opengis.net/def/serviceType/ogc/wfs'],
+      openindexmaps: item.dct_references_s['https://openindexmaps.org'],
       download: item.dct_references_s['http://schema.org/downloadUrl'],
       addl_downloads: JSON.parse(item.cugir_addl_downloads_s),
       bbox: bbox(item.solr_geom)
@@ -209,7 +210,7 @@ function search(q){
     $('<button id="zoom">')
       .text('Zoom to search results')
       .click(function(){
-        map.flyToBounds(bounds, { duration:1 });
+        map.fitBounds(bounds, { animate:true, duration:1 });
       })
       .appendTo('#nav');
   }
@@ -355,25 +356,30 @@ function clickResultItem(e){
   $('#results li:not(.selected)').hide();
 
   var nav = $('#nav').html('');
-  $('<button class="prev">')
-    .text('« previous')
-    .appendTo(nav);
-  nav.append( $('#results li').index(li) + 1);
-  nav.append(' of ');
-  nav.append( $('#results li').length );
-  $('<button class="next">')
-    .text('next »')
-    .appendTo(nav);
-  $('<a id="newSearch">')
+
+  $('<button id="newSearch">')
     .text('New Search')
     .attr('href', '#')
     .appendTo(nav);
-  $('<a id="backToSearch">')
+
+  $('<button id="backToSearch">')
     .text('Back to Search')
     .attr('href', '#'+ escapeForHash($('#results').data('q')))
     .appendTo(nav);
 
-  map.flyToBounds(item.bbox, { duration:1 });
+  $('<button class="prev">')
+    .text('« previous')
+    .appendTo(nav);
+
+  nav.append( $('#results li').index(li) + 1);
+  nav.append(' of ');
+  nav.append( $('#results li').length );
+
+  $('<button class="next">')
+    .text('next »')
+    .appendTo(nav);
+
+  map.fitBounds(item.bbox, { animate:true, duration:1 });
   var bboxlayer = renderItemBbox(item);
   bboxlayer.setStyle(bbox_selected_style);
   if (item.wms) {
@@ -385,6 +391,17 @@ function clickResultItem(e){
       maxZoom: 21 // default 18 is not enough
     });
     li.data('layer', layer);
+    layer.addTo(map).bringToFront();
+  }
+  if (item.openindexmaps) {
+    var layer = new L.GeoJSON.AJAX(item.openindexmaps, {
+      style: {
+        opacity: 1,
+        color: '#080',
+        weight: 1,
+        fillOpacity: 0.3,
+      }
+    });
     layer.addTo(map).bringToFront();
   }
 }
