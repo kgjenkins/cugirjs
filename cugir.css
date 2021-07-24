@@ -49,26 +49,26 @@ dd { margin:0 0 1em 1em }
 
 body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#fff ; color:#000 ; font-size:100% }
 
-#head { position:fixed ; top:0 ; height:108px ; width:98% ; padding:6px 1% ; background:#fc0 ; color:#000 ; z-index:99 }
+#head { position:fixed ; top:0 ; height:108px ; width:98% ; padding:6px 1% ; background:#fff ; color:#000 ; z-index:99 }
 #head img { vertical-align:middle ; height:100px }
 #head img:hover { cursor:pointer ; opacity:0.7 }
 
 #search { position:absolute ; left:340px ; top:2em ; line-height:2em }
 #search input[type=text] { width:20em }
 #menu { position:absolute ; top:6px ; right:1em }
-#menu a { background:#8fc349; color:#fff ; padding:6px 1em }
+#menu a { background:#373e4c; color:#fff ; padding:6px 1em ; margin:0 }
 
 
 #map { position:fixed ; right:0 ; top:128px ; margin:0 0.5% ; width:39% ; height:75% ; background:#fff }
 
-#body { position:absolute ; right:40% ; top:128px ; margin-right:0.5% }
-#body.info { right:60% }
-#body a { color:#e68742 }
+#body { position:absolute ; right:40% ; width:59% ; top:128px ; margin-right:0.5% }
+#body.info { right:60% ; width:39% }
+#body a { color:#2b7d37 }
 
 
-.home { font-size:150% ; text-align:center }
-#categories a { cursor:pointer ; line-height:1.5em ; white-space:nowrap }
-#categories .count { margin-right:2em ; color:#888 ; font-size:86% }
+.home { font-size:175% ; text-align:center }
+#categories a { cursor:pointer ; line-height:1.5em ; white-space:nowrap ; font-weight:bold ; margin-left:2em }
+#categories .count { color:#888 ; font-size:86% }
 
 #nav { margin:1em ; background:#fff }
 #nav .q { color:#080 ; font-weight:bold }

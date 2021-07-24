@@ -9,7 +9,7 @@ $(document).ready(function(){
   $(document).on('click', 'button.prev', clickPrevButton);
   $(document).on('click', 'button.next', clickNextButton);
   $(document).on('click', '#backToSearch', backToSearch);
-  $(document).on('click', '#newSearch', showHome);
+  $(document).on('click', '#newSearch', resetPage);
   $(document).on('click', 'button.more', showMore);
   $(document).on('click', '#info button.close', closeInfo);
   $(document).on('submit', 'form#search', submitQuery);
@@ -128,7 +128,6 @@ function showHome() {
   });
   $('#body').html('\
     <div class="home">\
-      <h1>Welcome to CUGIR.js!</h1>\
       <p style="color:#fff ; background:#f00 ; padding:1em">This is an EXPERIMENTAL javascript interface to <a href="https://cugir.library.cornell.edu/" style="color:#fc0 ; font-weight:bold ; text-decoration:underline">CUGIR</a>.</p>\
       <p>Explore and discover New York State data and metadata related to:</p>\
       <div id="categories"></div>\
@@ -512,11 +511,13 @@ function clickVectorMap(e){
       }
       else {
         // use first match only
+        // TODO show multiple matches
         match = data.features[0];
       }
       var properties = match.properties;
 
       // is this for an index map?
+      // TODO move this to the openindexmap handler
       var subset = $('#results li.selected .subset');
       if (subset.length>0) {
         if (properties.download != 'no data') {
