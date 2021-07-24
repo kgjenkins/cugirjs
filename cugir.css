@@ -59,10 +59,10 @@ body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#ff
 #menu a { background:#8fc349; color:#fff ; padding:6px 1em }
 
 
-#map { position:fixed ; left:0 ; top:128px ; margin:0 0.5% ; width:39% ; height:75% ; background:#fff }
+#map { position:fixed ; right:0 ; top:128px ; margin:0 0.5% ; width:39% ; height:75% ; background:#fff }
 
-#body { position:absolute ; left:40% ; top:128px ; margin-right:0.5% }
-#body.info { left:60% }
+#body { position:absolute ; right:40% ; top:128px ; margin-right:0.5% }
+#body.info { right:60% }
 #body a { color:#e68742 }
 
 
