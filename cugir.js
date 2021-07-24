@@ -10,6 +10,7 @@ $(document).ready(function(){
   $(document).on('click', 'button.next', clickNextButton);
   $(document).on('click', '#backToSearch', backToSearch);
   $(document).on('click', '#newSearch', showHome);
+  $(document).on('click', 'button.more', showMore);
   $(document).on('click', '#info button.close', closeInfo);
   $(document).on('submit', 'form#search', submitQuery);
   $(document).on('mouseover', '#results li', mouseoverResultItem);
@@ -70,7 +71,7 @@ function cleanData(cugirjson){
       id: item.layer_slug_s,
       title: item.dc_title_s,
       author: item.dc_creator_sm,
-      publisher: item.dc_publisher_sm,
+      //publisher: item.dc_publisher_sm,
       description: item.dc_description_s,
       collection: item.dct_isPartOf_sm,
       category: item.cugir_category_sm,
@@ -141,6 +142,11 @@ function showHome() {
     $('<span class="count">').html('&nbsp;(' + catstat[categories[i]] + ') ')
       .appendTo('#categories');
   }
+}
+
+function showMore(e) {
+  $(e.target).hide();
+  $(e.target).next().show();
 }
 
 function clickCategory(e){
@@ -336,6 +342,11 @@ function backToSearch(){
 }
 
 function clickResultItem(e){
+  // check that we are not already viewing this item
+  if ($(e.currentTarget).hasClass('selected')) {
+    return;
+  }
+
   // clear the selection
   $('#results li.selected').removeClass('selected');
 
@@ -393,13 +404,16 @@ function clickResultItem(e){
     li.data('layer', layer);
     layer.addTo(map).bringToFront();
   }
+
+  // openindexmap.org geojson layer
   if (item.openindexmaps) {
     var layer = new L.GeoJSON.AJAX(item.openindexmaps, {
       style: {
-        opacity: 1,
-        color: '#080',
+        color: '#1eb300',
         weight: 1,
-        fillOpacity: 0.3,
+        opacity: 1,
+        fill: '#1eb300',
+        fillOpacity: 0.2,
       }
     });
     layer.addTo(map).bringToFront();
@@ -636,14 +650,15 @@ function itemDetails(item){
   var table = $('<table>').appendTo(details);
   var properties = [
     'author',
-    //'publisher' is generally redundant with author
     'description',
     'collection',
+    'place',
     'category',
     'subject',
-    'place',
     'year',
-    'filesize'
+    'filesize',
+    'format',
+    'geom_type',
   ];
   for (var i=0; i<properties.length; i++) {
     var p = properties[i];
@@ -651,7 +666,7 @@ function itemDetails(item){
     if (!v) continue;
     var tr = $('<tr>').appendTo(table);
     $('<th>').text(p).appendTo(tr);
-    $('<td>').html(linkify(p, v)).appendTo(tr);
+    var td = $('<td>').html(linkify(p, v)).appendTo(tr);
   }
 
   // METADATA
@@ -764,6 +779,8 @@ function downloadSection(item){
 }
 
 function linkify(p, v){
+  // linkify certain fields
+  // TODO move to config
   if (p==='collection' || p==='category' || p==='place') {
     // make sure v is an array
     if (! Array.isArray(v)) {
@@ -785,6 +802,16 @@ function linkify(p, v){
   }
   else if (Array.isArray(v)) {
     return v.join(', ');
+  }
+  // TODO move max length to config
+  var max = 500
+  if (typeof(v)==="string" && v.length > (max+200)) {
+    // adjust max to chop at a space
+    max = v.indexOf(' ', max-10);
+    var more = v.substr(max);
+    v = v.substr(0, max) +
+      "<button class='more'>more</button>" +
+      "<span class='more'>" + more + "<span>";
   }
   return v;
 }

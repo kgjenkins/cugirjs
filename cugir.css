@@ -95,6 +95,8 @@ body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#ff
 #results .details table { margin:0.5em 0 }
 #results .details th { width:6em ; text-align:right ; color:#888 ; padding:3px 6px ; font-weight:normal }
 #results .details td { padding:3px 6px }
+#results .details button.more { margin:0 0.3em ; padding: 0 0.5em }
+#results .details span.more { display:none }
 #results .details .downloads .subset { margin-bottom:1.5em }
 #results .details .downloads a { background:#12b3c5 ; border-color:#109eae ; color:#fff ; border-radius:4px ; margin:6px 1em 6px 0 ; padding:3px 1em ; white-space:nowrap ; line-height:2em }
 #results .details .downloads a:hover { background:#0e8996 ; border-color:#0b6b76 ; text-decoration:none }
