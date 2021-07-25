@@ -19,12 +19,11 @@
 </head>
 <body>
   <div id="head">
-    <img id="logo" src="image/cugir-logo.png" />
+    <img id="logo" src="image/cugir-logo.png" alt="CUGIR logo" />
     <form id="search">
       <input id="q" type="text" placeholder="search..." autofocus />
       <button id="searchButton" type="submit">Search</button>
-      <br>
-      <input id="limitToMap" type="checkbox" /> limit results to map extent
+      <button id="resetButton">Reset</button>
     </form>
     <div id="menu">
       <a href="https://cul-it.github.io/cugir-help/about">About</a>
@@ -32,7 +31,13 @@
       <a href="https://cul-it.github.io/cugir-help/">Help</a>
     </div>
   </div>
-  <div id="map"></div>
-  <div id="body"></div>
+  <div id="left-panel">
+    <div id="summary"></div>
+    <div id="body"></div>
+  </div>
+  <div id="right-panel">
+    <input id="limitToMap" type="checkbox" /> limit search results to map extent
+    <div id="map"></div>
+  </div>
 </body>
 </html>

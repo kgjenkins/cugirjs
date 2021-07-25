@@ -35,7 +35,7 @@ input,textarea { padding:1px 2px }
 p { margin:0.5em 0 }
 pre { margin:0.5em 1em ; padding:0.5em ; border:1px solid #ddd ; background:#f8f8ee ; border-radius:4px }
 code { color:#840 ; font-size:85% }
-td, th { vertical-align:top ; text-align:left }
+td, th { vertical-align:baseline ; text-align:left }
 th { font-weight:bold }
 ul { margin:0 0 1em ; list-style-type:disc ; padding:0 0 0 1em }
 ol { margin:0 0 1em ; list-style-type:decimal ; padding:0 0 0 1em }
@@ -45,62 +45,74 @@ dd { margin:0 0 1em 1em }
 
 /* cugirjs */
 
-.alert { color:#00f ; font-weight:bold }
+.alert { color:#f00 ; font-weight:bold }
 
 body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#fff ; color:#000 ; font-size:100% }
+button, .button { color:#fff ; background:#006080 ; border:1px solid #002c3b ;
+   border-radius:0.5em ; padding:3px 1em ; white-space:nowrap ; xline-height:1.5em }
+button:hover, .button:hover { background:#002c3b ; cursor:pointer }
 
-#head { position:fixed ; top:0 ; height:108px ; width:98% ; padding:6px 1% ; background:#fff ; color:#000 ; z-index:99 }
+#head { position:fixed ; top:0 ; height:108px ; width:98% ; padding:6px 1% ;
+   background:#fff ; color:#000 ; z-index:99 }
 #head img { vertical-align:middle ; height:100px }
 #head img:hover { cursor:pointer ; opacity:0.7 }
 
 #search { position:absolute ; left:340px ; top:2em ; line-height:2em }
-#search input[type=text] { width:20em }
+#search input[type=text] { width:30em ; padding:3px }
 #menu { position:absolute ; top:6px ; right:1em }
-#menu a { background:#373e4c; color:#fff ; padding:6px 1em ; margin:0 }
+#menu a { background:#373e4c ; color:#fff ; padding:6px 1em ; margin:0 }
 
-
-#map { position:fixed ; right:0 ; top:128px ; margin:0 0.5% ; width:39% ; height:75% ; background:#fff }
-
-#body { position:absolute ; right:40% ; width:59% ; top:128px ; margin-right:0.5% }
-#body.info { right:60% ; width:39% }
+#left-panel { position:relative ; left:0 ; width:59% ; top:120px }
+#summary { position:fixed ; left:0 ; top:120px ; width:59% ; height:1.6em ; background:#fff ;
+   padding:0.3em 0.5% ; z-index:99 ; text-align:center }
+#body { position:absolute ; top:40px }
+#body.info { top:160px ; right:60% ; width:39% }
 #body a { color:#2b7d37 }
+
+#right-panel { position:fixed ; right:0 ; top:120px ; margin:0.3em 0.5% ; padding:0 ; width:39% ;
+   height:75% ; text-align:right }
+#zoom { float:left }
+#map { height:100% ; width:100% }
+
 
 
 .home { font-size:175% ; text-align:center }
 #categories a { cursor:pointer ; line-height:1.5em ; white-space:nowrap ; font-weight:bold ; margin-left:2em }
 #categories .count { color:#888 ; font-size:86% }
 
-#nav { margin:1em ; background:#fff }
+#nav { padding:0.3em ; background:#eee }
 #nav .q { color:#080 ; font-weight:bold }
-#nav button { color:#fff ; background:#12b3c5 ; border:1px solid #109eae ; border-radius:4px ; padding:3px 1em ; margin:0 1em 0 0.5em }
-#nav button:hover { cursor:pointer ; background:#0e8996 ; border-color:#0b6b76 }
-#nav button.next, #nav button.prev { color:#8fc349 ; background:#fff ; border:0 ; padding:0 ; margin:0 1em }
-#nav button.next:hover, #nav button.prev:hover { background:#fff ; color:#080 }
+#nav button { color:#fff ; background:#12b3c5 ; border:1px solid #109eae ; margin:0 1em 0 0.5em }
+#nav button.prev { position:absolute ; left:0.5em }
+#nav button.next { position:absolute ; right:0.5em }
+#nav button.next, #nav button.prev { color:#2b7d37 ; background:inherit ; border:0 ; padding:0 ; margin:0 1em }
+#nav button.next:hover, #nav button.prev:hover { text-decoration:underline }
 #nav button#zoom { float:right }
 
 #results { list-style-type:none ; padding:0 ; margin:0 }
-#results li { padding:0.5em ; background:#eee ; margin-bottom:0.5em }
+#results li { padding:0.5em ; border-bottom:1px solid #ccc }
 #results li:hover { background:#ddf ; cursor:pointer }
 #results li.hover { background:#ddf }
-#results .title { font-size:120% ; font-weight:bold ; color:#e68742 }
+#results a.title { display:block ; font-size:120% ; font-weight:bold ; color:#2B7d37 }
 #results .brief { max-height:3em ; overflow:hidden }
 #results .details { display:none }
 
-#results li.selected { background:#fff ! important ; border:3px solid #eda978 }
+#results li.selected { background:#fff ! important ; border:0 }
 #results li.selected:hover { cursor:default }
 #results li.selected .brief { display:none }
 #results li.selected .details { display:block }
 
+#results .details a { font-weight:bold }
 #results .details p { margin:0 0 0.5em }
 #results .details table { margin:0.5em 0 }
 #results .details th { width:6em ; text-align:right ; color:#888 ; padding:3px 6px ; font-weight:normal }
 #results .details td { padding:3px 6px }
 #results .details button.more { margin:0 0.3em ; padding: 0 0.5em }
 #results .details span.more { display:none }
+#results .details .downloads a { background:#006080; border-color:#002c3b ; color:#fff ;
+   border-radius:4px ; margin:0 0.5em 0 0 ; padding:3px 1em ; white-space:nowrap ; line-height:2em }
+#results .details .downloads a:hover { background:#002c3b ; text-decoration:none }
 #results .details .downloads .subset { margin-bottom:1.5em }
-#results .details .downloads a { background:#12b3c5 ; border-color:#109eae ; color:#fff ; border-radius:4px ; margin:6px 1em 6px 0 ; padding:3px 1em ; white-space:nowrap ; line-height:2em }
-#results .details .downloads a:hover { background:#0e8996 ; border-color:#0b6b76 ; text-decoration:none }
-
 
 #info { position:absolute ; left:40% ; top:128px ; width:19%; background:#fff ; border:3px solid #00f ; margin-bottom:3em ; overflow-y:auto ; word-break:break-all }
 #info table { width:100% }

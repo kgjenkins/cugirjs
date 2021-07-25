@@ -9,7 +9,7 @@ $(document).ready(function(){
   $(document).on('click', 'button.prev', clickPrevButton);
   $(document).on('click', 'button.next', clickNextButton);
   $(document).on('click', '#backToSearch', backToSearch);
-  $(document).on('click', '#newSearch', resetPage);
+  $(document).on('click', '#resetButton', resetPage);
   $(document).on('click', 'button.more', showMore);
   $(document).on('click', '#info button.close', closeInfo);
   $(document).on('submit', 'form#search', submitQuery);
@@ -22,7 +22,7 @@ $(document).ready(function(){
 function interpretHash(){
   var hash = location.hash;
   if (!hash) {
-    showHome();
+    resetPage();
     return;
   }
   // search for whatever is after the #
@@ -95,12 +95,7 @@ function cleanData(cugirjson){
   return data;
 }
 
-function resetPage() {
-  $('#q').val('');
-  showHome();
-}
-
-function bbox(solr_geom) {
+function bbox(solr_geom){
   // return leaflet bbox for solr_geom values like "ENVELOPE(minx, maxx, maxy, miny)"
   var m = solr_geom.match(/(-?\d+\.?\d*)/g);
   var minx = m[0];
@@ -113,11 +108,12 @@ function bbox(solr_geom) {
   ];
 }
 
-function showHome() {
+function resetPage(){
   location.hash = '';
+  $('#q').val('');
+  $('#summary').html('');
   clearMap();
   // zoom to NYS
-  // TODO set to max bounds of all data
   map.fitBounds([[40.5,-80],[45,-71.8]])
   var catstat = stats('category');
   var categories = Object.keys(catstat);
@@ -136,21 +132,25 @@ function showHome() {
   for (var i=0; i<categories.length; i++) {
     $('<a>')
       .text(categories[i])
-      .click(clickCategory)
+      .attr('href', '#category='+categories[i])
+      .click(clickLink)
       .appendTo('#categories');
     $('<span class="count">').html('&nbsp;(' + catstat[categories[i]] + ') ')
       .appendTo('#categories');
   }
+  return false;
 }
 
-function showMore(e) {
+function showMore(e){
   $(e.target).hide();
   $(e.target).next().show();
 }
 
-function clickCategory(e){
-  var category = $(e.target).text();
-  search('category="'+category+'"');
+function clickLink(e){
+  // click a link with a hash href like #category=transportation
+  var q = $(e.target).attr('href').substr(1);
+  search(q);
+  return false;
 }
 
 function submitQuery(e){
@@ -166,6 +166,7 @@ function clearMap(){
     }
   });
   closeInfo();
+  $('#zoom').remove();
 }
 
 function unescapeHash(h){
@@ -192,9 +193,10 @@ function search(q){
   $('#body').html('');
   clearMap();
   var bounds;
+  $('#summary').html('');
   $('<div id="nav">').text(Object.keys(results).length + ' matches for ').append(
-    $('<span>').addClass('q').text(q)
-  ).appendTo('#body');
+    q ? $('<span>').addClass('q').text(q) : '*'
+  ).prependTo('#summary');
   var ul = $('<ul id="results">').data('q', q);
   for (var i in results) {
     var item = results[i];
@@ -217,7 +219,7 @@ function search(q){
       .click(function(){
         map.fitBounds(bounds, { animate:true, duration:1 });
       })
-      .appendTo('#nav');
+      .prependTo('#right-panel');
   }
 }
 
@@ -264,7 +266,7 @@ function rankResults(results){
 
 var bbox_default_style = {
   color: '#222',
-  opacity: 1,
+  opacity: 0.3,
   weight: 1,
   fillColor: '#fff',
   fillOpacity: 0,
@@ -274,7 +276,7 @@ var bbox_default_style = {
 var bbox_active_style = {
   color:'#00f',
   opacity:0.7,
-  weight:4,
+  weight:1,
   fillColor:'#88f',
   fillOpacity:0.5
 }
@@ -298,7 +300,10 @@ var bbox_unavailable_style = {
 function renderResult(item){
   var li = $('<li>').data('item', item);
   //$('<div>').text(item._spatialscore).appendTo(li);
-  $('<div class="title">').text(item.title).appendTo(li);
+  var a = $('<a class="title">')
+    .text(item.title)
+    .attr('href', '#id='+item.id)
+    .appendTo(li);
   $('<div class="brief">').text(item.description).appendTo(li);
   itemDetails(item).appendTo(li);
   $('<span>').text(item.creator+'. ').prependTo(li.find('.description'));
@@ -362,29 +367,30 @@ function clickResultItem(e){
   // add cugir id to the URL hash
   location.hash = 'id='+item.id;
 
+  // clear the map and hide all other results
   clearMap();
   $('#results li:not(.selected)').hide();
 
-  var nav = $('#nav').html('');
+  var nav = $('#nav');
 
-  $('<button id="newSearch">')
-    .text('New Search')
-    .attr('href', '#')
-    .appendTo(nav);
+  //$('<button id="backToSearch">')
+  //  .text('Back to Search')
+  //  .attr('href', '#'+ escapeForHash($('#results').data('q')))
+  //  .appendTo(summary);
 
-  $('<button id="backToSearch">')
-    .text('Back to Search')
-    .attr('href', '#'+ escapeForHash($('#results').data('q')))
-    .appendTo(nav);
-
+  $('.prev').remove();
   $('<button class="prev">')
     .text('« previous')
     .appendTo(nav);
 
-  nav.append( $('#results li').index(li) + 1);
-  nav.append(' of ');
-  nav.append( $('#results li').length );
+  // remove any existing number
+  $('.num').remove();
 
+  // add number of current result
+  var num = $('#results li').index(li) + 1;
+  $('<span class="num">').text(num + ' of ').prependTo('#nav');
+
+  $('.next').remove();
   $('<button class="next">')
     .text('next »')
     .appendTo(nav);
@@ -437,8 +443,11 @@ function clickMap(e){
   // Does the map show a selected item?
   var selected = $('#results li.selected');
   if (selected.length>0) {
-    // Is it raster?
-    if (selected.data('item').geom_type=='Raster') {
+    // Is it openindexmap, raster, or vector?
+    if (selected.data('item').openindexmaps) {
+      clickIndexMap(e);
+    }
+    else if (selected.data('item').geom_type=='Raster') {
       clickRasterMap(e);
     }
     else{
@@ -466,13 +475,22 @@ function clickResultsMap(e){
   layer.bringToBack();
 }
 
+function clickIndexMap(e){
+  var selected = $('#results li.selected');
+  if (selected.length<1) {
+    console.log('this should never happen in clickIndexMap()');
+  }
+  var item = selected.data('item');
+  console.log('indexmap clicked...')
+}
+
 function clickVectorMap(e){
   var selected = $('#results li.selected');
   // make sure we have a wms layer
   if (selected.length<1) return;
   var item = selected.data('item');
 
-  // get generous bbox for the clicked point (+/- 3 pixels)
+  // calc generous bbox for the clicked point (+/- 3 pixels)
   var bounds = map.getBounds();
   var pixelsize = (bounds._northEast.lat - bounds._southWest.lat) / map.getSize().y;
   var x1 = e.latlng.lng - pixelsize*3;
@@ -605,7 +623,7 @@ function clickRasterMap(e){
       var value = properties.GRAY_INDEX || properties.PALETTE_INDEX;
       layer.bindTooltip(''+value, {permanent:true});
     },
-    error: function (xhr, status, error) {
+    error: function (xhr, status, error){
       console.log(xhr);
       console.log(status);
       console.log(error);
@@ -657,9 +675,6 @@ function itemDetails(item){
     'category',
     'subject',
     'year',
-    'filesize',
-    'format',
-    'geom_type',
   ];
   for (var i=0; i<properties.length; i++) {
     var p = properties[i];
@@ -683,7 +698,7 @@ function itemDetails(item){
   td.append(downloadSection(item));
 
   // ALERT IF NO WMS IMAGE IS AVAILABLE
-  if (! item.wms) {
+  if (! item.wms && ! item.openindexmaps) {
     var tr = $('<tr class="alert">').prependTo(table);
     $('<th>').text('note').appendTo(tr);
     $('<td>').text('Map previews are not available for the '+item.format+' file format.')
@@ -696,35 +711,39 @@ function itemDetails(item){
 function downloadSection(item){
   var div = $('<div class="downloads">');
   var isIndexMap = item.category.indexOf('index map')>-1;
-  if (isIndexMap) {
-    $('<p class="alert">')
-      .text('This is an index map.  Please select features on the map to get the download links for the actual data.')
-      .appendTo(div);
-    $('<div class="subset">').appendTo(div);
-  }
-  var indextext = isIndexMap ? ' index map' : '';
 
   // main download file
   $('<a>')
     .addClass('download')
     .attr('target', '_blank')
     .attr('href', item.download)
-    .text(item.format + ' (original' + indextext + ')')
+    .text(item.format + (isIndexMap ? ' (index map)' : '') )
     .appendTo(div);
-  div.append(' ');
+  div.append(item.filesize + ' ');
+
+  if (isIndexMap) {
+    $('<p class="alert">')
+      .text('This is an index map.  Please select features on the map to get the download links for the actual data.')
+      .appendTo(div);
+    $('<div class="subset">').appendTo(div);
+  }
 
   // addl_downloads
-  if (item.addl_downloads) {
+  if (item.addl_downloads.length > 0) {
+    console.log(item.addl_downloads);
+    div.append('<br>');
     for (var k in item.addl_downloads) {
       $('<a>')
         .addClass('download')
         .attr('target', '_blank')
         .attr('href', item.addl_downloads[k])
-        .text(k + ' (original' + indextext + ')')
+        .text(k)
         .appendTo(div);
-      div.append(' ');
     }
   }
+
+  // skip the generated downloads for now
+  return div;
 
   // generated downloads
   if (item.wfs) {
@@ -775,7 +794,6 @@ function downloadSection(item){
     }
   }
 
-
   return div;
 }
 
@@ -795,8 +813,9 @@ function linkify(p, v){
         div.append(', ');
       }
       $('<a>')
-        .attr('href', "javascript:search('"+p+'="'+vi+'"'+"')")
         .text(vi)
+        .attr('href', '#'+p+'="'+vi+'"')
+        .click(clickLink)
         .appendTo(div);
     }
     return div;
@@ -805,8 +824,8 @@ function linkify(p, v){
     return v.join(', ');
   }
   // TODO move max length to config
-  var max = 500
-  if (typeof(v)==="string" && v.length > (max+200)) {
+  var max = 600
+  if (typeof(v)==="string" && v.length > (max+300)) {
     // adjust max to chop at a space
     max = v.indexOf(' ', max-10);
     var more = v.substr(max);
