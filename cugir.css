@@ -67,7 +67,7 @@ button:hover, .button:hover { background:#002c3b ; cursor:pointer }
 #left-panel { position:absolute ; left:0 ; width:59% ; top:120px }
 #summary { position:fixed ; left:0 ; top:120px ; width:59% ; height:1.6em ; background:#fff ;
    padding:0.3em 0.5% ; z-index:99 ; text-align:center }
-#body { position:absolute ; top:40px ; left:0 ; width:84% }
+#body { position:absolute ; top:40px ; left:0 ; width:100% }
 #body.info { left:0 }
 #body a { color:#2b7d37 }
 
@@ -79,9 +79,10 @@ button:hover, .button:hover { background:#002c3b ; cursor:pointer }
 
 
 
-.home { font-size:175% ; text-align:center }
+.home { font-size:125% ; text-align:center }
+#categories { column-count:3 ; column-width:10em ; list-style:none ; margin-top:1em }
 #categories a { cursor:pointer ; line-height:1.5em ; white-space:nowrap ; font-weight:bold ; margin-left:2em }
-#categories .count { color:#888 ; font-size:86% }
+#categories .count { color:#888 ; font-size:85% }
 
 #nav { padding:0.3em ; background:#eee }
 #nav .q { color:#080 ; font-weight:bold }

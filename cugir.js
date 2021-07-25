@@ -130,19 +130,21 @@ function home(){
   });
   $('#body').html('\
     <div class="home">\
-      <p style="color:#fff ; background:#f00 ; padding:1em">This is an EXPERIMENTAL javascript interface to <a href="https://cugir.library.cornell.edu/" style="color:#fc0 ; font-weight:bold ; text-decoration:underline">CUGIR</a>.</p>\
+      <h1>Welcome to CUGIR!</h1>\
       <p>Explore and discover New York State data and metadata related to:</p>\
-      <div id="categories"></div>\
+      <ul id="categories"></ul>\
+      <p style="margin:4em ; color:#fff ; background:#f00 ; padding:1em">This is an EXPERIMENTAL javascript interface to <a href="https://cugir.library.cornell.edu/" style="color:#fc0 ; font-weight:bold ; text-decoration:underline">CUGIR</a>.</p>\
     </div>\
   ');
   for (var i=0; i<categories.length; i++) {
+    var li = $('<li>').appendTo('#categories');
     $('<a>')
       .text(categories[i])
       .attr('href', '#category="' + categories[i] + '"')
       .click(clickLink)
-      .appendTo('#categories');
+      .appendTo(li);
     $('<span class="count">').html('&nbsp;(' + catstat[categories[i]] + ') ')
-      .appendTo('#categories');
+      .appendTo(li);
   }
   return false;
 }
