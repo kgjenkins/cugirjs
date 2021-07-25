@@ -513,11 +513,9 @@ function clickIndexMap(e){
     console.log('this should never happen in clickIndexMap()');
   }
   var item = selected.data('item');
-  console.log('indexmap clicked...');
-  console.log(selected.data('layer'));
-  console.log(e);
-  console.log(map.getLayerAt(e.layerPoint));
-  var feature = map.getLayerAt(e.layerPoint).feature;
+  var features = leafletPip.pointInLayer(e.latlng, selected.data('layer'));
+  console.log(features);
+  var feature = features[0].feature;
   var properties = feature.properties;
   var subset = $('#results li.selected .subset');
   if (subset.length>0) {
