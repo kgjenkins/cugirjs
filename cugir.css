@@ -2,10 +2,11 @@
 
 html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strong, sub, sup, var, b, u, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video { margin:0 ; padding:0 ; border:0 ; font-size:100% ; font:inherit ; vertical-align:baseline }
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display:block }
-body { line-height:1 }
+body { line-height:normal }
 ol, ul { list-style:none }
 blockquote, q { quotes:none }
 blockquote:before, blockquote:after, q:before, q:after { content:'' ; content:none }
+button { font-size:inherit }
 table { border-collapse:collapse ; border-spacing:0 }
 
 
@@ -47,9 +48,10 @@ dd { margin:0 0 1em 1em }
 
 .alert { color:#f00 ; font-weight:bold }
 
-body { padding: 0 ; margin: 0 ; font-family:Calibri, sans-serif ; background:#fff ; color:#000 ; font-size:100% }
+body { padding: 0 ; margin: 0 ; font-family:"Arial", "Calibri", sans-serif ; background:#fff ;
+ color:#000 ; font-size:100% }
 button, .button { color:#fff ; background:#006080 ; border:1px solid #002c3b ;
-   border-radius:0.5em ; padding:3px 1em ; white-space:nowrap ; xline-height:1.5em }
+   border-radius:0.5em ; padding:3px 1em ; white-space:nowrap }
 button:hover, .button:hover { background:#002c3b ; cursor:pointer }
 
 #head { position:fixed ; top:0 ; height:108px ; width:98% ; padding:6px 1% ;
@@ -65,14 +67,15 @@ button:hover, .button:hover { background:#002c3b ; cursor:pointer }
 #left-panel { position:absolute ; left:0 ; width:59% ; top:120px }
 #summary { position:fixed ; left:0 ; top:120px ; width:59% ; height:1.6em ; background:#fff ;
    padding:0.3em 0.5% ; z-index:99 ; text-align:center }
-#body { position:absolute ; top:40px }
-#body.info { width:66% }
+#body { position:absolute ; top:40px ; left:0 ; width:84% }
+#body.info { left:0 }
 #body a { color:#2b7d37 }
 
 #right-panel { position:fixed ; right:0 ; top:120px ; margin:0.3em 0.5% ; padding:0 ; width:39% ;
-   height:75% ; text-align:right }
+  height:75% ; text-align:right }
 #zoom { float:left }
 #map { height:100% ; width:100% }
+#map:hover { cursor:crosshair }
 
 
 
@@ -82,10 +85,10 @@ button:hover, .button:hover { background:#002c3b ; cursor:pointer }
 
 #nav { padding:0.3em ; background:#eee }
 #nav .q { color:#080 ; font-weight:bold }
-#nav button { color:#fff ; background:#12b3c5 ; border:1px solid #109eae ; margin:0 1em 0 0.5em }
+#nav button { color:#2b7d37 ; background:inherit ; border:0 ;
+  padding:0 ; margin:0 1em ; font-weight:bold ; font-size:inherit }
 #nav button.prev { position:absolute ; left:0.5em }
 #nav button.next { position:absolute ; right:0.5em }
-#nav button.next, #nav button.prev { color:#2b7d37 ; background:inherit ; border:0 ; padding:0 ; margin:0 1em }
 #nav button.next:hover, #nav button.prev:hover { text-decoration:underline }
 #nav button#zoom { float:right }
 
@@ -94,7 +97,7 @@ button:hover, .button:hover { background:#002c3b ; cursor:pointer }
 #results li:hover { background:#ddf ; cursor:pointer }
 #results li.hover { background:#ddf }
 #results a.title { display:block ; font-size:120% ; font-weight:bold ; color:#2B7d37 }
-#results .brief { max-height:3em ; overflow:hidden }
+#results .brief { max-height:3.5em ; overflow:hidden }
 #results .details { display:none }
 
 #results li.selected { background:#fff ! important ; border:0 }
@@ -114,10 +117,12 @@ button:hover, .button:hover { background:#002c3b ; cursor:pointer }
 #results .details .downloads a:hover { background:#002c3b ; text-decoration:none }
 #results .details .downloads .subset { margin-bottom:1.5em }
 
-#info { position:absolute ; left:40% ; top:160px ; width:19%; background:#fff ; border:3px solid #00f ; margin-bottom:3em ; overflow-y:auto ; word-break:break-all }
+#info { position:absolute ; left:40% ; top:160px ; width:19%; background:#fff ;
+  border:2px solid #00f ; margin-bottom:3em ; overflow-y:auto ; word-break:break-all ;
+  box-shadow:0 8px 16px #000 }
 #info table { width:100% }
 #info tr.head th { font-weight:bold ; color:#000 ; background:#ccf ; text-align:center }
-#info button.close { float:right }
+#info button.close { float:right ; padding:2px 4px }
 #info button.close:hover { background:#ccc ; cursor:pointer }
 #info th { width:5em ; text-align:right ; color:#888 ; padding:3px 6px ; font-weight:normal ; border:1px solid #888 }
 #info td { padding:3px 6px ; border:1px solid #888 }

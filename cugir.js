@@ -15,7 +15,7 @@ $(document).ready(function(){
   $(document).on('submit', 'form#search', submitQuery);
   $(document).on('mouseover', '#results li', mouseoverResultItem);
   $(document).on('mouseout', '#results li', mouseoutResultItem);
-  $(document).on('keydown', listenForEsc);
+  $(document).on('keydown', listenForKeys);
   interpretHash();
 });
 
@@ -29,9 +29,15 @@ function interpretHash(){
   search(unescapeHash(hash.slice(1)));
 }
 
-function listenForEsc(e){
+function listenForKeys(e){
   if (e.key=='Escape') {
     closeInfo();
+  }
+  else if (e.key=='ArrowRight' || e.key=='PageDown') {
+    clickNextButton();
+  }
+  else if (e.key=='ArrowLeft' || e.key=='PageUp'){
+    clickPrevButton();
   }
 }
 
@@ -155,7 +161,9 @@ function clickLink(e){
 
 function submitQuery(e){
   var q = $('#q').val();
-  search(q);
+  var qbounds = map.getBounds();
+  console.log(qbounds);
+  search(q, qbounds);
   e.preventDefault();
 }
 
@@ -183,21 +191,33 @@ function escapeForHash(q){
   return hash;
 }
 
-function search(q){
+function search(q, qbounds){
   // remove superfluous quotes around single words
   q = q.replace(/"(\w+)"/g, '$1');
   location.hash = escapeForHash(q);
   $('#q').val(q);
   var results = filter(cugirjson, q);
-  results = rankResults(results);
+  results = rankResults(results, qbounds);
   $('#body').html('');
   clearMap();
   var bounds;
   $('#summary').html('');
-  $('<div id="nav">').text(Object.keys(results).length + ' matches for ').append(
-    q ? $('<span>').addClass('q').text(q) : '*'
-  ).prependTo('#summary');
-  var ul = $('<ul id="results">').data('q', q);
+  var nav = $('<div id="nav">').text(Object.keys(results).length + ' matches');
+  if (q) {
+    nav.append(' for ');
+    $('<a>')
+      .addClass('q')
+      .text(q)
+      .attr('href', '#' + q)
+      .click(backToSearch)
+      .appendTo(nav)
+  }
+  nav.prependTo('#summary');
+  var ul =
+    $('<ul id="results">')
+    .data('q', q)
+    .data('qbounds', qbounds);
+    console.log(qbounds);
   for (var i in results) {
     var item = results[i];
     if (! bounds) {
@@ -214,22 +234,28 @@ function search(q){
     return;
   }
   if (bounds) {
-    $('<button id="zoom">')
+    var zoomButton = $('<button id="zoom">')
       .text('Zoom to search results')
       .click(function(){
         map.fitBounds(bounds, { animate:true, duration:1 });
       })
       .prependTo('#right-panel');
+    if ($('#limitToMap').val()) {
+      zoomButton.click();
+    }
   }
 }
 
-function rankResults(results){
+function rankResults(results, bounds){
+  console.log(bounds);
   var limit = $('#limitToMap').is(':checked');
-  var b = map.getBounds();
-  var mx1 = b.getWest();
-  var my1 = b.getSouth();
-  var mx2 = b.getEast();
-  var my2 = b.getNorth();
+  if (! bounds) {
+    bounds = map.getBounds();
+  }
+  var mx1 = bounds.getWest();
+  var my1 = bounds.getSouth();
+  var mx2 = bounds.getEast();
+  var my2 = bounds.getNorth();
   var map_area = (mx2-mx1)*(my2-my1);
   var result_list = [];
   for (var i in results) {
@@ -276,7 +302,7 @@ var default_style = {
 var active_style = {
   color:'#00f',
   opacity:0.7,
-  weight:4,
+  weight:5,
   fillColor:'#88f',
   fillOpacity:0.5
 }
@@ -284,14 +310,14 @@ var active_style = {
 var selected_style = {
   color:'#e68742',
   opacity:0.7,
-  weight:4,
+  weight:5,
   fillOpacity:0
 }
 
 var unavailable_style = {
   color:'#f00',
   opacity:0.7,
-  weight:4,
+  weight:5,
   fillColor:'#f88',
   fillOpacity:0.5
 }
@@ -346,9 +372,11 @@ function mouseoutResultItem(e){
 
 function backToSearch(){
   var q = $('#results').data('q');
+  var qbounds = $('#results').data('qbounds');
+  console.log(qbounds);
   var scroll = $('#results').data('scroll')-120;
   $('#q').val(q);
-  search(q);
+  search(q, qbounds);
   $('html').scrollTop(scroll);
 }
 
@@ -403,8 +431,6 @@ function clickResultItem(e){
     .appendTo(nav);
 
   map.fitBounds(item.bbox, { animate:true, duration:1 });
-  var bboxlayer = renderItemBbox(item);
-  bboxlayer.setStyle(selected_style);
   if (item.wms) {
     var layer = L.tileLayer.wms(item.wms, {
       layers: item.layerid,
@@ -416,14 +442,16 @@ function clickResultItem(e){
     li.data('layer', layer);
     layer.addTo(map).bringToFront();
   }
-
-  // openindexmap.org geojson layer
-  if (item.openindexmaps) {
+  else if (item.openindexmaps) {
     var layer = new L.GeoJSON.AJAX(item.openindexmaps, {
       style: index_map_style
     });
     li.data('layer', layer);
     layer.addTo(map).bringToFront();
+  }
+  else {
+    var bboxlayer = renderItemBbox(item);
+    bboxlayer.setStyle(unavailable_style);
   }
 }
 
