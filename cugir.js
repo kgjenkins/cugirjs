@@ -71,7 +71,7 @@ function cleanData(cugirjson){
       id: item.layer_slug_s,
       title: item.dc_title_s,
       author: item.dc_creator_sm,
-      //publisher: item.dc_publisher_sm,
+      publisher: item.dc_publisher_sm,
       description: item.dc_description_s,
       collection: item.dct_isPartOf_sm,
       category: item.cugir_category_sm,
@@ -132,7 +132,7 @@ function resetPage(){
   for (var i=0; i<categories.length; i++) {
     $('<a>')
       .text(categories[i])
-      .attr('href', '#category='+categories[i])
+      .attr('href', '#category="' + categories[i] + '"')
       .click(clickLink)
       .appendTo('#categories');
     $('<span class="count">').html('&nbsp;(' + catstat[categories[i]] + ') ')
@@ -264,7 +264,7 @@ function rankResults(results){
   return result_list;
 }
 
-var bbox_default_style = {
+var default_style = {
   color: '#222',
   opacity: 0.3,
   weight: 1,
@@ -273,22 +273,22 @@ var bbox_default_style = {
   isBbox: true
 };
 
-var bbox_active_style = {
+var active_style = {
   color:'#00f',
   opacity:0.7,
-  weight:1,
+  weight:4,
   fillColor:'#88f',
   fillOpacity:0.5
 }
 
-var bbox_selected_style = {
+var selected_style = {
   color:'#e68742',
   opacity:0.7,
   weight:4,
   fillOpacity:0
 }
 
-var bbox_unavailable_style = {
+var unavailable_style = {
   color:'#f00',
   opacity:0.7,
   weight:4,
@@ -296,6 +296,13 @@ var bbox_unavailable_style = {
   fillOpacity:0.5
 }
 
+var index_map_style = {
+  color: '#000',
+  weight: 0.7,
+  opacity: 1,
+  fill: '#888',
+  fillOpacity: 0.3,
+}
 
 function renderResult(item){
   var li = $('<li>').data('item', item);
@@ -315,7 +322,7 @@ function renderResult(item){
 
 function renderItemBbox(item){
   // add bbox to map
-  var layer = L.rectangle(item.bbox, bbox_default_style).addTo(map);
+  var layer = L.rectangle(item.bbox, default_style).addTo(map);
   return layer;
 }
 
@@ -327,14 +334,14 @@ function mouseoverResultItem(e){
   }
   var bbox = item.data('bbox');
   if (bbox) {
-    bbox.setStyle(bbox_active_style).bringToFront();
+    bbox.setStyle(active_style).bringToFront();
   }
 }
 
 function mouseoutResultItem(e){
   var item = $(e.currentTarget);
   var bbox = item.data('bbox');
-  bbox.setStyle(bbox_default_style);
+  bbox.setStyle(default_style);
 }
 
 function backToSearch(){
@@ -397,7 +404,7 @@ function clickResultItem(e){
 
   map.fitBounds(item.bbox, { animate:true, duration:1 });
   var bboxlayer = renderItemBbox(item);
-  bboxlayer.setStyle(bbox_selected_style);
+  bboxlayer.setStyle(selected_style);
   if (item.wms) {
     var layer = L.tileLayer.wms(item.wms, {
       layers: item.layerid,
@@ -413,14 +420,9 @@ function clickResultItem(e){
   // openindexmap.org geojson layer
   if (item.openindexmaps) {
     var layer = new L.GeoJSON.AJAX(item.openindexmaps, {
-      style: {
-        color: '#1eb300',
-        weight: 1,
-        opacity: 1,
-        fill: '#1eb300',
-        fillOpacity: 0.2,
-      }
+      style: index_map_style
     });
+    li.data('layer', layer);
     layer.addTo(map).bringToFront();
   }
 }
@@ -464,7 +466,7 @@ function clickResultsMap(e){
   // forget about any previously-clicked item
   var olditem = $('#results li.hover').removeClass('hover');
   if (olditem.length>0) {
-    olditem.data('bbox').setStyle(bbox_default_style);
+    olditem.data('bbox').setStyle(default_style);
   }
 
   // highlight the clicked bbox and corresponding item
@@ -481,7 +483,39 @@ function clickIndexMap(e){
     console.log('this should never happen in clickIndexMap()');
   }
   var item = selected.data('item');
-  console.log('indexmap clicked...')
+  console.log('indexmap clicked...');
+  console.log(selected.data('layer'));
+  console.log(e);
+  console.log(map.getLayerAt(e.layerPoint));
+  var feature = map.getLayerAt(e.layerPoint).feature;
+  var properties = feature.properties;
+  var subset = $('#results li.selected .subset');
+  if (subset.length>0) {
+    if (properties.downloadUrl != 'no data') {
+      // add text before the first selected subset
+      if (subset.children().length==0) {
+        subset.append('Selected data subsets:<br>');
+      }
+      // add subset download button
+      if (properties.downloadUrl) {
+        subset.append(subsetDownload(properties))
+        .append(' ');
+      }
+    }
+    // show feature and info
+    var layer = L.geoJSON(feature, {
+      //display points as little circles
+      pointToLayer: function(point, latlng) {
+        return L.circleMarker(latlng);
+      },
+      style: active_style,
+      isSelection: true
+    }).addTo(map);
+    if (properties.downloadUrl == 'no data') {
+      layer.setStyle(unavailable_style);
+    }
+    showInfo(properties);
+  }
 }
 
 function clickVectorMap(e){
@@ -564,11 +598,11 @@ function clickVectorMap(e){
         pointToLayer: function(point, latlng) {
           return L.circleMarker(latlng);
         },
-        style: bbox_active_style,
+        style: active_style,
         isSelection: true
       }).addTo(map);
       if (properties.download == 'no data') {
-        layer.setStyle(bbox_unavailable_style);
+        layer.setStyle(unavailable_style);
       }
       showInfo(properties);
     },
@@ -616,7 +650,7 @@ function clickRasterMap(e){
       });
       // show feature and info
       var layer = L.circleMarker(e.latlng, {
-        style: bbox_active_style,
+        style: active_style,
         isSelection: true
       }).addTo(map);
       var properties = data.features[0].properties;
@@ -655,11 +689,11 @@ function showInfo(properties){
 
 function subsetDownload(p){
   // TODO simplify this by switching to standard openindexmaps properties
-  var label = p.name || p.usgs_name || p.title || p.countyname;
+  var label = p.label;
   var a =  $('<a>')
     .addClass('download')
     .attr('target', '_blank')
-    .attr('href', p.download)
+    .attr('href', p.downloadUrl)
     .text( label );
   return a;
 }
@@ -729,8 +763,7 @@ function downloadSection(item){
   }
 
   // addl_downloads
-  if (item.addl_downloads.length > 0) {
-    console.log(item.addl_downloads);
+  if (Object.keys(item.addl_downloads).length > 0) {
     div.append('<br>');
     for (var k in item.addl_downloads) {
       $('<a>')
