@@ -4,12 +4,12 @@ var map;
 $(document).ready(function(){
   cugirjson = cleanData(cugirjson);
   map = setupMap();
-  $(document).on('click', 'img#logo', resetPage);
+  $(document).on('click', 'img#logo', home);
   $(document).on('click', '#results li', clickResultItem);
   $(document).on('click', 'button.prev', clickPrevButton);
   $(document).on('click', 'button.next', clickNextButton);
   $(document).on('click', '#backToSearch', backToSearch);
-  $(document).on('click', '#resetButton', resetPage);
+  $(document).on('click', '#resetButton', home);
   $(document).on('click', 'button.more', showMore);
   $(document).on('click', '#info button.close', closeInfo);
   $(document).on('submit', 'form#search', submitQuery);
@@ -22,7 +22,7 @@ $(document).ready(function(){
 function interpretHash(){
   var hash = location.hash;
   if (!hash) {
-    resetPage();
+    home();
     return;
   }
   // search for whatever is after the #
@@ -114,7 +114,7 @@ function bbox(solr_geom){
   ];
 }
 
-function resetPage(){
+function home(){
   location.hash = '';
   $('#q').val('');
   $('#summary').html('');
