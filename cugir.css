@@ -118,7 +118,7 @@ button:hover, .button:hover { background:#002c3b ; cursor:pointer }
 #results .details .downloads a:hover { background:#002c3b ; text-decoration:none }
 #results .details .downloads .subset { margin-bottom:1.5em }
 
-#info { position:absolute ; left:40% ; top:160px ; width:19%; background:#fff ;
+#info { position:absolute ; left:30% ; top:160px ; width:30%; background:#fff ;
   border:2px solid #00f ; margin-bottom:3em ; overflow-y:auto ; word-break:break-all ;
   box-shadow:0 8px 16px #000 }
 #info table { width:100% }
