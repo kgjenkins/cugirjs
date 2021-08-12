@@ -164,7 +164,6 @@ function clickLink(e){
 function submitQuery(e){
   var q = $('#q').val();
   var qbounds = map.getBounds();
-  console.log(qbounds);
   search(q, qbounds);
   e.preventDefault();
 }
@@ -219,7 +218,6 @@ function search(q, qbounds){
     $('<ul id="results">')
     .data('q', q)
     .data('qbounds', qbounds);
-    console.log(qbounds);
   for (var i in results) {
     var item = results[i];
     if (! bounds) {
@@ -249,7 +247,6 @@ function search(q, qbounds){
 }
 
 function rankResults(results, bounds){
-  console.log(bounds);
   var limit = $('#limitToMap').is(':checked');
   if (! bounds) {
     bounds = map.getBounds();
@@ -310,26 +307,27 @@ var active_style = {
 }
 
 var selected_style = {
-  color:'#e68742',
+  color:'#00f',
   opacity:0.7,
   weight:5,
-  fillOpacity:0
+  fillColor:'#00f',
+  fillOpacity:0.5
 }
 
 var unavailable_style = {
   color:'#f00',
   opacity:0.7,
-  weight:5,
+  weight:2,
   fillColor:'#f88',
   fillOpacity:0.5
 }
 
 var index_map_style = {
-  color: '#000',
-  weight: 0.7,
-  opacity: 1,
-  fill: '#888',
-  fillOpacity: 0.3,
+  color: '#080',
+  opacity:0.7,
+  weight: 2,
+  fillColor: '#080',
+  fillOpacity: 0.5,
 }
 
 function renderResult(item){
@@ -356,8 +354,8 @@ function renderItemBbox(item){
 
 function mouseoverResultItem(e){
   var item = $(e.currentTarget);
-  if ($('#results li.selected').length > 0) {
-    // ignore mouseover if any item is selected (in detail view)
+  if ($('#results li.active').length > 0) {
+    // ignore mouseover if any item is active (in detail view)
     return;
   }
   var bbox = item.data('bbox');
@@ -375,7 +373,6 @@ function mouseoutResultItem(e){
 function backToSearch(){
   var q = $('#results').data('q');
   var qbounds = $('#results').data('qbounds');
-  console.log(qbounds);
   var scroll = $('#results').data('scroll')-120;
   $('#q').val(q);
   search(q, qbounds);
@@ -384,15 +381,15 @@ function backToSearch(){
 
 function clickResultItem(e){
   // check that we are not already viewing this item
-  if ($(e.currentTarget).hasClass('selected')) {
+  if ($(e.currentTarget).hasClass('active')) {
     return;
   }
 
   // clear the selection
-  $('#results li.selected').removeClass('selected');
+  $('#results li.active').removeClass('active');
 
   // select the clicked item and show it
-  var li = $(e.currentTarget).addClass('selected').show();
+  var li = $(e.currentTarget).addClass('active').show();
 
   // remember current scroll position
   $('#results').data('scroll', li.offset().top);
@@ -406,7 +403,7 @@ function clickResultItem(e){
 
   // clear the map and hide all other results
   clearMap();
-  $('#results li:not(.selected)').hide();
+  $('#results li:not(.active)').hide();
 
   var nav = $('#nav');
 
@@ -446,7 +443,8 @@ function clickResultItem(e){
   }
   else if (item.openindexmaps) {
     var layer = new L.GeoJSON.AJAX(item.openindexmaps, {
-      style: index_map_style
+      style: index_map_style,
+      onEachFeature: eachIndexMapFeature
     });
     li.data('layer', layer);
     layer.addTo(map).bringToFront();
@@ -457,29 +455,38 @@ function clickResultItem(e){
   }
 }
 
+function eachIndexMapFeature(feature, layer) {
+  if (feature.properties.available===false) {
+    layer.setStyle(unavailable_style);
+  }
+  else {
+    layer.setStyle(index_map_style);
+  }
+}
+
 function clickPrevButton(){
-  var prev = $('#results li.selected').prev();
+  var prev = $('#results li.active').prev();
   if (prev) {
     prev.click();
   }
 }
 
 function clickNextButton(){
-  var next = $('#results li.selected').next();
+  var next = $('#results li.active').next();
   if (next) {
     next.click();
   }
 }
 
 function clickMap(e){
-  // Does the map show a selected item?
-  var selected = $('#results li.selected');
-  if (selected.length>0) {
+  // Does the map show an active item?
+  var active = $('#results li.active');
+  if (active.length>0) {
     // Is it openindexmap, raster, or vector?
-    if (selected.data('item').openindexmaps) {
+    if (active.data('item').openindexmaps) {
       clickIndexMap(e);
     }
-    else if (selected.data('item').geom_type=='Raster') {
+    else if (active.data('item').geom_type=='Raster') {
       clickRasterMap(e);
     }
     else{
@@ -508,49 +515,62 @@ function clickResultsMap(e){
 }
 
 function clickIndexMap(e){
-  var selected = $('#results li.selected');
-  if (selected.length<1) {
+  var active = $('#results li.active');
+  if (active.length<1) {
     console.log('this should never happen in clickIndexMap()');
   }
-  var item = selected.data('item');
-  var features = leafletPip.pointInLayer(e.latlng, selected.data('layer'));
-  console.log(features);
+  var item = active.data('item');
+  var features = leafletPip.pointInLayer(e.latlng, active.data('layer'));
   var feature = features[0].feature;
   var properties = feature.properties;
-  var subset = $('#results li.selected .subset');
-  if (subset.length>0) {
-    if (properties.downloadUrl != 'no data') {
-      // add text before the first selected subset
-      if (subset.children().length==0) {
-        subset.append('Selected data subsets:<br>');
-      }
-      // add subset download button
-      if (properties.downloadUrl) {
-        subset.append(subsetDownload(properties))
-        .append(' ');
-      }
+  var subsets = $('#results li.active .subsets');
+  if (properties.downloadUrl != 'no data') {
+    if (subsets.children().length===0) {
+      // If this is the first selected subset, add text before
+      subsets.append('Selected data subsets:<br>');
     }
-    // show feature and info
-    var layer = L.geoJSON(feature, {
-      //display points as little circles
-      pointToLayer: function(point, latlng) {
-        return L.circleMarker(latlng);
-      },
-      style: active_style,
-      isSelection: true
-    }).addTo(map);
-    if (properties.downloadUrl == 'no data') {
-      layer.setStyle(unavailable_style);
+    // add subset download button
+    if (properties.downloadUrl) {
+      subsets.append(subsetDownload(properties))
+      .append(' ');
     }
-    showInfo(properties);
+    // add download-all button if more than one subset
+    if (subsets.children().length > 1) {
+      let d = document.getElementById('download-all');
+      if (d) {
+        d.remove();
+      }
+      subsets.append('<button id="download-all" onclick="downloadAll()">Download all selected subsets</button>');
+    }
   }
+  // show feature and info
+  var layer = L.geoJSON(feature, {
+    //display points as little circles
+    pointToLayer: function(point, latlng) {
+      return L.circleMarker(latlng);
+    },
+    style: selected_style,
+    isSelection: true
+  }).addTo(map);
+  if (! properties.downloadUrl) {
+    layer.setStyle(unavailable_style);
+  }
+  showInfo(properties);
+}
+
+function downloadAll() {
+  $('.subsets .download').each(function(i, link) {
+    let url = $(link).attr('href');
+    // wait 500ms between downloads to keep the browser happy
+    setTimeout(function(){ window.location = url }, 500*i);
+  });
 }
 
 function clickVectorMap(e){
-  var selected = $('#results li.selected');
+  var active = $('#results li.active');
   // make sure we have a wms layer
-  if (selected.length<1) return;
-  var item = selected.data('item');
+  if (active.length<1) return;
+  var item = active.data('item');
 
   // calc generous bbox for the clicked point (+/- 3 pixels)
   var bounds = map.getBounds();
@@ -598,7 +618,7 @@ function clickVectorMap(e){
 
       // is this for an index map?
       // TODO move this to the openindexmap handler
-      var subset = $('#results li.selected .subset');
+      var subset = $('#results li.active .subset');
       if (subset.length>0) {
         if (properties.download != 'no data') {
           // add text before the first selected subset
@@ -643,7 +663,7 @@ function clickVectorMap(e){
 }
 
 function clickRasterMap(e){
-  var item = $('#results li.selected').data('item');
+  var item = $('#results li.active').data('item');
   var bounds = map.getBounds();
   var x1 = bounds._southWest.lng;
   var x2 = bounds._northEast.lng;
@@ -787,7 +807,7 @@ function downloadSection(item){
     $('<p class="alert">')
       .text('This is an index map.  Please select features on the map to get the download links for the actual data.')
       .appendTo(div);
-    $('<div class="subset">').appendTo(div);
+    $('<div class="subsets">').appendTo(div);
   }
 
   // addl_downloads

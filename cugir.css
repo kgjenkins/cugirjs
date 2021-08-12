@@ -101,10 +101,10 @@ button:hover, .button:hover { background:#002c3b ; cursor:pointer }
 #results .brief { max-height:3.5em ; overflow:hidden }
 #results .details { display:none }
 
-#results li.selected { background:#fff ! important ; border:0 }
-#results li.selected:hover { cursor:default }
-#results li.selected .brief { display:none }
-#results li.selected .details { display:block }
+#results li.active { background:#fff ! important ; border:0 }
+#results li.active:hover { cursor:default }
+#results li.active .brief { display:none }
+#results li.active .details { display:block }
 
 #results .details a { font-weight:bold }
 #results .details p { margin:0 0 0.5em }
@@ -116,7 +116,8 @@ button:hover, .button:hover { background:#002c3b ; cursor:pointer }
 #results .details .downloads a { background:#006080; border-color:#002c3b ; color:#fff ;
    border-radius:4px ; margin:0 0.5em 0 0 ; padding:3px 1em ; white-space:nowrap ; line-height:2em }
 #results .details .downloads a:hover { background:#002c3b ; text-decoration:none }
-#results .details .downloads .subset { margin-bottom:1.5em }
+#results .details .downloads .subsets { margin-bottom:1.5em }
+#results .details .downloads #download-all { display:block }
 
 #info { position:absolute ; left:30% ; top:160px ; width:30%; background:#fff ;
   border:2px solid #00f ; margin-bottom:3em ; overflow-y:auto ; word-break:break-all ;
