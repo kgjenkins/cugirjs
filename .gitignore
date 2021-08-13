@@ -1,0 +1,2 @@
+# don't track js sourcemaps
+*.map
