@@ -1,5 +1,5 @@
 /* global $ L leafletPip cugirjson */
-import filter from './lib/json-filter.js'
+//import filter from './lib/json-filter.js'
 
 let map
 
