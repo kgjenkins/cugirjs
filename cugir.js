@@ -2,10 +2,12 @@
 //import filter from './lib/json-filter.js'
 
 let map
+const styles = []
 
 $(document).ready(function () {
   cugirjson = cleanData(cugirjson)
-  map = setupMap()
+  setupMap()
+  setupStyles()
   $(document).on('click', 'img#logo', home)
   $(document).on('click', '#results li', clickResultItem)
   $(document).on('click', 'button.prev', clickPrevButton)
@@ -64,7 +66,6 @@ function setupMap () {
     ]
   }).addTo(map)
   map.on('click', clickMap)
-  return map
 }
 
 function cleanData (cugirjson) {
@@ -284,53 +285,55 @@ function rankResults (results, bounds) {
   return resultList
 }
 
-const bboxStyle = {
-  color: '#222',
-  opacity: 0.3,
-  weight: 1,
-  fillColor: '#fff',
-  fillOpacity: 0,
-  isBbox: true
+function cssVar (name) {
+  const body = window.getComputedStyle(document.querySelector('body'))
+  return body.getPropertyValue(name)
 }
 
-const bboxHighlightStyle = {
-  color: '#00f',
-  opacity: 0.7,
-  weight: 5,
-  fillColor: '#88f',
-  fillOpacity: 0.5
-}
-
-const featureHighlightStyle = {
-  color: '#00f',
-  opacity: 0.7,
-  weight: 3,
-  fillColor: '#88f',
-  fillOpacity: 0.5
-}
-
-const indexmapStyle = {
-  color: '#00f',
-  opacity: 0.7,
-  weight: 2,
-  fillColor: '#88f',
-  fillOpacity: 0.5
-}
-
-const indexmapUnavailableStyle = {
-  color: '#f00',
-  opacity: 0.7,
-  weight: 2,
-  fillColor: '#f88',
-  fillOpacity: 0.5
-}
-
-const indexmapSelectedStyle = {
-  color: '#880',
-  opacity: 0.7,
-  weight: 5,
-  fillColor: '#ff0',
-  fillOpacity: 0.8
+function setupStyles () {
+  styles.bbox = {
+    color: cssVar('--map-bbox-color'),
+    opacity: 0.3,
+    weight: 1,
+    fillColor: '#fff',
+    fillOpacity: 0,
+    isBbox: true
+  }
+  styles.bboxHighlight = {
+    color: cssVar('--map-bbox-highlight-color'),
+    opacity: 1,
+    weight: 4,
+    fillColor: cssVar('--map-bbox-highlight-color'),
+    fillOpacity: 0.2
+  }
+  styles.featureHighlight = {
+    color: cssVar('--map-feature-highlight-color'),
+    opacity: 1,
+    weight: 4,
+    fillColor: cssVar('--map-feature-highlight-color'),
+    fillOpacity: 0.2
+  }
+  styles.indexmap = {
+    color: cssVar('--map-indexmap-color'),
+    opacity: 1,
+    weight: 2,
+    fillColor: cssVar('--map-indexmap-color'),
+    fillOpacity: 0.3
+  }
+  styles.indexmapUnavailable = {
+    color: cssVar('--map-indexmap-unavailable-color'),
+    opacity: 1,
+    weight: 2,
+    fillColor: cssVar('--map-indexmap-unavailable-color'),
+    fillOpacity: 0.3
+  }
+  styles.indexmapSelected = {
+    color: cssVar('--map-indexmap-selected-color'),
+    opacity: 1,
+    weight: 4,
+    fillColor: cssVar('--map-indexmap-selected-color'),
+    fillOpacity: 0.3
+  }
 }
 
 function renderResult (item) {
@@ -351,7 +354,7 @@ function renderResult (item) {
 
 function renderItemBbox (item) {
   // add bbox to map
-  const layer = L.rectangle(item.bbox, bboxStyle).addTo(map)
+  const layer = L.rectangle(item.bbox, styles.bbox).addTo(map)
   return layer
 }
 
@@ -363,14 +366,14 @@ function mouseoverResultItem (e) {
   }
   const bbox = item.data('bbox')
   if (bbox) {
-    bbox.setStyle(bboxHighlightStyle).bringToFront()
+    bbox.setStyle(styles.bboxHighlight).bringToFront()
   }
 }
 
 function mouseoutResultItem (e) {
   const item = $(e.currentTarget)
   const bbox = item.data('bbox')
-  bbox.setStyle(bboxStyle)
+  bbox.setStyle(styles.bbox)
 }
 
 function backToSearch () {
@@ -445,22 +448,22 @@ function clickResultItem (e) {
     layer.addTo(map).bringToFront()
   } else if (item.openindexmaps) {
     layer = new L.GeoJSON.AJAX(item.openindexmaps, {
-      style: indexmapStyle,
+      style: styles.indexmap,
       onEachFeature: eachIndexMapFeature
     })
     li.data('layer', layer)
     layer.addTo(map).bringToFront()
   } else {
     const bboxlayer = renderItemBbox(item)
-    bboxlayer.setStyle(indexmapUnavailableStyle)
+    bboxlayer.setStyle(styles.indexmapUnavailable)
   }
 }
 
 function eachIndexMapFeature (feature, layer) {
   if (feature.properties.available === false) {
-    layer.setStyle(indexmapUnavailableStyle)
+    layer.setStyle(styles.indexmapUnavailable)
   } else {
-    layer.setStyle(indexmapStyle)
+    layer.setStyle(styles.indexmap)
   }
 }
 
@@ -500,7 +503,7 @@ function clickResultsMap (e) {
   // forget about any previously-clicked item
   const olditem = $('#results li.hover').removeClass('hover')
   if (olditem.length > 0) {
-    olditem.data('bbox').setStyle(bboxStyle)
+    olditem.data('bbox').setStyle(styles.bbox)
   }
 
   // highlight the clicked bbox and corresponding item
@@ -545,11 +548,11 @@ function clickIndexMap (e) {
     pointToLayer: function (point, latlng) {
       return L.circleMarker(latlng)
     },
-    style: indexmapSelectedStyle,
+    style: styles.indexmapSelected,
     isSelection: true
   }).addTo(map)
   if (!properties.downloadUrl) {
-    layer.setStyle(indexmapUnavailableStyle)
+    layer.setStyle(styles.indexmapUnavailable)
   }
   showInfo(properties)
 }
@@ -641,11 +644,11 @@ function clickVectorMap (e) {
         pointToLayer: function (point, latlng) {
           return L.circleMarker(latlng)
         },
-        style: featureHighlightStyle,
+        style: styles.featureHighlight,
         isSelection: true
       }).addTo(map)
       if (properties.download === 'no data') {
-        layer.setStyle(indexmapUnavailableStyle)
+        layer.setStyle(styles.indexmapUnavailable)
       }
       showInfo(properties)
     },
@@ -693,7 +696,7 @@ function clickRasterMap (e) {
       })
       // show feature and info
       const layer = L.circleMarker(e.latlng, {
-        style: featureHighlightStyle,
+        style: styles.featureHighlight,
         isSelection: true
       }).addTo(map)
       const properties = data.features[0].properties
