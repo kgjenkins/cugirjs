@@ -1,4 +1,5 @@
-var cugirjson = {
+/* eslint-disable */
+let cugirjson = {
   "responseHeader":{
     "status":0,
     "QTime":1,
