@@ -1,4 +1,4 @@
-/* global $ L leafletPip filter */
+/* global $ L leafletPip filter cugirjson */
 let map
 
 $(document).ready(function () {
@@ -510,7 +510,7 @@ function clickIndexMap (e) {
   const feature = features[0].feature
   const properties = feature.properties
   const subsets = $('#results li.active .subsets')
-  if (properties.downloadUrl != 'no data') {
+  if (properties.downloadUrl !== 'no data') {
     if (subsets.children().length === 0) {
       // If this is the first selected subset, add text before
       subsets.append('Selected data subsets:<br>')
@@ -568,7 +568,7 @@ function clickVectorMap (e) {
   const y2 = e.latlng.lat + pixelsize * 3
 
   // https://cugir.library.cornell.edu/geoserver/cugirwfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cugir008186&srsName=EPSG:4326&bbox=42.1634,-76.5687,42.1634,-76.5687&outputFormat=json
-  params = {
+  const params = {
     service: 'WFS',
     version: '2.0.0',
     request: 'GetFeature',
@@ -582,7 +582,7 @@ function clickVectorMap (e) {
     url: url,
     dataType: 'json',
     success: function (data, status, xhr) {
-      if (data.features.length == 0) {
+      if (data.features.length === 0) {
         // no features found
         return
       }
@@ -592,7 +592,7 @@ function clickVectorMap (e) {
       let match
       if (data.features[0].geometry.type.indexOf('Polygon') > -1) {
         const matches = leafletPip.pointInLayer(e.latlng, L.geoJSON(data), true)
-        if (matches.length == 0) return
+        if (matches.length === 0) return
         // use first match only
         match = matches[0].feature
       } else {
@@ -606,9 +606,9 @@ function clickVectorMap (e) {
       // TODO move this to the openindexmap handler
       const subset = $('#results li.active .subset')
       if (subset.length > 0) {
-        if (properties.download != 'no data') {
+        if (properties.download !== 'no data') {
           // add text before the first selected subset
-          if (subset.children().length == 0) {
+          if (subset.children().length === 0) {
             subset.append('Selected data subsets:<br>')
           }
           // add subset download button
@@ -634,7 +634,7 @@ function clickVectorMap (e) {
         style: activeStyle,
         isSelection: true
       }).addTo(map)
-      if (properties.download == 'no data') {
+      if (properties.download === 'no data') {
         layer.setStyle(unavailableStyle)
       }
       showInfo(properties)
@@ -655,7 +655,7 @@ function clickRasterMap (e) {
   const y1 = bounds._southWest.lat
   const y2 = bounds._northEast.lat
   const size = map.getSize()
-  params = {
+  const params = {
     service: 'WMS',
     version: '1.1.1',
     request: 'GetFeatureInfo',
@@ -747,26 +747,26 @@ function itemDetails (item) {
     const p = properties[i]
     const v = item[p]
     if (!v) continue
-    var tr = $('<tr>').appendTo(table)
+    const tr = $('<tr>').appendTo(table)
     $('<th>').text(p).appendTo(tr)
-    var td = $('<td>').html(linkify(p, v)).appendTo(tr)
+    $('<td>').html(linkify(p, v)).appendTo(tr)
   }
 
   // METADATA
-  var tr = $('<tr>').appendTo(table)
+  let tr = $('<tr>').appendTo(table)
   $('<th>').text('more details').appendTo(tr)
-  var td = $('<td>').appendTo(tr)
+  let td = $('<td>').appendTo(tr)
   $('<a>').attr('href', item.metadata).attr('target', '_blank').text('metadata').appendTo(td)
 
   // DOWNLOAD
-  var tr = $('<tr>').prependTo(table)
+  tr = $('<tr>').prependTo(table)
   $('<th>').text('download').appendTo(tr)
-  var td = $('<td>').appendTo(tr)
+  td = $('<td>').appendTo(tr)
   td.append(downloadSection(item))
 
   // ALERT IF NO WMS IMAGE IS AVAILABLE
   if (!item.wms && !item.openindexmaps) {
-    var tr = $('<tr class="alert">').prependTo(table)
+    tr = $('<tr class="alert">').prependTo(table)
     $('<th>').text('note').appendTo(tr)
     $('<td>').text('Map previews are not available for the ' + item.format + ' file format.')
       .appendTo(tr)
@@ -809,57 +809,6 @@ function downloadSection (item) {
   }
 
   // skip the generated downloads for now
-  return div
-
-  // generated downloads
-  if (item.wfs) {
-    // generate geojson if there isn't already such a download
-    if (item.format !== 'GeoJSON' &&
-        !item.addl_downloads.GeoJSON) {
-      var params = {
-        service: 'WFS',
-        version: '2.0.0',
-        request: 'GetFeature',
-        typeNames: 'cugir:' + item.layerid,
-        maxFeatures: 999999,
-        srs: 'EPSG:4326',
-        outputFormat: 'json'
-      }
-      $('<a>')
-        .text('GeoJSON (generated' + indextext + ')')
-        .addClass('download')
-        .attr('target', '_blank')
-        .attr('href', item.wfs + L.Util.getParamString(params))
-        .appendTo(div)
-      div.append(' ')
-    }
-
-    // generate kml if there isn't already such a download
-    if (item.format !== 'KML' &&
-        !item.addl_downloads.KML) {
-      params = {
-        service: 'WMS',
-        version: '1.1.0',
-        request: 'GetMap',
-        layers: 'cugir:' + item.layerid,
-        maxFeatures: 999999,
-        srs: 'EPSG:4326',
-        // we have to flip yx -> xy
-        bbox: item.bbox[0][1] + ',' + item.bbox[0][0] + ',' + item.bbox[1][1] + ',' + item.bbox[1][0],
-        height: 1, // height/width are required, but don't matter
-        width: 1,
-        format: 'application/vnd.google-earth.kmz+xml'
-      }
-      $('<a>')
-        .text('KML (generated' + indextext + ')')
-        .addClass('download')
-        .attr('target', '_blank')
-        .attr('href', item.wms + L.Util.getParamString(params))
-        .appendTo(div)
-      div.append(' ')
-    }
-  }
-
   return div
 }
 
