@@ -94,14 +94,14 @@ function cleanData(cugirjson){
       openindexmaps: item.dct_references_s['https://openindexmaps.org'],
       download: item.dct_references_s['http://schema.org/downloadUrl'],
       addl_downloads: JSON.parse(item.cugir_addl_downloads_s),
-      bbox: bbox(item.solr_geom)
+      bbox: leafletBbox(item.solr_geom)
     };
     data.push(item2);
   }
   return data;
 }
 
-function bbox(solr_geom){
+function leafletBbox(solr_geom){
   // return leaflet bbox for solr_geom values like "ENVELOPE(minx, maxx, maxy, miny)"
   var m = solr_geom.match(/(-?\d+\.?\d*)/g);
   var minx = m[0];
@@ -573,6 +573,7 @@ function clickVectorMap(e){
   var item = active.data('item');
 
   // calc generous bbox for the clicked point (+/- 3 pixels)
+  // otherwise it is difficult to click a point feature
   var bounds = map.getBounds();
   var pixelsize = (bounds._northEast.lat - bounds._southWest.lat) / map.getSize().y;
   var x1 = e.latlng.lng - pixelsize*3;
