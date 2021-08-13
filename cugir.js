@@ -1,4 +1,6 @@
-/* global $ L leafletPip filter cugirjson */
+/* global $ L leafletPip cugirjson */
+import filter from './lib/json-filter.js'
+
 let map
 
 $(document).ready(function () {
