@@ -1,5 +1,4 @@
-/* global $ L leafletPip cugirjson */
-//import filter from './lib/json-filter.js'
+/* global $ L leafletPip filter cugirjson */
 
 let map
 const styles = []
@@ -509,16 +508,13 @@ function clickResultsMap (e) {
   // highlight the clicked bbox and corresponding item
   const layer = map.getLayerAt(e.layerPoint)
   const li = layer.options.li.mouseover().addClass('hover')
-  $('html').scrollTop(li.offset().top - 128)
+  $('html').scrollTop(li.offset().top - 240)
   // move to back so that other results can be clicked
   layer.bringToBack()
 }
 
 function clickIndexMap (e) {
   const active = $('#results li.active')
-  if (active.length < 1) {
-    console.log('this should never happen in clickIndexMap()')
-  }
   const features = leafletPip.pointInLayer(e.latlng, active.data('layer'))
   const feature = features[0].feature
   const properties = feature.properties
