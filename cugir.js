@@ -467,6 +467,7 @@ function openindexmapsLayer (item) {
       if (feature.properties.available === false) {
         layer.setStyle(styles.unavailable)
       }
+      feature.layer = layer
     }
   })
   layer.addTo(map).bringToFront()
@@ -529,38 +530,50 @@ function clickIndexMap (e) {
   const properties = feature.properties
 
   const subsets = $('#results li.active .subsets')
-  if (properties.downloadUrl !== 'no data') {
-    if (subsets.children().length === 0) {
-      // If this is the first selected subset, add text before
-      subsets.append('Selected data subsets:<br>')
+  if (properties.available) {
+    if (feature.selection) {
+      // deselect this feature
+      feature.selection.remove()
+      feature.download.remove()
+      delete feature.selection
+    } else {
+      // highlight feature
+      const layer = L.geoJSON(feature, {
+        // display points as little circles
+        // pointToLayer: function (point, latlng) {
+        //   return L.circleMarker(latlng)
+        // },
+        style: styles.indexmapSelected,
+        isSelection: true
+      }).addTo(map)
+      feature.selection = layer
+
+      // add subset download button
+      feature.download = subsetDownload(properties)
+      if (properties.downloadUrl) {
+        subsets.append(feature.download)
+          .append(' ')
+      }
     }
-    // add subset download button
-    if (properties.downloadUrl) {
-      subsets.append(subsetDownload(properties))
-        .append(' ')
+
+    $('#subset-text').remove()
+    $('#clear-subsets, br').remove()
+    if (subsets.children('a').length > 0) {
+      $('<button id="clear-subsets">Clear selection</button>')
+        .prependTo(subsets)
+        .on('click', clearSubsets)
     }
     // add download-all button if more than one subset
-    if (subsets.children().length > 1) {
-      const d = document.getElementById('download-all')
-      if (d) {
-        d.remove()
-      }
-      subsets.append('<button id="download-all">Download all selected subsets</button>')
+    $('#download-all').remove()
+    if (subsets.children('a').length > 1) {
+      subsets.prepend('<button id="download-all">Download all selected subsets</button>')
     }
+  } else {
+    // unavailable
+    window.alert('No data is available for ' + properties.label)
+    return
   }
-  // show feature and info
-  const layer = L.geoJSON(feature, {
-    // display points as little circles
-    pointToLayer: function (point, latlng) {
-      return L.circleMarker(latlng)
-    },
-    style: styles.indexmapSelected,
-    isSelection: true
-  }).addTo(map)
-  if (!properties.downloadUrl) {
-    layer.setStyle(styles.unavailable)
-  }
-  showInfo(properties)
+  // showInfo(properties)
 }
 
 function downloadAll () {
@@ -568,6 +581,15 @@ function downloadAll () {
     const url = $(link).attr('href')
     // wait 500ms between downloads to keep the browser happy
     setTimeout(function () { window.location = url }, 500 * i)
+  })
+}
+
+function clearSubsets () {
+  $('.subsets').html('')
+  map.eachLayer(function (layer) {
+    if (layer.options.isSelection) {
+      layer.remove()
+    }
   })
 }
 
@@ -621,29 +643,12 @@ function clickVectorMap (e) {
       }
       const properties = match.properties
 
-      // is this for an index map?
-      // TODO move this to the openindexmap handler
-      const subset = $('#results li.active .subset')
-      if (subset.length > 0) {
-        console.log('wow')
-        if (properties.download !== 'no data') {
-          // add text before the first selected subset
-          if (subset.children().length === 0) {
-            subset.append('Selected data subsets:<br>')
-          }
-          // add subset download button
-          subset
-            .append(subsetDownload(properties))
-            .append(' ')
+      // if not an index map, remove any other selected features
+      map.eachLayer(function (layer) {
+        if (layer.options.isSelection) {
+          layer.remove()
         }
-      } else {
-        // if not an index map, remove any other selected features
-        map.eachLayer(function (layer) {
-          if (layer.options.isSelection) {
-            layer.remove()
-          }
-        })
-      }
+      })
 
       // show feature and info
       const layer = L.geoJSON(match, {
