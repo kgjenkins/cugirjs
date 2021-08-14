@@ -388,6 +388,14 @@ function backToSearch () {
 }
 
 function clickResultItem (e) {
+  // ctrl-click should open the link in a new window
+  if (e.ctrlKey) {
+    e.stopPropagation()
+    const item = $(e.currentTarget).data('item')
+    window.open('#id=' + item.id)
+    return false
+  }
+
   // check that we are not already viewing this item
   if ($(e.currentTarget).hasClass('active')) {
     return
