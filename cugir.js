@@ -790,11 +790,18 @@ function downloadSection (item) {
   const isIndexMap = item.category.indexOf('index map') > -1
 
   // main download file
+  let format = item.format
+  if (format.slice(-4) !== 'file') {
+    format += ' file'
+  }
+  if (isIndexMap) {
+    format += ' (index map)'
+  }
   $('<a>')
     .addClass('download')
     .attr('target', '_blank')
     .attr('href', item.download)
-    .text(item.format + (isIndexMap ? ' (index map)' : ''))
+    .text(format)
     .appendTo(div)
   div.append(item.filesize + ' ')
 
