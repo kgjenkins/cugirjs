@@ -49,11 +49,12 @@ function closeInfo () {
 }
 
 function setupMap () {
-  map = L.map('map', {
-    fadeAnimation: false
-  })
+  map = L.map('map')
+
   // zoom to NYS
   map.fitBounds([[40.5, -80], [45, -71.8]])
+
+  // add basemap using colorFilter to enhance/balance coloration
   L.tileLayer.colorFilter('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     isBasemap: true,
     maxZoom: 21,
@@ -132,11 +133,12 @@ function home () {
   $('#body').html(
     '<div class="home">' +
       '<h1>Welcome to CUGIR!</h1>' +
-      '<p>Explore and discover New York State data and metadata related to:</p>' +
+      '<p>Explore and discover New York State geospatial data:</p>' +
       '<ul id="categories"></ul>' +
       '<p style="margin:4em ; color:#fff ; background:#f00 ; padding:1em">This is an EXPERIMENTAL javascript interface to <a href="https://cugir.library.cornell.edu/" style="color:#fc0 ; font-weight:bold ; text-decoration:underline">CUGIR</a>.</p>' +
     '</div>'
   )
+  // list all categories (and the number of datasets for each)
   for (let i = 0; i < categories.length; i++) {
     const li = $('<li>').appendTo('#categories')
     $('<a>')
@@ -316,21 +318,21 @@ function setupStyles () {
   styles.indexmap = {
     color: cssVar('--map-indexmap-color'),
     opacity: 1,
-    weight: 2,
+    weight: 0.5,
     fillColor: cssVar('--map-indexmap-color'),
     fillOpacity: 0.3
   }
-  styles.indexmapUnavailable = {
+  styles.unavailable = {
     color: cssVar('--map-indexmap-unavailable-color'),
     opacity: 1,
-    weight: 2,
+    weight: 0.5,
     fillColor: cssVar('--map-indexmap-unavailable-color'),
     fillOpacity: 0.3
   }
   styles.indexmapSelected = {
     color: cssVar('--map-indexmap-selected-color'),
     opacity: 1,
-    weight: 4,
+    weight: 2,
     fillColor: cssVar('--map-indexmap-selected-color'),
     fillOpacity: 0.3
   }
@@ -435,36 +437,40 @@ function clickResultItem (e) {
     .text('next »')
     .appendTo(nav)
 
-  map.fitBounds(item.bbox, { animate: true, duration: 1 })
+  map.fitBounds(item.bbox, { animate: true, duration: 1, padding: [32, 32] })
   if (item.wms) {
-    var layer = L.tileLayer.wms(item.wms, {
-      layers: item.layerid,
-      format: 'image/png',
-      transparent: true,
-      tiled: true,
-      maxZoom: 21 // default 18 is not enough
-    })
-    li.data('layer', layer)
-    layer.addTo(map).bringToFront()
+    li.data('layer', wmsLayer(item))
   } else if (item.openindexmaps) {
-    layer = new L.GeoJSON.AJAX(item.openindexmaps, {
-      style: styles.indexmap,
-      onEachFeature: eachIndexMapFeature
-    })
-    li.data('layer', layer)
-    layer.addTo(map).bringToFront()
+    li.data('layer', openindexmapsLayer(item))
   } else {
     const bboxlayer = renderItemBbox(item)
-    bboxlayer.setStyle(styles.indexmapUnavailable)
+    bboxlayer.setStyle(styles.unavailable)
   }
 }
 
-function eachIndexMapFeature (feature, layer) {
-  if (feature.properties.available === false) {
-    layer.setStyle(styles.indexmapUnavailable)
-  } else {
-    layer.setStyle(styles.indexmap)
-  }
+function wmsLayer (item) {
+  var layer = L.tileLayer.wms(item.wms, {
+    layers: item.layerid,
+    format: 'image/png',
+    transparent: true,
+    tiled: true,
+    maxZoom: 21 // default 18 is not enough
+  })
+  layer.addTo(map).bringToFront()
+  return layer
+}
+
+function openindexmapsLayer (item) {
+    layer = new L.GeoJSON.AJAX(item.openindexmaps, {
+      style: styles.indexmap,
+      onEachFeature: function (feature, layer) {
+        if (feature.properties.available === false) {
+          layer.setStyle(styles.unavailable)
+        }
+      }
+    })
+    layer.addTo(map).bringToFront()
+    return layer
 }
 
 function clickPrevButton () {
@@ -549,7 +555,7 @@ function clickIndexMap (e) {
     isSelection: true
   }).addTo(map)
   if (!properties.downloadUrl) {
-    layer.setStyle(styles.indexmapUnavailable)
+    layer.setStyle(styles.unavailable)
   }
   showInfo(properties)
 }
@@ -645,7 +651,7 @@ function clickVectorMap (e) {
         isSelection: true
       }).addTo(map)
       if (properties.download === 'no data') {
-        layer.setStyle(styles.indexmapUnavailable)
+        layer.setStyle(styles.unavailable)
       }
       showInfo(properties)
     },
@@ -825,7 +831,6 @@ function downloadSection (item) {
     }
   }
 
-  // skip the generated downloads for now
   return div
 }
 
