@@ -594,9 +594,9 @@ function clickVectorMap (e) {
     bbox: [y1, x1, y2, x2].join(','),
     outputFormat: 'json'
   }
-  // here we use a proxy to avoid CORS
-  // const url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(item.wfs + L.Util.getParamString(params))
-  const url = item.wfs + L.Util.getParamString(params)
+  // const url = item.wfs + L.Util.getParamString(params)
+  // use a proxy to avoid CORS problem
+  const url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(item.wfs + L.Util.getParamString(params))
   $.ajax({
     url: url,
     dataType: 'json',
