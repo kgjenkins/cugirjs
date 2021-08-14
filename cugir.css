@@ -60,7 +60,7 @@ dd { margin:0 0 1em 1em }
 
 .alert { color:#f00 ; font-weight:bold }
 
-body { padding: 0 ; margin: 0 ; font-family:"Arial", "Calibri", sans-serif ; background:#fff ;
+body { padding: 0 ; margin: 0 ; font-family:'Segoe UI', 'BlinkMacSystemFont', 'Arial', sans-serif ; background:#fff ;
  color:#000 ; font-size:100% }
 button, .button { color:#fff ; background:var(--button-color) ; border:0 ;
    border-radius:0.5em ; padding:3px 1em ; white-space:nowrap }
@@ -81,7 +81,7 @@ button:hover, .button:hover { background:var(--button-hover-color) ; cursor:poin
    padding:0.3em 0.5% ; z-index:99 ; text-align:center }
 #body { position:absolute ; top:40px ; left:0 ; width:100% }
 #body.info { left:0 }
-#body a { color:var('--link-color') }
+#body a { color:var(--link-color) }
 
 #right-panel { position:fixed ; right:0 ; top:120px ; margin:0.3em 0.5% ; padding:0 ; width:39% ;
   height:75% ; text-align:right }
@@ -98,7 +98,7 @@ button:hover, .button:hover { background:var(--button-hover-color) ; cursor:poin
 
 #nav { padding:0.3em ; background:#eee }
 #nav .q { color:#080 ; font-weight:bold }
-#nav button { color:var('--link-color') ; background:inherit ; border:0 ;
+#nav button { color:var(--link-color) ; background:inherit ; border:0 ;
   padding:0 ; margin:0 1em ; font-weight:bold ; font-size:inherit }
 #nav button.prev { position:absolute ; left:0.5em }
 #nav button.next { position:absolute ; right:0.5em }
@@ -109,7 +109,7 @@ button:hover, .button:hover { background:var(--button-hover-color) ; cursor:poin
 #results li { padding:0.5em ; border-bottom:1px solid #ccc }
 #results li:hover { background:#ddf ; cursor:pointer }
 #results li.hover { background:#ddf }
-#results a.title { display:block ; font-size:120% ; font-weight:bold ; color:var('--link-color') }
+#results a.title { display:block ; font-size:120% ; font-weight:bold ; color:var(--link-color) }
 #results .brief { max-height:3.5em ; overflow:hidden }
 #results .details { display:none }
 
@@ -129,7 +129,7 @@ button:hover, .button:hover { background:var(--button-hover-color) ; cursor:poin
    border-radius:4px ; margin:0 0.5em 0 0 ; padding:3px 1em ; white-space:nowrap ; line-height:2em }
 #results .details .downloads a:hover { background:var(--button-hover-color) ; text-decoration:none }
 #results .details .downloads .subsets { }
-#results .details .downloads button { margin-right:1em ; background:#080 }
+#results .details .downloads button { margin-right:1em ; background:var(--link-color)}
 
 #info { position:absolute ; left:30% ; top:160px ; width:30%; background:#fff ;
   border:2px solid #00f ; margin-bottom:3em ; overflow-y:auto ; word-break:break-all ;
