@@ -449,7 +449,7 @@ function clickResultItem (e) {
 }
 
 function wmsLayer (item) {
-  var layer = L.tileLayer.wms(item.wms, {
+  const layer = L.tileLayer.wms(item.wms, {
     layers: item.layerid,
     format: 'image/png',
     transparent: true,
@@ -461,16 +461,16 @@ function wmsLayer (item) {
 }
 
 function openindexmapsLayer (item) {
-    layer = new L.GeoJSON.AJAX(item.openindexmaps, {
-      style: styles.indexmap,
-      onEachFeature: function (feature, layer) {
-        if (feature.properties.available === false) {
-          layer.setStyle(styles.unavailable)
-        }
+  const layer = new L.GeoJSON.AJAX(item.openindexmaps, {
+    style: styles.indexmap,
+    onEachFeature: function (feature, layer) {
+      if (feature.properties.available === false) {
+        layer.setStyle(styles.unavailable)
       }
-    })
-    layer.addTo(map).bringToFront()
-    return layer
+    }
+  })
+  layer.addTo(map).bringToFront()
+  return layer
 }
 
 function clickPrevButton () {
@@ -522,9 +522,12 @@ function clickResultsMap (e) {
 
 function clickIndexMap (e) {
   const active = $('#results li.active')
+
+  // get the clicked feature properties
   const features = leafletPip.pointInLayer(e.latlng, active.data('layer'))
   const feature = features[0].feature
   const properties = feature.properties
+
   const subsets = $('#results li.active .subsets')
   if (properties.downloadUrl !== 'no data') {
     if (subsets.children().length === 0) {
@@ -570,8 +573,6 @@ function downloadAll () {
 
 function clickVectorMap (e) {
   const active = $('#results li.active')
-  // make sure we have a wms layer
-  if (active.length < 1) return
   const item = active.data('item')
 
   // calc generous bbox for the clicked point (+/- 3 pixels)
@@ -593,7 +594,9 @@ function clickVectorMap (e) {
     bbox: [y1, x1, y2, x2].join(','),
     outputFormat: 'json'
   }
-  const url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(item.wfs + L.Util.getParamString(params))
+  // here we use a proxy to avoid CORS
+  // const url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(item.wfs + L.Util.getParamString(params))
+  const url = item.wfs + L.Util.getParamString(params)
   $.ajax({
     url: url,
     dataType: 'json',
@@ -622,6 +625,7 @@ function clickVectorMap (e) {
       // TODO move this to the openindexmap handler
       const subset = $('#results li.active .subset')
       if (subset.length > 0) {
+        console.log('wow')
         if (properties.download !== 'no data') {
           // add text before the first selected subset
           if (subset.children().length === 0) {
@@ -721,6 +725,8 @@ function showInfo (properties) {
   const table = $('<table>')
     .html('<tr class="head"><th>Attribute</th><th>Value<button class="close">X</button></th></tr>')
     .appendTo(info)
+  // show all properties
+  // custom view for new openindexmaps w/thumbnail, etc
   for (const p in properties) {
     const tr = $('<tr>').appendTo(table)
     $('<th>').text(p).appendTo(tr)
@@ -731,6 +737,9 @@ function showInfo (properties) {
         .attr('href', v)
         .attr('target', '_blank')
         .text(v)
+    }
+    if (v === false) {
+      v = 'false'
     }
     $('<td>').html(v).appendTo(tr)
   }
