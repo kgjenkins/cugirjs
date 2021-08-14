@@ -1,4 +1,4 @@
-/* global $ L leafletPip filter cugirjson */
+/* global $ L leafletPip filter cugirjson:writeable */
 
 let map
 const styles = []
@@ -15,6 +15,7 @@ $(document).ready(function () {
   $(document).on('click', '#resetButton', home)
   $(document).on('click', 'button.more', showMore)
   $(document).on('click', '#info button.close', closeInfo)
+  $(document).on('click', '#download-all', downloadAll)
   $(document).on('submit', 'form#search', submitQuery)
   $(document).on('mouseover', '#results li', mouseoverResultItem)
   $(document).on('mouseout', '#results li', mouseoutResultItem)
@@ -535,7 +536,7 @@ function clickIndexMap (e) {
       if (d) {
         d.remove()
       }
-      subsets.append('<button id="download-all" onclick="downloadAll()">Download all selected subsets</button>')
+      subsets.append('<button id="download-all">Download all selected subsets</button>')
     }
   }
   // show feature and info
