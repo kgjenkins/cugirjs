@@ -106,11 +106,10 @@ button:hover, .button:hover { background:var(--button-hover-color) ; cursor:poin
 #nav button#zoom { float:right }
 
 #results { list-style-type:none ; padding:0 ; margin:0 }
-#results li { padding:0.5em ; border-bottom:1px solid #ccc }
+#results li { padding:0 0.5em ; border-bottom:1px solid #ccc }
 #results li:hover { background:#ddf ; cursor:pointer }
-#results li.hover { background:#ddf }
 #results a.title { display:block ; font-size:120% ; font-weight:bold ; color:var(--link-color) }
-#results .brief { max-height:3.5em ; overflow:hidden }
+#results .brief { max-height:2.8em ; overflow:hidden }
 #results .details { display:none }
 
 #results li.active { background:#fff ! important ; border:0 }
