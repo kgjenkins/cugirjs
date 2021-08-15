@@ -55,15 +55,14 @@ function setupMap () {
   map.fitBounds([[40.5, -80], [45, -71.8]])
 
   // add basemap using colorFilter to enhance/balance coloration
-  L.tileLayer.colorFilter('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+  L.tileLayer.colorFilter('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
     isBasemap: true,
     maxZoom: 21,
     opacity: 1,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
     filter: [
-      'brightness:75%',
-      'contrast:200%',
-      'saturate:200%'
+      'brightness:250%',
+      'contrast:100%'
     ]
   }).addTo(map)
   map.on('click', clickMap)
