@@ -77,13 +77,13 @@ button:hover, .button:hover { background:var(--button-hover-color) ; cursor:poin
 #menu { position:absolute ; top:6px ; right:1em }
 #menu a { background:#373e4c ; color:#fff ; padding:6px 1em ; margin:0 }
 
-#left-panel { position:absolute ; left:0 ; width:59% ; top:120px }
-#summary { position:fixed ; left:0 ; top:120px ; width:59% ; height:1.6em ; background:#fff ;
+#left-panel { position:absolute ; left:0 ; width:49% ; top:120px }
+#summary { position:fixed ; left:0 ; top:120px ; width:49% ; height:1.6em ; background:#fff ;
    padding:0.3em 0.5% ; z-index:99 ; text-align:center }
 #body { position:absolute ; top:40px ; left:0 ; width:100% }
 #body a { color:var(--link-color) }
 
-#right-panel { position:fixed ; right:0 ; top:120px ; margin:0.3em 0.5% ; padding:0 ; width:39% ;
+#right-panel { position:fixed ; right:0 ; top:120px ; margin:0.3em 0.5% ; padding:0 ; width:49% ;
   height:75% ; text-align:right }
 #zoom { float:left }
 #map { height:100% ; width:100% ; border:1px solid #000 }
@@ -106,16 +106,16 @@ button:hover, .button:hover { background:var(--button-hover-color) ; cursor:poin
 #nav button#zoom { float:right }
 
 #results { list-style-type:none ; padding:0 ; margin:0 }
-#results li { padding:0 0.5em ; border-bottom:1px solid #ccc }
-#results li:hover { background:#ddf ; cursor:pointer }
+#results > li { padding:0 0.5em ; border-bottom:1px solid #ccc }
+#results > li:hover { background:#ddf ; cursor:pointer }
 #results a.title { display:block ; font-size:120% ; font-weight:bold ; color:var(--link-color) }
 #results .brief { max-height:2.8em ; overflow:hidden }
 #results .details { display:none }
 
-#results li.active { background:#fff ! important ; border:0 }
-#results li.active:hover { cursor:default }
-#results li.active .brief { display:none }
-#results li.active .details { display:block }
+#results > li.active { background:#fff ! important ; border:0 }
+#results > li.active:hover { cursor:default }
+#results > li.active .brief { display:none }
+#results > li.active .details { display:block }
 
 #results .details a { font-weight:bold }
 #results .details p { margin:0 0 0.5em }
@@ -124,18 +124,19 @@ button:hover, .button:hover { background:var(--button-hover-color) ; cursor:poin
 #results .details td { padding:3px 6px }
 #results .details button.more { margin:0 0.3em ; padding: 0 0.5em }
 #results .details span.more { display:none }
+
 #results .details .downloads a { background:var(--button-color) ; border:0 ; color:#fff ;
    border-radius:4px ; margin:0 0.5em 0 0 ; padding:3px 1em ; white-space:nowrap ; line-height:2em }
 #results .details .downloads a:hover { background:var(--button-hover-color) ; text-decoration:none }
-#results .details .downloads .subsets { }
+#results .details .downloads ul.subsets { list-style:none ; padding:0 ; margin-top:0.5em }
 #results .details .downloads button { margin-right:1em ; background:var(--link-color)}
 
 #attr { position:absolute ; right:6px ; top:120px ; max-width:30%; background:#eef ;
-   word-break:break-all ; border:1px solid #000 ; box-shadow:0 8px 16px #000 }
-#attr table { width:100% }
+   word-break:break-all ; border:1px solid #000 ; box-shadow:0 8px 16px 2px #000 }
+#attr table { width:100% ; margin-bottom:0.5em }
 #attr tr.head th { font-weight:bold ; color:#000 ; background:#ccf ; text-align:center ; overflow-wrap:normal }
 #attr button.close { padding:2px 4px ; font-size:70% ; position:absolute ; top:2px ; right:2px }
 #attr tr:nth-child(2n) { background:#fff }
 #attr th { min-width:6em ; text-align:right ; color:#444 ; padding:0 6px 1px ; font-weight:normal ;
-   border-right:1px solid #ccc }
+   border-right:1px solid #ccc ; vertical-align:top }
 #attr td { padding:0 6px ; border:0 solid #ccc }

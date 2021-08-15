@@ -3,7 +3,6 @@
 let map
 let config // this will get set by config.js
 const styles = []
-window.ignoreHash = false
 
 $(document).ready(function () {
   cugirjson = cleanData(cugirjson)
@@ -16,19 +15,15 @@ $(document).ready(function () {
   $(document).on('click', '#backToSearch', backToSearch)
   $(document).on('click', '#resetButton', home)
   $(document).on('click', 'button.more', showMore)
-  $(document).on('click', '#attr button.close', closeAttributes)
+  $(document).on('click', '#attr button.close', clearSelections)
   $(document).on('click', '#download-all', downloadAll)
   $(document).on('submit', 'form#search', submitQuery)
-  $(document).on('mouseover', '#results li', mouseoverResultItem)
-  $(document).on('mouseout', '#results li', mouseoutResultItem)
+  $(document).on('mouseover', '#results > li', mouseoverResultItem)
+  $(document).on('mouseout', '#results > li', mouseoutResultItem)
   $(document).on('keydown', listenForKeys)
   window.onhashchange = function () {
-    // if browser back/forward buttons are clicked...
-    if (window.ignoreHash) {
-      window.ignoreHash = false
-    } else {
-      interpretHash()
-    }
+    // determine if browser back/forward buttons are clicked and if so...
+    // interpretHash()
   }
   interpretHash()
 })
@@ -45,16 +40,12 @@ function interpretHash () {
 
 function listenForKeys (e) {
   if (e.key === 'Escape') {
-    closeAttributes()
-  } else if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+    clearSelections()
+  } else if (e.key === 'PageDown') {
     clickNextButton()
-  } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+  } else if (e.key === 'PageUp') {
     clickPrevButton()
   }
-}
-
-function closeAttributes () {
-  $('#attr').remove()
 }
 
 function setupMap () {
@@ -126,7 +117,6 @@ function leafletBbox (solrGeom) {
 }
 
 function go (hash, title) {
-  window.ignoreHash = true
   window.location.hash = hash
   document.title = title
 }
@@ -190,7 +180,7 @@ function clearMap () {
   map.eachLayer(function (layer) {
     if (!layer.options.isBasemap) layer.remove()
   })
-  closeAttributes()
+  $('#attr').remove()
   $('#zoom').remove()
 }
 
@@ -378,7 +368,7 @@ function renderItemBbox (item) {
 function mouseoverResultItem (e) {
   const item = $(e.currentTarget)
   if ($('#results li.active').length > 0) {
-    // ignore mouseover if any item is active (in detail view)
+    // ignore mouseover if any item is active (i.e. in detail view)
     return
   }
   const bbox = item.data('bbox')
@@ -403,8 +393,8 @@ function backToSearch () {
 }
 
 function clickResultItem (e) {
-  // ctrl-click should open the link in a new window
   if (e.ctrlKey) {
+    // ctrl-click should open the link in a new window
     e.stopPropagation()
     const item = $(e.currentTarget).data('item')
     window.open('#id=' + item.id)
@@ -416,10 +406,12 @@ function clickResultItem (e) {
     return
   }
 
-  // clear the selection
-  $('#results li.active').removeClass('active')
+  // deactivate the item and remove any download subsets
+  $('#results li.active')
+    .removeClass('active')
+    .find('.subsets, .allclear').html('')
 
-  // select the clicked item and show it
+  // activate the clicked item and show it
   const li = $(e.currentTarget).addClass('active').show()
 
   // remember current scroll position
@@ -554,53 +546,58 @@ function clickIndexMap (e) {
   // get the clicked feature properties
   const features = leafletPip.pointInLayer(e.latlng, active.data('layer'))
   const feature = features[0].feature
-  const properties = feature.properties
+  showAttributes(feature.properties)
 
   const subsets = $('#results li.active .subsets')
-  if (properties.available) {
-    if (feature.selection) {
-      // deselect this feature
-      feature.selection.remove()
-      feature.download.remove()
-      delete feature.selection
-    } else {
-      // highlight feature
-      const layer = L.geoJSON(feature, {
-        // display points as little circles
-        // pointToLayer: function (point, latlng) {
-        //   return L.circleMarker(latlng)
-        // },
-        style: styles.indexmapSelected,
-        isSelection: true
-      }).addTo(map)
-      feature.selection = layer
-
-      // add subset download button
-      feature.download = subsetDownload(properties)
-      if (properties.downloadUrl) {
-        subsets.append(feature.download)
-          .append(' ')
-      }
-    }
-
-    $('#subset-text').remove()
-    $('#clear-subsets, br').remove()
-    if (subsets.children('a').length > 0) {
-      $('<button id="clear-subsets">Clear selection</button>')
-        .prependTo(subsets)
-        .on('click', clearSubsets)
-    }
-    // add download-all button if more than one subset
-    $('#download-all').remove()
-    if (subsets.children('a').length > 1) {
-      subsets.prepend('<button id="download-all">Download all selected subsets</button>')
-    }
-  } else {
-    // unavailable
-    // window.alert('No data is available for ' + properties.label)
-    // return
+  const allclear = $('#results li.active .allclear')
+  if (!(feature.properties.available && feature.properties.downloadUrl)) {
+    return
   }
-  showAttributes(properties)
+  if (feature.selection) {
+    // deselect this feature
+    feature.selection.remove()
+    feature.download.remove()
+    delete feature.selection
+  } else {
+    // highlight feature
+    const layer = L.geoJSON(feature, {
+      // display points as little circles
+      pointToLayer: function (point, latlng) {
+        return L.circleMarker(latlng, { color: cssVar('--map-feature-highlight-color') })
+      },
+      style: styles.indexmapSelected,
+      isSelection: true
+    }).addTo(map)
+    feature.selection = layer
+
+    // keep track of the download button so we can remove it later
+    // if the feature is clicked again
+    feature.download = subsetDownload(feature.properties)
+
+    // add download button
+    subsets.append(feature.download)
+  }
+
+  allclear.html('')
+  if (subsets.children().length > 0) {
+    $('<button id="clear-subsets">Clear selection</button>')
+      .appendTo(allclear)
+      .on('click', clearSelections)
+  }
+  if (subsets.children().length > 1) {
+    allclear.append('<button id="download-all">Download all selected subsets</button>')
+  }
+}
+
+function subsetDownload (p) {
+  let name = p.label
+  if (!name) name = p.title
+  const a = $('<a>')
+    .addClass('download')
+    .attr('target', '_blank')
+    .attr('href', p.downloadUrl)
+    .text(name)
+  return $('<li>').append(a)
 }
 
 function downloadAll () {
@@ -611,13 +608,21 @@ function downloadAll () {
   })
 }
 
-function clearSubsets () {
-  $('.subsets').html('')
+function clearSelections () {
+  // remove everything from downloads section
+  $('.allclear, .subsets').html('')
+  // remove selections from map
   map.eachLayer(function (layer) {
     if (layer.options.isSelection) {
+      if (layer.feature && layer.feature.selection) {
+        layer.feature.selection.remove()
+        delete layer.feature.selection
+      }
       layer.remove()
     }
   })
+  // remove attributes too
+  $('#attr').remove()
 }
 
 function clickVectorMap (e) {
@@ -670,25 +675,23 @@ function clickVectorMap (e) {
       }
       const properties = match.properties
 
-      // if not an index map, remove any other selected features
+      // remove any other selected features
+      // since we only look at one feature's attributes at a time
       map.eachLayer(function (layer) {
         if (layer.options.isSelection) {
           layer.remove()
         }
       })
 
-      // show feature and attributes
-      const layer = L.geoJSON(match, {
-        // display points as little circles
+      // highlight feature and show attributes
+      L.geoJSON(match, {
+        // display any points as little circles
         pointToLayer: function (point, latlng) {
-          return L.circleMarker(latlng)
+          return L.circleMarker(latlng, { color: cssVar('--map-feature-highlight-color') })
         },
         style: styles.featureHighlight,
         isSelection: true
       }).addTo(map)
-      if (properties.download === 'no data') {
-        layer.setStyle(styles.unavailable)
-      }
       showAttributes(properties)
     },
     error: function (xhr, status, error) {
@@ -736,7 +739,8 @@ function clickRasterMap (e) {
       // show feature and attributes
       const layer = L.circleMarker(e.latlng, {
         style: styles.featureHighlight,
-        isSelection: true
+        isSelection: true,
+        color: cssVar('--map-feature-highlight-color')
       }).addTo(map)
       const properties = data.features[0].properties
       const value = properties.GRAY_INDEX || properties.PALETTE_INDEX
@@ -762,8 +766,11 @@ function showAttributes (properties) {
     const tr = $('<tr>').appendTo(table)
     $('<th>').text(p).appendTo(tr)
     let v = properties[p]
-    // linkify urls
-    if (typeof (v) === 'string' && (v.startsWith('http') || v.startsWith('ftp'))) {
+    if (p.match(/^thumb(nail)?Url$/)) {
+      // display thumbnails
+      v = $('<img>').attr('src', v)
+    } else if (typeof (v) === 'string' && (v.startsWith('http') || v.startsWith('ftp'))) {
+      // linkify URLs
       v = $('<a>')
         .attr('href', v)
         .attr('target', '_blank')
@@ -774,17 +781,6 @@ function showAttributes (properties) {
     }
     $('<td>').html(v).appendTo(tr)
   }
-}
-
-function subsetDownload (p) {
-  let name = p.label
-  if (!name) name = p.title
-  const a = $('<a>')
-    .addClass('download')
-    .attr('target', '_blank')
-    .attr('href', p.downloadUrl)
-    .text(name)
-  return a
 }
 
 function itemDetails (item) {
@@ -855,7 +851,8 @@ function downloadSection (item) {
     $('<p class="alert">')
       .text('This is an index map.  Please select features on the map to get the download links for the actual data.')
       .appendTo(div)
-    $('<div class="subsets">').appendTo(div)
+    $('<div class="allclear">').appendTo(div)
+    $('<ul class="subsets">').appendTo(div)
   }
 
   // addl_downloads
