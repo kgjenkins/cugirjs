@@ -1,7 +1,9 @@
 /* global $ L leafletPip filter cugirjson:writeable */
 
 let map
+let config // this will get set by config.js
 const styles = []
+window.ignoreHash = false
 
 $(document).ready(function () {
   cugirjson = cleanData(cugirjson)
@@ -20,6 +22,14 @@ $(document).ready(function () {
   $(document).on('mouseover', '#results li', mouseoverResultItem)
   $(document).on('mouseout', '#results li', mouseoutResultItem)
   $(document).on('keydown', listenForKeys)
+  window.onhashchange = function () {
+    // if browser back/forward buttons are clicked...
+    if (window.ignoreHash) {
+      window.ignoreHash = false
+    } else {
+      interpretHash()
+    }
+  }
   interpretHash()
 })
 
@@ -115,8 +125,14 @@ function leafletBbox (solrGeom) {
   ]
 }
 
+function go (hash, title) {
+  window.ignoreHash = true
+  window.location.hash = hash
+  document.title = title
+}
+
 function home () {
-  window.location.hash = ''
+  go('', 'CUGIRjs')
   $('#q').val('')
   $('#summary').html('')
   clearMap()
@@ -193,7 +209,7 @@ function escapeForHash (q) {
 function search (q, qbounds) {
   // remove superfluous quotes around single words
   q = q.replace(/"(\w+)"/g, '$1')
-  window.location.hash = escapeForHash(q)
+  go(escapeForHash(q), 'search for ' + q)
   $('#q').val(q)
   let results = filter(cugirjson, q)
   results = rankResults(results, qbounds)
@@ -414,7 +430,7 @@ function clickResultItem (e) {
   const item = li.data('item')
 
   // add cugir id to the URL hash
-  window.location.hash = 'id=' + item.id
+  go('id=' + item.id, item.title)
 
   // clear the map and hide all other results
   clearMap()
@@ -475,6 +491,10 @@ function openindexmapsLayer (item) {
         layer.setStyle(styles.unavailable)
       }
       feature.layer = layer
+      layer.bindTooltip(
+        feature.properties.label || feature.properties.title,
+        { sticky: true, direction: 'top' }
+      )
     }
   })
   layer.addTo(map).bringToFront()
@@ -577,8 +597,8 @@ function clickIndexMap (e) {
     }
   } else {
     // unavailable
-    window.alert('No data is available for ' + properties.label)
-    return
+    // window.alert('No data is available for ' + properties.label)
+    // return
   }
   showAttributes(properties)
 }
@@ -734,7 +754,7 @@ function showAttributes (properties) {
   $('#attr').remove()
   const info = $('<div id="attr">').appendTo('body')
   const table = $('<table>')
-    .html('<tr class="head"><th>Attribute</th><th>Value<button class="close">X</button></th></tr>')
+    .html('<tr class="head"><th colspan="2">Attributes<button class="close">X</button></th></tr>')
     .appendTo(info)
   // show all properties
   // custom view for new openindexmaps w/thumbnail, etc
@@ -757,13 +777,13 @@ function showAttributes (properties) {
 }
 
 function subsetDownload (p) {
-  // TODO simplify this by switching to standard openindexmaps properties
-  const label = p.label
+  let name = p.label
+  if (!name) name = p.title
   const a = $('<a>')
     .addClass('download')
     .attr('target', '_blank')
     .attr('href', p.downloadUrl)
-    .text(label)
+    .text(name)
   return a
 }
 
@@ -855,9 +875,8 @@ function downloadSection (item) {
 }
 
 function linkify (p, v) {
-  // linkify certain fields
-  // TODO move to config
-  if (p === 'collection' || p === 'category' || p === 'place') {
+  // linkify specific fields
+  if (config.linkify.indexOf(p) > -1) {
     // make sure v is an array
     if (!Array.isArray(v)) {
       v = [v]
@@ -879,11 +898,11 @@ function linkify (p, v) {
   } else if (Array.isArray(v)) {
     return v.join(', ')
   }
-  // TODO move max length to config
-  let max = 600
-  if (typeof (v) === 'string' && v.length > (max + 300)) {
+
+  let max = config.moreLength
+  if (typeof (v) === 'string' && v.length > (max * 1.3)) {
     // adjust max to chop at a space
-    max = v.indexOf(' ', max - 10)
+    max = v.indexOf(' ', max - 16)
     const more = v.substr(max)
     v = v.substr(0, max) +
       "<button class='more'>more</button>" +

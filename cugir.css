@@ -56,12 +56,13 @@ dd { margin:0 0 1em 1em }
   --map-indexmap-color: #00f;
   --map-indexmap-unavailable-color: #f00;
   --map-indexmap-selected-color: #ff0;
+  overflow-y:scroll;
 }
 
 .alert { color:#f00 ; font-weight:bold }
 
-body { padding: 0 ; margin: 0 ; font-family:'Segoe UI', 'BlinkMacSystemFont', 'Arial', sans-serif ; background:#fff ;
- color:#000 ; font-size:100% }
+body { padding: 0 ; margin: 0 ; font-family:'Segoe UI', 'BlinkMacSystemFont', 'Arial', sans-serif ;
+ background:#fff ; color:#000 ; font-size:100% }
 button, .button { color:#fff ; background:var(--button-color) ; border:0 ;
    border-radius:0.5em ; padding:3px 1em ; white-space:nowrap }
 button:hover, .button:hover { background:var(--button-hover-color) ; cursor:pointer }
@@ -85,7 +86,7 @@ button:hover, .button:hover { background:var(--button-hover-color) ; cursor:poin
 #right-panel { position:fixed ; right:0 ; top:120px ; margin:0.3em 0.5% ; padding:0 ; width:39% ;
   height:75% ; text-align:right }
 #zoom { float:left }
-#map { height:100% ; width:100% }
+#map { height:100% ; width:100% ; border:1px solid #000 }
 #map:hover { cursor:crosshair }
 
 
@@ -129,12 +130,12 @@ button:hover, .button:hover { background:var(--button-hover-color) ; cursor:poin
 #results .details .downloads .subsets { }
 #results .details .downloads button { margin-right:1em ; background:var(--link-color)}
 
-#attr { position:absolute ; left:30% ; top:160px ; width:30%; background:#fff ;
-  border:2px solid #00f ; margin-bottom:3em ; overflow-y:auto ; word-break:break-all ;
-  box-shadow:0 8px 16px #000 }
+#attr { position:absolute ; right:6px ; top:120px ; max-width:30%; background:#eef ;
+   word-break:break-all ; border:1px solid #000 ; box-shadow:0 8px 16px #000 }
 #attr table { width:100% }
-#attr tr.head th { font-weight:bold ; color:#000 ; background:#ccf ; text-align:center }
-#attr button.close { float:right ; padding:2px 4px }
-#attr button.close:hover { background:#ccc ; cursor:pointer }
-#attr th { width:5em ; text-align:right ; color:#888 ; padding:3px 6px ; font-weight:normal ; border:1px solid #888 }
-#attr td { padding:3px 6px ; border:1px solid #888 }
+#attr tr.head th { font-weight:bold ; color:#000 ; background:#ccf ; text-align:center ; overflow-wrap:normal }
+#attr button.close { padding:2px 4px ; font-size:70% ; position:absolute ; top:2px ; right:2px }
+#attr tr:nth-child(2n) { background:#fff }
+#attr th { min-width:6em ; text-align:right ; color:#444 ; padding:0 6px 1px ; font-weight:normal ;
+   border-right:1px solid #ccc }
+#attr td { padding:0 6px ; border:0 solid #ccc }
