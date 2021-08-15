@@ -5,7 +5,9 @@ config = {
     'collection',
     'category',
     'place',
-    'author'
+    'author',
+    'wms',
+    'wfs'
   ],
 
   // field display will be limited to this many characters

@@ -787,12 +787,14 @@ function itemDetails (item) {
   const table = $('<table>').appendTo(details)
   const properties = [
     'author',
+    'year',
     'description',
     'collection',
     'place',
     'category',
     'subject',
-    'year'
+    'wms',
+    'wfs'
   ]
   for (let i = 0; i < properties.length; i++) {
     const p = properties[i]
@@ -800,7 +802,10 @@ function itemDetails (item) {
     if (!v) continue
     const tr = $('<tr>').appendTo(table)
     $('<th>').text(p).appendTo(tr)
-    $('<td>').html(linkify(p, v)).appendTo(tr)
+    const td = $('<td>').html(linkify(p, v)).appendTo(tr)
+    if (p === 'wms' || p === 'wfs') {
+      td.append(' (layerid=' + item.layerid + ')')
+    }
   }
 
   // METADATA
