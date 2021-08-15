@@ -14,7 +14,7 @@ $(document).ready(function () {
   $(document).on('click', '#backToSearch', backToSearch)
   $(document).on('click', '#resetButton', home)
   $(document).on('click', 'button.more', showMore)
-  $(document).on('click', '#info button.close', closeInfo)
+  $(document).on('click', '#attr button.close', closeAttributes)
   $(document).on('click', '#download-all', downloadAll)
   $(document).on('submit', 'form#search', submitQuery)
   $(document).on('mouseover', '#results li', mouseoverResultItem)
@@ -35,7 +35,7 @@ function interpretHash () {
 
 function listenForKeys (e) {
   if (e.key === 'Escape') {
-    closeInfo()
+    closeAttributes()
   } else if (e.key === 'ArrowRight' || e.key === 'PageDown') {
     clickNextButton()
   } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
@@ -43,9 +43,8 @@ function listenForKeys (e) {
   }
 }
 
-function closeInfo () {
-  $('#info').remove()
-  $('#body').removeClass('info')
+function closeAttributes () {
+  $('#attr').remove()
 }
 
 function setupMap () {
@@ -175,7 +174,7 @@ function clearMap () {
   map.eachLayer(function (layer) {
     if (!layer.options.isBasemap) layer.remove()
   })
-  closeInfo()
+  closeAttributes()
   $('#zoom').remove()
 }
 
@@ -581,7 +580,7 @@ function clickIndexMap (e) {
     window.alert('No data is available for ' + properties.label)
     return
   }
-  // showInfo(properties)
+  showAttributes(properties)
 }
 
 function downloadAll () {
@@ -658,7 +657,7 @@ function clickVectorMap (e) {
         }
       })
 
-      // show feature and info
+      // show feature and attributes
       const layer = L.geoJSON(match, {
         // display points as little circles
         pointToLayer: function (point, latlng) {
@@ -670,7 +669,7 @@ function clickVectorMap (e) {
       if (properties.download === 'no data') {
         layer.setStyle(styles.unavailable)
       }
-      showInfo(properties)
+      showAttributes(properties)
     },
     error: function (xhr, status, error) {
       console.log(xhr)
@@ -714,7 +713,7 @@ function clickRasterMap (e) {
           layer.remove()
         }
       })
-      // show feature and info
+      // show feature and attributes
       const layer = L.circleMarker(e.latlng, {
         style: styles.featureHighlight,
         isSelection: true
@@ -731,10 +730,9 @@ function clickRasterMap (e) {
   })
 }
 
-function showInfo (properties) {
-  $('#body').addClass('info')
-  $('#info').remove()
-  const info = $('<div id="info">').appendTo('body')
+function showAttributes (properties) {
+  $('#attr').remove()
+  const info = $('<div id="attr">').appendTo('body')
   const table = $('<table>')
     .html('<tr class="head"><th>Attribute</th><th>Value<button class="close">X</button></th></tr>')
     .appendTo(info)

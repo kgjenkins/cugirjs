@@ -80,7 +80,6 @@ button:hover, .button:hover { background:var(--button-hover-color) ; cursor:poin
 #summary { position:fixed ; left:0 ; top:120px ; width:59% ; height:1.6em ; background:#fff ;
    padding:0.3em 0.5% ; z-index:99 ; text-align:center }
 #body { position:absolute ; top:40px ; left:0 ; width:100% }
-#body.info { left:0 }
 #body a { color:var(--link-color) }
 
 #right-panel { position:fixed ; right:0 ; top:120px ; margin:0.3em 0.5% ; padding:0 ; width:39% ;
@@ -130,12 +129,12 @@ button:hover, .button:hover { background:var(--button-hover-color) ; cursor:poin
 #results .details .downloads .subsets { }
 #results .details .downloads button { margin-right:1em ; background:var(--link-color)}
 
-#info { position:absolute ; left:30% ; top:160px ; width:30%; background:#fff ;
+#attr { position:absolute ; left:30% ; top:160px ; width:30%; background:#fff ;
   border:2px solid #00f ; margin-bottom:3em ; overflow-y:auto ; word-break:break-all ;
   box-shadow:0 8px 16px #000 }
-#info table { width:100% }
-#info tr.head th { font-weight:bold ; color:#000 ; background:#ccf ; text-align:center }
-#info button.close { float:right ; padding:2px 4px }
-#info button.close:hover { background:#ccc ; cursor:pointer }
-#info th { width:5em ; text-align:right ; color:#888 ; padding:3px 6px ; font-weight:normal ; border:1px solid #888 }
-#info td { padding:3px 6px ; border:1px solid #888 }
+#attr table { width:100% }
+#attr tr.head th { font-weight:bold ; color:#000 ; background:#ccf ; text-align:center }
+#attr button.close { float:right ; padding:2px 4px }
+#attr button.close:hover { background:#ccc ; cursor:pointer }
+#attr th { width:5em ; text-align:right ; color:#888 ; padding:3px 6px ; font-weight:normal ; border:1px solid #888 }
+#attr td { padding:3px 6px ; border:1px solid #888 }
