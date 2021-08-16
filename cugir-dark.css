@@ -48,14 +48,12 @@ dd { margin:0 0 1em 1em }
 
 :root {
   --text-color: #ddd;
-  --dim-color: #888;
   --background-color: #000;
-  --background-dim-color: #440;
   --link-color: #3ada51;
+  --query-color: #f80;
   --button-color: #d8de3b;
   --button-hover-color: #b8be1b;
   --nav-color: #444;
-  --query-color: #ff0;
 
   --map-bbox-color: #fff;
   --map-bbox-highlight-color: #ff0;
@@ -76,7 +74,7 @@ button, .button { color:var(--background-color) ; background:var(--button-color)
    border-radius:0.5em ; padding:3px 1em ; white-space:nowrap }
 button:hover, .button:hover { background:var(--button-hover-color) ; cursor:pointer }
 
-input { background:var(--background-dim-color) ; color:var(--text-color)}
+input { background:var(--background-color) ; color:var(--text-color) ; border-color:var(--query-color) }
 
 #head { position:fixed ; top:0 ; height:108px ; width:98% ; padding:6px 1% ;
    background:var(--background-color) ; color:var(--text-color) ; z-index:99 }
@@ -106,7 +104,7 @@ input { background:var(--background-dim-color) ; color:var(--text-color)}
 .home { font-size:125% ; text-align:center }
 #categories { column-count:3 ; column-width:10em ; list-style:none ; margin-top:1em }
 #categories a { cursor:pointer ; line-height:1.5em ; white-space:nowrap ; font-weight:bold ; margin-left:2em }
-#categories .count { color:var(--dim-color) ; font-size:85% }
+#categories .count { opacity:0.7 ; font-size:85% }
 
 #nav { padding:0.3em ; background:var(--nav-color) }
 #nav .q { color:var(--query-color) ; font-weight:bold }
@@ -132,7 +130,7 @@ input { background:var(--background-dim-color) ; color:var(--text-color)}
 #results .details a { font-weight:bold }
 #results .details p { margin:0 0 0.5em }
 #results .details table { margin:0.5em 0 }
-#results .details th { width:6em ; text-align:right ; color:var(--dim-color) ; padding:3px 6px ; font-weight:normal }
+#results .details th { width:6em ; text-align:right ; opacity:0.7 ; padding:3px 6px ; font-weight:normal }
 #results .details td { padding:3px 6px }
 #results .details button.more { margin:0 0.3em ; padding: 0 0.5em }
 #results .details span.more { display:none }
@@ -146,9 +144,9 @@ input { background:var(--background-dim-color) ; color:var(--text-color)}
 #attr { position:absolute ; right:6px ; top:120px ; max-width:30%; background:var(--background-color) ;
    word-break:break-all ; border:1px solid var(--text-color) ; xbox-shadow:0 8px 16px 2px var(--text-color) }
 #attr table { width:100% ; margin-bottom:0.5em ; color:var(--text-color) }
-#attr tr.head th { font-weight:bold ; color:var(--background-color) ; background:var(--dim-color);
+#attr tr.head th { font-weight:bold ; color:var(--background-color) ; background:var(--text-color) ;
    text-align:center ; overflow-wrap:normal }
-#attr button.close { padding:2px 4px ; font-size:70% ; position:absolute ; top:2px ; right:2px }
+#attr button.close { padding:2px 4px ; font-size:70% ; position:absolute ; top:2px ; right:2px ; background:var(--text-color) }
 #attr tr:nth-child(2n) { background:var(--nav-color) }
 #attr th { min-width:6em ; text-align:right ; color:var(--text-color) ; padding:0 6px 1px ; font-weight:normal ;
    border-right:1px solid #ccc ; vertical-align:top }
