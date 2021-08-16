@@ -95,7 +95,8 @@ function cleanData (cugirjson) {
       openindexmaps: item.dct_references_s['https://openindexmaps.org'] || '',
       download: item.dct_references_s['http://schema.org/downloadUrl'] || '',
       addl_downloads: JSON.parse(item.cugir_addl_downloads_s || '[]'),
-      bbox: leafletBbox(item.solr_geom)
+      bbox: leafletBbox(item.solr_geom || item.locn_geometry),
+      institution: item.dct_provenance_s || ''
     }
     data.push(item2)
   }
@@ -466,14 +467,17 @@ function clickResultItem (e) {
 
 function wmsLayer (item) {
   const url = item.wms
-  const layer = L.tileLayer.wms(url, {
+  const options = {
     layers: item.layerid,
     format: 'image/png',
     transparent: true,
     tiled: true,
-    maxZoom: 21, // default 18 is not enough
-    styles: 'darkmode-' + item.geom_type
-  })
+    maxZoom: 21 // default 18 is not enough
+  }
+  if (url.match(/cugir/) && item.geom_type.match(/point|line|polygon/i)) {
+    options.styles = 'darkmode-' + item.geom_type
+  }
+  const layer = L.tileLayer.wms(url, options)
   layer.addTo(map).bringToFront()
   return layer
 }
@@ -643,16 +647,34 @@ function clickVectorMap (e) {
   const y2 = e.latlng.lat + pixelsize * 3
 
   // https://cugir.library.cornell.edu/geoserver/cugirwfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cugir008186&srsName=EPSG:4326&bbox=42.1634,-76.5687,42.1634,-76.5687&outputFormat=json
-  const params = {
+  let params = {
     service: 'WFS',
     version: '2.0.0',
     request: 'GetFeature',
-    typeNames: 'cugir:' + item.layerid,
+    typeNames: item.layerid,
     srs: 'EPSG:4326',
     bbox: [y1, x1, y2, x2].join(','),
     outputFormat: 'json'
   }
-  const url = item.wfs + L.Util.getParamString(params)
+  let url = item.wfs + L.Util.getParamString(params)
+
+  xparams = {
+    service: 'WMS',
+    version: '1.1.1',
+    request: 'GetFeatureInfo',
+    layers: item.layerid,
+    query_layers: item.layerid,
+    srs: 'EPSG:4326',
+    bbox: [x1, y1, x2, y2].join(','),
+    x: 3,
+    y: 3,
+    width: 7,
+    height: 7,
+    info_format: 'application/json'
+  }
+  xurl = item.wms + L.Util.getParamString(params)
+  console.log(url)
+
   // use a proxy to avoid CORS problem
   // const url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(item.wfs + L.Util.getParamString(params))
   $.ajax({
@@ -795,6 +817,7 @@ function showAttributes (properties) {
 function itemDetails (item) {
   const details = $('<div class="details">')
   const table = $('<table>').appendTo(details)
+  // TODO after this list, include any other fields found in the item
   const properties = [
     'author',
     'year',
@@ -804,7 +827,8 @@ function itemDetails (item) {
     'category',
     'subject',
     'wms',
-    'wfs'
+    'wfs',
+    'institution'
   ]
   for (let i = 0; i < properties.length; i++) {
     const p = properties[i]
