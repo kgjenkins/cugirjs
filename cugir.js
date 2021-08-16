@@ -468,7 +468,8 @@ function wmsLayer (item) {
     format: 'image/png',
     transparent: true,
     tiled: true,
-    maxZoom: 21 // default 18 is not enough
+    maxZoom: 21, // default 18 is not enough
+    styles: 'darkmode-' + item.geom_type
   })
   layer.addTo(map).bringToFront()
   return layer
@@ -765,11 +766,13 @@ function showAttributes (properties) {
     const tr = $('<tr>').appendTo(table)
     $('<th>').text(p).appendTo(tr)
     let v = properties[p]
+    let link = false
     if (p.match(/^thumb(nail)?Url$/)) {
       // display thumbnails
       v = $('<img>').attr('src', v)
     } else if (typeof (v) === 'string' && (v.startsWith('http') || v.startsWith('ftp'))) {
       // linkify URLs
+      link = true
       v = $('<a>')
         .attr('href', v)
         .attr('target', '_blank')
@@ -778,7 +781,10 @@ function showAttributes (properties) {
     if (v === false) {
       v = 'false'
     }
-    $('<td>').html(v).appendTo(tr)
+    const td = $('<td>').html(v).appendTo(tr)
+    if (link) {
+      td.addClass('url')
+    }
   }
 }
 

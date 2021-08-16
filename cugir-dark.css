@@ -66,7 +66,7 @@ dd { margin:0 0 1em 1em }
 
 .alert { color:var(--map-indexmap-unavailable-color) ; font-weight:bold }
 
-a { color:var(--link-color) }
+a, a:visited { color:var(--link-color) }
 
 body { padding: 0 ; margin: 0 ; font-family:'Segoe UI', 'BlinkMacSystemFont', 'Arial', sans-serif ;
  background:var(--background-color) ; color:var(--text-color) ; font-size:100% }
@@ -91,14 +91,14 @@ input { background:var(--background-color) ; color:var(--text-color) ; border-co
 #summary { position:fixed ; left:0 ; top:120px ; width:49% ; height:1.6em ; background:var(--background-color) ;
    padding:0.3em 0.5% ; z-index:99 ; text-align:center }
 #body { position:absolute ; top:40px ; left:0 ; width:100% }
-#body a { color:var(--link-color) }
 
 #right-panel { position:fixed ; right:0 ; top:120px ; margin:0.3em 0.5% ; padding:0 ; width:49% ;
   height:75% ; text-align:right }
 #zoom { float:left }
+
 #map { height:100% ; width:100% ; xborder:1px solid var(--text-color) ; background:var(--background-color) }
 #map:hover { cursor:crosshair }
-
+.leaflet-bar a { color:#000 } /* not sure why this is needed, but it is */
 
 
 .home { font-size:125% ; text-align:center }
@@ -142,7 +142,7 @@ input { background:var(--background-color) ; color:var(--text-color) ; border-co
 #results .details .downloads button { margin-right:1em ; background:var(--link-color)}
 
 #attr { position:absolute ; right:6px ; top:120px ; max-width:30%; background:var(--background-color) ;
-   word-break:break-all ; border:1px solid var(--text-color) ; xbox-shadow:0 8px 16px 2px var(--text-color) }
+   border:1px solid var(--text-color) ; xbox-shadow:0 8px 16px 2px var(--text-color) }
 #attr table { width:100% ; margin-bottom:0.5em ; color:var(--text-color) }
 #attr tr.head th { font-weight:bold ; color:var(--background-color) ; background:var(--text-color) ;
    text-align:center ; overflow-wrap:normal }
@@ -151,3 +151,4 @@ input { background:var(--background-color) ; color:var(--text-color) ; border-co
 #attr th { min-width:6em ; text-align:right ; color:var(--text-color) ; padding:0 6px 1px ; font-weight:normal ;
    border-right:1px solid #ccc ; vertical-align:top }
 #attr td { padding:0 6px ; border:0 solid #ccc }
+#attr td.url { word-break: break-all }
