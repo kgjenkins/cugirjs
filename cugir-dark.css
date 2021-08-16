@@ -56,7 +56,7 @@ dd { margin:0 0 1em 1em }
   --button-hover-color: #b8be1b;
   --nav-color: #444;
 
-  --map-bbox-color: #fff;
+  --map-bbox-color: #ff0;
   --map-bbox-highlight-color: #ff0;
   --map-feature-highlight-color: #ff0;
   --map-indexmap-color: #fff;
