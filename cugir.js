@@ -139,7 +139,9 @@ function home () {
       '<h1>Welcome to CUGIR!</h1>' +
       '<p>Explore and discover New York State geospatial data:</p>' +
       '<ul id="categories"></ul>' +
-      '<p style="margin:4em ; color:#fff ; background:#f00 ; padding:1em">This is an EXPERIMENTAL javascript interface to <a href="https://cugir.library.cornell.edu/" style="color:#fc0 ; font-weight:bold ; text-decoration:underline">CUGIR</a>.</p>' +
+      '<p style="margin:4em ; color:#fff ; border:2px solid #f00 ; padding:1em">' +
+      'This is an EXPERIMENTAL javascript interface to <a href="https://cugir.library.cornell.edu/">CUGIR</a>.' +
+      '</p>' +
     '</div>'
   )
   // list all categories (and the number of datasets for each)
@@ -317,7 +319,7 @@ function setupStyles () {
     opacity: 1,
     weight: 4,
     fillColor: cssVar('--map-feature-highlight-color'),
-    fillOpacity: 0.2
+    fillOpacity: 0.4
   }
   styles.indexmap = {
     color: cssVar('--map-indexmap-color'),
@@ -463,7 +465,8 @@ function clickResultItem (e) {
 }
 
 function wmsLayer (item) {
-  const layer = L.tileLayer.wms(item.wms, {
+  const url = item.wms
+  const layer = L.tileLayer.wms(url, {
     layers: item.layerid,
     format: 'image/png',
     transparent: true,
@@ -476,7 +479,8 @@ function wmsLayer (item) {
 }
 
 function openindexmapsLayer (item) {
-  const layer = new L.GeoJSON.AJAX(item.openindexmaps, {
+  const url = item.openindexmaps
+  const layer = new L.GeoJSON.AJAX(url, {
     style: styles.indexmap,
     onEachFeature: function (feature, layer) {
       if (feature.properties.available === false) {
@@ -648,9 +652,9 @@ function clickVectorMap (e) {
     bbox: [y1, x1, y2, x2].join(','),
     outputFormat: 'json'
   }
-  // const url = item.wfs + L.Util.getParamString(params)
+  const url = item.wfs + L.Util.getParamString(params)
   // use a proxy to avoid CORS problem
-  const url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(item.wfs + L.Util.getParamString(params))
+  // const url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(item.wfs + L.Util.getParamString(params))
   $.ajax({
     url: url,
     dataType: 'json',
@@ -725,7 +729,7 @@ function clickRasterMap (e) {
     y: parseInt(e.containerPoint.y)
   }
   let url = item.wms + L.Util.getParamString(params)
-  url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(url)
+  // url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(url)
   $.ajax({
     url: url,
     dataType: 'json',
