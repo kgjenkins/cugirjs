@@ -645,9 +645,7 @@ function clickVectorMap (e) {
   const x2 = e.latlng.lng + pixelsize * 3
   const y1 = e.latlng.lat - pixelsize * 3
   const y2 = e.latlng.lat + pixelsize * 3
-
-  // https://cugir.library.cornell.edu/geoserver/cugirwfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cugir008186&srsName=EPSG:4326&bbox=42.1634,-76.5687,42.1634,-76.5687&outputFormat=json
-  let params = {
+  const params = {
     service: 'WFS',
     version: '2.0.0',
     request: 'GetFeature',
@@ -656,9 +654,10 @@ function clickVectorMap (e) {
     bbox: [y1, x1, y2, x2].join(','),
     outputFormat: 'json'
   }
-  let url = item.wfs + L.Util.getParamString(params)
+  const url = item.wfs + L.Util.getParamString(params)
 
-  xparams = {
+  /* TODO try WMS if WFS fails
+  params = {
     service: 'WMS',
     version: '1.1.1',
     request: 'GetFeatureInfo',
@@ -672,11 +671,9 @@ function clickVectorMap (e) {
     height: 7,
     info_format: 'application/json'
   }
-  xurl = item.wms + L.Util.getParamString(params)
-  console.log(url)
+  url = item.wms + L.Util.getParamString(params)
+  */
 
-  // use a proxy to avoid CORS problem
-  // const url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(item.wfs + L.Util.getParamString(params))
   $.ajax({
     url: url,
     dataType: 'json',
