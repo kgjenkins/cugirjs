@@ -1,13 +1,11 @@
 /* global $ L leafletPip filter cugirjson:writeable */
 
 let map
-let config // this will get set by config.js
-const styles = []
+let config
 
 $(document).ready(function () {
   cugirjson = cleanData(cugirjson)
   setupMap()
-  setupStyles()
   $(document).on('click', 'img#logo', home)
   $(document).on('click', '#results li', clickResultItem)
   $(document).on('click', 'button.prev', clickPrevButton)
@@ -55,16 +53,30 @@ function setupMap () {
   map.fitBounds([[40.5, -80], [45, -71.8]])
 
   // add basemap using colorFilter to enhance/balance coloration
-  L.tileLayer.colorFilter('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
-    isBasemap: true,
-    maxZoom: 21,
-    opacity: 1,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
-    filter: [
-      'brightness:250%',
-      'contrast:100%'
-    ]
-  }).addTo(map)
+  if (cssVar('--dark')) {
+    L.tileLayer.colorFilter(config.basemap_dark, {
+      isBasemap: true,
+      maxZoom: 21,
+      opacity: 1,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
+      filter: [
+        'brightness:250%',
+        'contrast:100%'
+      ]
+    }).addTo(map)
+  } else {
+    L.tileLayer.colorFilter(config.basemap, {
+      isBasemap: true,
+      maxZoom: 21,
+      opacity: 1,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
+      filter: [
+        'brightness:75%',
+        'contrast:200%',
+        'saturate:200%'
+      ]
+    }).addTo(map)
+  }
   map.on('click', clickMap)
 }
 
@@ -140,7 +152,7 @@ function home () {
       '<h1>Welcome to CUGIR!</h1>' +
       '<p>Explore and discover New York State geospatial data:</p>' +
       '<ul id="categories"></ul>' +
-      '<p style="margin:4em ; color:#fff ; border:2px solid #f00 ; padding:1em">' +
+      '<p class="alert">' +
       'This is an EXPERIMENTAL javascript interface to <a href="https://cugir.library.cornell.edu/">CUGIR</a>.' +
       '</p>' +
     '</div>'
@@ -299,52 +311,6 @@ function cssVar (name) {
   return body.getPropertyValue(name)
 }
 
-function setupStyles () {
-  styles.bbox = {
-    color: cssVar('--map-bbox-color'),
-    opacity: 0.3,
-    weight: 1,
-    fillColor: '#fff',
-    fillOpacity: 0,
-    isBbox: true
-  }
-  styles.bboxHighlight = {
-    color: cssVar('--map-bbox-highlight-color'),
-    opacity: 1,
-    weight: 4,
-    fillColor: cssVar('--map-bbox-highlight-color'),
-    fillOpacity: 0.2
-  }
-  styles.featureHighlight = {
-    color: cssVar('--map-feature-highlight-color'),
-    opacity: 1,
-    weight: 4,
-    fillColor: cssVar('--map-feature-highlight-color'),
-    fillOpacity: 0.4
-  }
-  styles.indexmap = {
-    color: cssVar('--map-indexmap-color'),
-    opacity: 1,
-    weight: 0.5,
-    fillColor: cssVar('--map-indexmap-color'),
-    fillOpacity: 0.3
-  }
-  styles.unavailable = {
-    color: cssVar('--map-indexmap-unavailable-color'),
-    opacity: 1,
-    weight: 0.5,
-    fillColor: cssVar('--map-indexmap-unavailable-color'),
-    fillOpacity: 0.3
-  }
-  styles.indexmapSelected = {
-    color: cssVar('--map-indexmap-selected-color'),
-    opacity: 1,
-    weight: 2,
-    fillColor: cssVar('--map-indexmap-selected-color'),
-    fillOpacity: 0.3
-  }
-}
-
 function renderResult (item) {
   const li = $('<li>').data('item', item)
   // $('<div>').text(item._spatialscore).appendTo(li);
@@ -363,7 +329,7 @@ function renderResult (item) {
 
 function renderItemBbox (item) {
   // add bbox to map
-  const layer = L.rectangle(item.bbox, styles.bbox).addTo(map)
+  const layer = L.rectangle(item.bbox, config.mapStyles.bbox).addTo(map)
   return layer
 }
 
@@ -375,14 +341,14 @@ function mouseoverResultItem (e) {
   }
   const bbox = item.data('bbox')
   if (bbox) {
-    bbox.setStyle(styles.bboxHighlight).bringToFront()
+    bbox.setStyle(config.mapStyles.bboxHighlight).bringToFront()
   }
 }
 
 function mouseoutResultItem (e) {
   const item = $(e.currentTarget)
   const bbox = item.data('bbox')
-  bbox.setStyle(styles.bbox)
+  bbox.setStyle(config.mapStyles.bbox)
 }
 
 function backToSearch () {
@@ -461,7 +427,7 @@ function clickResultItem (e) {
     li.data('layer', openindexmapsLayer(item))
   } else {
     const bboxlayer = renderItemBbox(item)
-    bboxlayer.setStyle(styles.unavailable)
+    bboxlayer.setStyle(config.mapStyles.unavailable)
   }
 }
 
@@ -474,7 +440,7 @@ function wmsLayer (item) {
     tiled: true,
     maxZoom: 21 // default 18 is not enough
   }
-  if (url.match(/cugir/) && item.geom_type.match(/point|line|polygon/i)) {
+  if (cssVar('--dark') && url.match(/cugir/) && item.geom_type.match(/point|line|polygon/i)) {
     options.styles = 'darkmode-' + item.geom_type
   }
   const layer = L.tileLayer.wms(url, options)
@@ -485,10 +451,10 @@ function wmsLayer (item) {
 function openindexmapsLayer (item) {
   const url = item.openindexmaps
   const layer = new L.GeoJSON.AJAX(url, {
-    style: styles.indexmap,
+    style: config.mapStyles.indexmap,
     onEachFeature: function (feature, layer) {
       if (feature.properties.available === false) {
-        layer.setStyle(styles.unavailable)
+        layer.setStyle(config.mapStyles.unavailable)
       }
       feature.layer = layer
       layer.bindTooltip(
@@ -537,7 +503,7 @@ function clickResultsMap (e) {
   // forget about any previously-clicked item
   const olditem = $('#results li.hover').removeClass('hover')
   if (olditem.length > 0) {
-    olditem.data('bbox').setStyle(styles.bbox)
+    olditem.data('bbox').setStyle(config.mapStyles.bbox)
   }
 
   // highlight the clicked bbox and corresponding item
@@ -573,7 +539,7 @@ function clickIndexMap (e) {
       pointToLayer: function (point, latlng) {
         return L.circleMarker(latlng, { color: cssVar('--map-feature-highlight-color') })
       },
-      style: styles.indexmapSelected,
+      style: config.mapStyles.indexmapSelected,
       isSelection: true
     }).addTo(map)
     feature.selection = layer
@@ -712,7 +678,7 @@ function clickVectorMap (e) {
         pointToLayer: function (point, latlng) {
           return L.circleMarker(latlng, { color: cssVar('--map-feature-highlight-color') })
         },
-        style: styles.featureHighlight,
+        style: config.mapStyles.featureHighlight,
         isSelection: true
       }).addTo(map)
       showAttributes(properties)
@@ -761,7 +727,7 @@ function clickRasterMap (e) {
       })
       // show feature and attributes
       const layer = L.circleMarker(e.latlng, {
-        style: styles.featureHighlight,
+        style: config.mapStyles.featureHighlight,
         isSelection: true,
         color: cssVar('--map-feature-highlight-color')
       }).addTo(map)
