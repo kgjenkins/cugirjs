@@ -520,6 +520,10 @@ function clickIndexMap (e) {
 
   // get the clicked feature properties
   const features = leafletPip.pointInLayer(e.latlng, active.data('layer'))
+  if (features.length === 0) {
+    // no features found at the clicked point
+    return false
+  }
   const feature = features[0].feature
   showAttributes(feature.properties)
 
