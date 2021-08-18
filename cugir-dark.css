@@ -1,0 +1,20 @@
+/* dark mode */
+
+:root {
+  --dark: true;
+  --text-color: #ddd;
+  --background-color: #000;
+  --background-dim-color: #440;
+  --link-color: #3ada51;
+  --query-color: #f80;
+  --button-color: #d8de3b;
+  --button-hover-color: #b8be1b;
+  --nav-color: #444;
+
+  --map-bbox-color: #ff0;
+  --map-bbox-highlight-color: #ff0;
+  --map-feature-highlight-color: #ff0;
+  --map-indexmap-color: #fff;
+  --map-indexmap-unavailable-color: #f88;
+  --map-indexmap-selected-color: #ff0;
+}

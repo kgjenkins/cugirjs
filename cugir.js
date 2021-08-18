@@ -1,13 +1,12 @@
-/* global $ L leafletPip filter cugirjson:writeable */
+/* global $ L leafletPip filter cugirjson:writeable setupConfig */
 
 let map
-let config // this will get set by config.js
-const styles = []
+let config
 
 $(document).ready(function () {
   cugirjson = cleanData(cugirjson)
+  config = setupConfig()
   setupMap()
-  setupStyles()
   $(document).on('click', 'img#logo', home)
   $(document).on('click', '#results li', clickResultItem)
   $(document).on('click', 'button.prev', clickPrevButton)
@@ -55,17 +54,30 @@ function setupMap () {
   map.fitBounds([[40.5, -80], [45, -71.8]])
 
   // add basemap using colorFilter to enhance/balance coloration
-  L.tileLayer.colorFilter('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-    isBasemap: true,
-    maxZoom: 21,
-    opacity: 1,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
-    filter: [
-      'brightness:75%',
-      'contrast:200%',
-      'saturate:200%'
-    ]
-  }).addTo(map)
+  if (cssVar('--dark')) {
+    L.tileLayer.colorFilter(config.basemap_dark, {
+      isBasemap: true,
+      maxZoom: 21,
+      opacity: 1,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
+      filter: [
+        'brightness:250%',
+        'contrast:100%'
+      ]
+    }).addTo(map)
+  } else {
+    L.tileLayer.colorFilter(config.basemap, {
+      isBasemap: true,
+      maxZoom: 21,
+      opacity: 1,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
+      filter: [
+        'brightness:75%',
+        'contrast:200%',
+        'saturate:200%'
+      ]
+    }).addTo(map)
+  }
   map.on('click', clickMap)
 }
 
@@ -96,7 +108,8 @@ function cleanData (cugirjson) {
       openindexmaps: item.dct_references_s['https://openindexmaps.org'] || '',
       download: item.dct_references_s['http://schema.org/downloadUrl'] || '',
       addl_downloads: JSON.parse(item.cugir_addl_downloads_s || '[]'),
-      bbox: leafletBbox(item.solr_geom)
+      bbox: leafletBbox(item.solr_geom || item.locn_geometry),
+      institution: item.dct_provenance_s || ''
     }
     data.push(item2)
   }
@@ -140,7 +153,9 @@ function home () {
       '<h1>Welcome to CUGIR!</h1>' +
       '<p>Explore and discover New York State geospatial data:</p>' +
       '<ul id="categories"></ul>' +
-      '<p style="margin:4em ; color:#fff ; background:#f00 ; padding:1em">This is an EXPERIMENTAL javascript interface to <a href="https://cugir.library.cornell.edu/" style="color:#fc0 ; font-weight:bold ; text-decoration:underline">CUGIR</a>.</p>' +
+      '<p class="alert">' +
+      'This is an EXPERIMENTAL javascript interface to <a href="https://cugir.library.cornell.edu/">CUGIR</a>.' +
+      '</p>' +
     '</div>'
   )
   // list all categories (and the number of datasets for each)
@@ -297,52 +312,6 @@ function cssVar (name) {
   return body.getPropertyValue(name)
 }
 
-function setupStyles () {
-  styles.bbox = {
-    color: cssVar('--map-bbox-color'),
-    opacity: 0.3,
-    weight: 1,
-    fillColor: '#fff',
-    fillOpacity: 0,
-    isBbox: true
-  }
-  styles.bboxHighlight = {
-    color: cssVar('--map-bbox-highlight-color'),
-    opacity: 1,
-    weight: 4,
-    fillColor: cssVar('--map-bbox-highlight-color'),
-    fillOpacity: 0.2
-  }
-  styles.featureHighlight = {
-    color: cssVar('--map-feature-highlight-color'),
-    opacity: 1,
-    weight: 4,
-    fillColor: cssVar('--map-feature-highlight-color'),
-    fillOpacity: 0.2
-  }
-  styles.indexmap = {
-    color: cssVar('--map-indexmap-color'),
-    opacity: 1,
-    weight: 0.5,
-    fillColor: cssVar('--map-indexmap-color'),
-    fillOpacity: 0.3
-  }
-  styles.unavailable = {
-    color: cssVar('--map-indexmap-unavailable-color'),
-    opacity: 1,
-    weight: 0.5,
-    fillColor: cssVar('--map-indexmap-unavailable-color'),
-    fillOpacity: 0.3
-  }
-  styles.indexmapSelected = {
-    color: cssVar('--map-indexmap-selected-color'),
-    opacity: 1,
-    weight: 2,
-    fillColor: cssVar('--map-indexmap-selected-color'),
-    fillOpacity: 0.3
-  }
-}
-
 function renderResult (item) {
   const li = $('<li>').data('item', item)
   // $('<div>').text(item._spatialscore).appendTo(li);
@@ -361,7 +330,7 @@ function renderResult (item) {
 
 function renderItemBbox (item) {
   // add bbox to map
-  const layer = L.rectangle(item.bbox, styles.bbox).addTo(map)
+  const layer = L.rectangle(item.bbox, config.mapStyles.bbox).addTo(map)
   return layer
 }
 
@@ -373,14 +342,14 @@ function mouseoverResultItem (e) {
   }
   const bbox = item.data('bbox')
   if (bbox) {
-    bbox.setStyle(styles.bboxHighlight).bringToFront()
+    bbox.setStyle(config.mapStyles.bboxHighlight).bringToFront()
   }
 }
 
 function mouseoutResultItem (e) {
   const item = $(e.currentTarget)
   const bbox = item.data('bbox')
-  bbox.setStyle(styles.bbox)
+  bbox.setStyle(config.mapStyles.bbox)
 }
 
 function backToSearch () {
@@ -459,28 +428,34 @@ function clickResultItem (e) {
     li.data('layer', openindexmapsLayer(item))
   } else {
     const bboxlayer = renderItemBbox(item)
-    bboxlayer.setStyle(styles.unavailable)
+    bboxlayer.setStyle(config.mapStyles.unavailable)
   }
 }
 
 function wmsLayer (item) {
-  const layer = L.tileLayer.wms(item.wms, {
+  const url = item.wms
+  const options = {
     layers: item.layerid,
     format: 'image/png',
     transparent: true,
     tiled: true,
     maxZoom: 21 // default 18 is not enough
-  })
+  }
+  if (cssVar('--dark') && url.match(/cugir/) && item.geom_type.match(/point|line|polygon/i)) {
+    options.styles = 'darkmode-' + item.geom_type
+  }
+  const layer = L.tileLayer.wms(url, options)
   layer.addTo(map).bringToFront()
   return layer
 }
 
 function openindexmapsLayer (item) {
-  const layer = new L.GeoJSON.AJAX(item.openindexmaps, {
-    style: styles.indexmap,
+  const url = item.openindexmaps
+  const layer = new L.GeoJSON.AJAX(url, {
+    style: config.mapStyles.indexmap,
     onEachFeature: function (feature, layer) {
       if (feature.properties.available === false) {
-        layer.setStyle(styles.unavailable)
+        layer.setStyle(config.mapStyles.unavailable)
       }
       feature.layer = layer
       layer.bindTooltip(
@@ -529,7 +504,7 @@ function clickResultsMap (e) {
   // forget about any previously-clicked item
   const olditem = $('#results li.hover').removeClass('hover')
   if (olditem.length > 0) {
-    olditem.data('bbox').setStyle(styles.bbox)
+    olditem.data('bbox').setStyle(config.mapStyles.bbox)
   }
 
   // highlight the clicked bbox and corresponding item
@@ -565,7 +540,7 @@ function clickIndexMap (e) {
       pointToLayer: function (point, latlng) {
         return L.circleMarker(latlng, { color: cssVar('--map-feature-highlight-color') })
       },
-      style: styles.indexmapSelected,
+      style: config.mapStyles.indexmapSelected,
       isSelection: true
     }).addTo(map)
     feature.selection = layer
@@ -637,20 +612,35 @@ function clickVectorMap (e) {
   const x2 = e.latlng.lng + pixelsize * 3
   const y1 = e.latlng.lat - pixelsize * 3
   const y2 = e.latlng.lat + pixelsize * 3
-
-  // https://cugir.library.cornell.edu/geoserver/cugirwfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cugir008186&srsName=EPSG:4326&bbox=42.1634,-76.5687,42.1634,-76.5687&outputFormat=json
   const params = {
     service: 'WFS',
     version: '2.0.0',
     request: 'GetFeature',
-    typeNames: 'cugir:' + item.layerid,
+    typeNames: item.layerid,
     srs: 'EPSG:4326',
     bbox: [y1, x1, y2, x2].join(','),
     outputFormat: 'json'
   }
-  // const url = item.wfs + L.Util.getParamString(params)
-  // use a proxy to avoid CORS problem
-  const url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(item.wfs + L.Util.getParamString(params))
+  const url = item.wfs + L.Util.getParamString(params)
+
+  /* TODO try WMS if WFS fails
+  params = {
+    service: 'WMS',
+    version: '1.1.1',
+    request: 'GetFeatureInfo',
+    layers: item.layerid,
+    query_layers: item.layerid,
+    srs: 'EPSG:4326',
+    bbox: [x1, y1, x2, y2].join(','),
+    x: 3,
+    y: 3,
+    width: 7,
+    height: 7,
+    info_format: 'application/json'
+  }
+  url = item.wms + L.Util.getParamString(params)
+  */
+
   $.ajax({
     url: url,
     dataType: 'json',
@@ -689,7 +679,7 @@ function clickVectorMap (e) {
         pointToLayer: function (point, latlng) {
           return L.circleMarker(latlng, { color: cssVar('--map-feature-highlight-color') })
         },
-        style: styles.featureHighlight,
+        style: config.mapStyles.featureHighlight,
         isSelection: true
       }).addTo(map)
       showAttributes(properties)
@@ -725,7 +715,7 @@ function clickRasterMap (e) {
     y: parseInt(e.containerPoint.y)
   }
   let url = item.wms + L.Util.getParamString(params)
-  url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(url)
+  // url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(url)
   $.ajax({
     url: url,
     dataType: 'json',
@@ -738,7 +728,7 @@ function clickRasterMap (e) {
       })
       // show feature and attributes
       const layer = L.circleMarker(e.latlng, {
-        style: styles.featureHighlight,
+        style: config.mapStyles.featureHighlight,
         isSelection: true,
         color: cssVar('--map-feature-highlight-color')
       }).addTo(map)
@@ -766,11 +756,13 @@ function showAttributes (properties) {
     const tr = $('<tr>').appendTo(table)
     $('<th>').text(p).appendTo(tr)
     let v = properties[p]
+    let link = false
     if (p.match(/^thumb(nail)?Url$/)) {
       // display thumbnails
       v = $('<img>').attr('src', v)
     } else if (typeof (v) === 'string' && (v.startsWith('http') || v.startsWith('ftp'))) {
       // linkify URLs
+      link = true
       v = $('<a>')
         .attr('href', v)
         .attr('target', '_blank')
@@ -779,21 +771,28 @@ function showAttributes (properties) {
     if (v === false) {
       v = 'false'
     }
-    $('<td>').html(v).appendTo(tr)
+    const td = $('<td>').html(v).appendTo(tr)
+    if (link) {
+      td.addClass('url')
+    }
   }
 }
 
 function itemDetails (item) {
   const details = $('<div class="details">')
   const table = $('<table>').appendTo(details)
+  // TODO after this list, include any other fields found in the item
   const properties = [
     'author',
+    'year',
     'description',
     'collection',
     'place',
     'category',
     'subject',
-    'year'
+    'wms',
+    'wfs',
+    'institution'
   ]
   for (let i = 0; i < properties.length; i++) {
     const p = properties[i]
@@ -801,7 +800,10 @@ function itemDetails (item) {
     if (!v) continue
     const tr = $('<tr>').appendTo(table)
     $('<th>').text(p).appendTo(tr)
-    $('<td>').html(linkify(p, v)).appendTo(tr)
+    const td = $('<td>').html(linkify(p, v)).appendTo(tr)
+    if (p === 'wms' || p === 'wfs') {
+      td.append(' (layerid=' + item.layerid + ')')
+    }
   }
 
   // METADATA
