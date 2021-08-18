@@ -1,10 +1,11 @@
-/* global $ L leafletPip filter cugirjson:writeable */
+/* global $ L leafletPip filter cugirjson:writeable setupConfig */
 
 let map
 let config
 
 $(document).ready(function () {
   cugirjson = cleanData(cugirjson)
+  config = setupConfig()
   setupMap()
   $(document).on('click', 'img#logo', home)
   $(document).on('click', '#results li', clickResultItem)
