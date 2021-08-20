@@ -44,6 +44,8 @@ function listenForKeys (e) {
     clickNextButton()
   } else if (e.key === 'PageUp') {
     clickPrevButton()
+  } else if (e.key === 'Enter') {
+    $('#results li.hover').click()
   }
 }
 
