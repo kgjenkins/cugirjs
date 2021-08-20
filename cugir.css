@@ -120,6 +120,7 @@ input { background:var(--background-color) ; color:var(--text-color) ; border-co
 #results { list-style-type:none ; padding:0 ; margin:0 }
 #results > li { padding:2px 0.5em ; xborder-bottom:1px solid #ccc }
 #results > li:hover { background:var(--background-dim-color) ; cursor:pointer }
+#results > li.hover { background:var(--background-dim-color) }
 #results a.title { display:block ; font-size:120% ; font-weight:bold ; color:var(--link-color) }
 #results .brief { max-height:2.8em ; overflow:hidden }
 #results .details { display:none }

@@ -349,7 +349,9 @@ function mouseoverResultItem (e) {
 function mouseoutResultItem (e) {
   const item = $(e.currentTarget)
   const bbox = item.data('bbox')
-  bbox.setStyle(config.mapStyles.bbox)
+  if (bbox) {
+    bbox.setStyle(config.mapStyles.bbox)
+  }
 }
 
 function backToSearch () {
