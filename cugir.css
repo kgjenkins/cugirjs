@@ -47,21 +47,21 @@ dd { margin:0 0 1em 1em }
 /* cugirjs */
 
 :root {
-  --text-color: #000;
-  --background-color: #fff;
-  --background-dim-color: #ccc;
+  --text-color: #000000;
+  --background-color: #ffffff;
+  --background-dim-color: #ccccff;
   --link-color: #2b7d37;
-  --query-color: #f80;
+  --query-color: #ff8800;
   --button-color: #006080;
   --button-hover-color: #002c3b;
-  --nav-color: #ccc; /* obsoleted by background-dim-color? */
+  --nav-color: #cccccc; /* obsoleted by background-dim-color? */
 
-  --map-bbox-color: #222;
-  --map-bbox-highlight-color: #00f;
-  --map-feature-highlight-color: #00f;
-  --map-indexmap-color: #00f;
-  --map-indexmap-unavailable-color: #f00;
-  --map-indexmap-selected-color: #ff0;
+  --map-bbox-color: #222222;
+  --map-bbox-highlight-color: #0000ff;
+  --map-feature-highlight-color: #0000ff;
+  --map-indexmap-color: #0000ff;
+  --map-indexmap-unavailable-color: #ff0000;
+  --map-indexmap-selected-color: #ffff00;
   overflow-y: scroll;
 }
 
@@ -119,7 +119,8 @@ input { background:var(--background-color) ; color:var(--text-color) ; border-co
 
 #results { list-style-type:none ; padding:0 ; margin:0 }
 #results > li { padding:2px 0.5em ; xborder-bottom:1px solid #ccc }
-#results > li:hover { background:var(--background-dim-color); cursor:pointer }
+#results > li:hover { background:var(--background-dim-color) ; cursor:pointer }
+#results > li.hover { background:var(--background-dim-color) }
 #results a.title { display:block ; font-size:120% ; font-weight:bold ; color:var(--link-color) }
 #results .brief { max-height:2.8em ; overflow:hidden }
 #results .details { display:none }
@@ -144,7 +145,7 @@ input { background:var(--background-color) ; color:var(--text-color) ; border-co
 #results .details .downloads button { margin-right:1em ; background:var(--link-color)}
 
 #attr { position:absolute ; right:6px ; top:120px ; max-width:30%; background:var(--background-color) ;
-   border:1px solid var(--background-dim-color) ; xbox-shadow:0 8px 16px 2px var(--text-color) }
+   border:2px solid var(--background-dim-color) ; xbox-shadow:0 8px 16px 2px var(--text-color) }
 #attr table { width:100% ; margin-bottom:0.5em ; color:var(--text-color) }
 #attr tr.head th { font-weight:bold ; color:var(--background-color) ; background:var(--text-color) ;
    text-align:center ; overflow-wrap:normal }

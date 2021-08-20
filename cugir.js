@@ -44,6 +44,8 @@ function listenForKeys (e) {
     clickNextButton()
   } else if (e.key === 'PageUp') {
     clickPrevButton()
+  } else if (e.key === 'Enter') {
+    $('#results li.hover').click()
   }
 }
 
@@ -340,6 +342,15 @@ function mouseoverResultItem (e) {
     // ignore mouseover if any item is active (i.e. in detail view)
     return
   }
+  $('#results li.hover').each(function (i, olditem) {
+    olditem = $(olditem)
+    olditem.removeClass('hover')
+    const bbox = olditem.data('bbox')
+    if (bbox) {
+      bbox.setStyle(config.mapStyles.bbox)
+    }
+  })
+  item.addClass('hover')
   const bbox = item.data('bbox')
   if (bbox) {
     bbox.setStyle(config.mapStyles.bboxHighlight).bringToFront()
@@ -349,7 +360,9 @@ function mouseoverResultItem (e) {
 function mouseoutResultItem (e) {
   const item = $(e.currentTarget)
   const bbox = item.data('bbox')
-  bbox.setStyle(config.mapStyles.bbox)
+  if (bbox) {
+    bbox.setStyle(config.mapStyles.bbox)
+  }
 }
 
 function backToSearch () {
@@ -509,7 +522,7 @@ function clickResultsMap (e) {
 
   // highlight the clicked bbox and corresponding item
   const layer = map.getLayerAt(e.layerPoint)
-  const li = layer.options.li.mouseover().addClass('hover')
+  const li = layer.options.li.mouseover()
   $('html').scrollTop(li.offset().top - 240)
   // move to back so that other results can be clicked
   layer.bringToBack()
