@@ -25,6 +25,7 @@ $(document).ready(function () {
   window.onhashchange = function () {
     // determine if browser back/forward buttons are clicked and if so...
     // interpretHash()
+    // maybe look at the leaflet history plugin for ideas
   }
 })
 
@@ -57,32 +58,17 @@ function home () {
   $('#summary').html('')
   s.map.clear()
   s.map.leaflet.fitBounds(s.config.homeBounds)
-  $('#left-panel').html(
+    $('#left-panel').html(
     '<div class="home">' +
       '<h1>Welcome to CUGIR!</h1>' +
       '<p>Explore and discover New York State geospatial data:</p>' +
-      '<ul id="categories"></ul>' +
-      '<p class="alert">' +
-      'This is an EXPERIMENTAL javascript interface to <a href="https://cugir.library.cornell.edu/">CUGIR</a>.' +
-      '</p>' +
     '</div>'
   )
-  // list all categories (and the number of datasets for each)
-  const catstat = s.stats(s.data, 'category')
-  let categories = Object.keys(catstat)
-  categories = categories.sort(function (a, b) {
-    if (a < b) return -1
-    else if (a > b) return 1
-    else return 0
-  })
-  for (let i = 0; i < categories.length; i++) {
-    const li = $('<li>').appendTo('#categories')
-    $('<a>')
-      .text(categories[i])
-      .attr('href', '#category="' + categories[i] + '"')
-      .click(Sift._clickLink)
-      .appendTo(li)
-    $('<span class="count">').html('&nbsp;(' + catstat[categories[i]] + ') ')
-      .appendTo(li)
-  }
+  $('.home')
+    .append(s.categories)
+    .append('<p class="alert">' +
+      'This is an EXPERIMENTAL javascript interface to' +
+      '<br>' +
+      '<a href="https://cugir.library.cornell.edu/">the original CUGIR website</a>.' +
+      '</p>')
 }

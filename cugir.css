@@ -102,7 +102,7 @@ input { background:var(--background-color) ; color:var(--text-color) ; border-co
 .leaflet-bar a { color:#000 } /* not sure why this is needed, but it is */
 
 
-.home { font-size:125% ; text-align:center }
+.home { font-size:125% ; text-align:center ; margin-top:2em }
 #categories { column-count:3 ; column-width:10em ; list-style:none ; margin-top:1em }
 #categories a { cursor:pointer ; line-height:1.5em ; white-space:nowrap ; font-weight:bold ; margin-left:2em }
 #categories .count { opacity:0.7 ; font-size:85% }

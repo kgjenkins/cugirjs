@@ -21,6 +21,7 @@ export function Sift (options) {
   this.stats = _stats
   this.itemDetails = _itemDetails
   this.downloadSection = _downloadSection
+  this.categories = _categories
 }
 
 $(document).on('keydown', _listenForKeys)
@@ -31,6 +32,7 @@ $(document).on('click', 'button.more', _showMore)
 $(document).on('click', 'button.prev', _clickPrevButton)
 $(document).on('click', 'button.next', _clickNextButton)
 $(document).on('click', '#backToSearch', _backToSearch)
+$(document).on('click', 'a', _clickLink)
 
 // indexmap actions
 $(document).on('click', '#attr button.close', _clearSelections)
@@ -119,8 +121,8 @@ function _search (q, qbounds) {
   this.go(this.escapeForHash(q), 'search for ' + q)
   $('#q').val(q)
   let results = filter(this.data, q)
-  results = s.rank(results, qbounds)
-  $('#'+s.resultsDiv).html(
+  results = this.rank(results, qbounds)
+  $('#'+this.results).html(
     '<div id="summary"></div>' +
     '<div id="body"></div>'
   )
@@ -360,7 +362,6 @@ function _linkify (p, v) {
       $('<a>')
         .text(vi)
         .attr('href', '#' + p + '="' + vi + '"')
-        .click(_clickLink)
         .appendTo(div)
     }
     return div
@@ -381,10 +382,12 @@ function _linkify (p, v) {
 }
 
 function _clickLink (e) {
-  // click a link with a hash href like #category=transportation
-  const q = $(e.target).attr('href').substr(1)
-  s.search(q)
-  return false
+  // intercept hash links (like #category=transportation)
+  const hash = e.target.hash
+  if (hash.length > 0) {
+    s.search(_unescapeHash(hash.substr(1)))
+    return false
+  }
 }
 
 Sift.cssVar = function (name) {
@@ -895,4 +898,26 @@ function _listenForKeys (e) {
   } else if (e.key === 'Enter') {
     $('#results li.hover').click()
   }
+}
+
+function _categories () {
+  // return a <ul> listing all categories (and number of datasets in each)
+  const div = $('<ul id="categories">')
+  const catstat = s.stats(s.data, 'category')
+  let categories = Object.keys(catstat)
+  categories = categories.sort(function (a, b) {
+    if (a < b) return -1
+    else if (a > b) return 1
+    else return 0
+  })
+  for (let i = 0; i < categories.length; i++) {
+    const li = $('<li>').appendTo(div)
+    $('<a>')
+      .text(categories[i])
+      .attr('href', '#category="' + categories[i] + '"')
+      .appendTo(li)
+    $('<span class="count">').html('&nbsp;(' + catstat[categories[i]] + ') ')
+      .appendTo(li)
+  }
+  return div
 }
