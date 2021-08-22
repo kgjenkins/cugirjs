@@ -7,6 +7,17 @@ function setupConfig (s) {
     // limit search results to datasets overlapping current map view?
     limitToMap: false,
 
+    homeHtml: `
+      <div class="home">
+        <p class="alert">
+          This is an EXPERIMENTAL javascript interface to
+          <br>
+          <a href="https://cugir.library.cornell.edu/">the original CUGIR website</a>.
+        </p>
+        <h1>Welcome to CUGIR!</h1>
+        <p>Explore and discover New York State geospatial data:</p>
+      </div>`,
+
     solr2sift: function (doc) {
       // convert solr doc to sift doc (with simpler field names)
 

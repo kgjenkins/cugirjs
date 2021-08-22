@@ -22,6 +22,7 @@ export function Sift (options) {
   this.itemDetails = _itemDetails
   this.downloadSection = _downloadSection
   this.categories = _categories
+  waitForData(this)
 }
 
 $(document).on('keydown', _listenForKeys)
@@ -37,6 +38,24 @@ $(document).on('click', 'a', _clickLink)
 // indexmap actions
 $(document).on('click', '#attr button.close', _clearSelections)
 $(document).on('click', '#download-all', _downloadAll)
+
+function waitForData (s) {
+  if (!s.data) {
+    window.setTimeout(function () { waitForData(s) }, 100)
+  } else {
+    interpretHash(s)
+  }
+}
+
+function interpretHash (s) {
+  const hash = window.location.hash
+  if (hash) {
+    // search for whatever is after the #
+    s.search(s.unescapeHash(hash.slice(1)))
+  } else {
+    s.home()
+  }
+}
 
 function _loadData (s, datasource) {
   $.ajax({
