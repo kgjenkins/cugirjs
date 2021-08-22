@@ -18,5 +18,6 @@
 2021-08-17  1.0 hours
 2021-08-18  0.5 hours
 2021-08-20  0.5 hours
-2021-08-21  x.x hours - begin Sift
+2021-08-21  2.0 hours - begin Sift
+2021-08-22  2.0 hours
 ```

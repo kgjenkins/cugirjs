@@ -1,11 +1,11 @@
 /* global $ setupConfig */
 import { Sift } from './sift.mjs'
 
+let s
 window.cssVar = Sift.cssVar
-window.Sift = Sift
 
 $(document).ready(function () {
-  const s = new Sift({
+  s = new Sift({
     config: setupConfig(),
     dataSource: 'data/cugir.json',
     resultsDiv: 'left-panel',
@@ -30,7 +30,7 @@ $(document).ready(function () {
 })
 
 // TODO have the UI set something like s.config.limitToMap
-function updateMapLimit() {
+function updateMapLimit () {
   s.config.limitToMap = $('#limitToMap').is(':checked')
 }
 
@@ -58,7 +58,7 @@ function home () {
   $('#summary').html('')
   s.map.clear()
   s.map.leaflet.fitBounds(s.config.homeBounds)
-    $('#left-panel').html(
+  $('#left-panel').html(
     '<div class="home">' +
       '<h1>Welcome to CUGIR!</h1>' +
       '<p>Explore and discover New York State geospatial data:</p>' +
