@@ -404,6 +404,8 @@ function _clickLink (e) {
   // intercept hash links (like #category=transportation)
   const hash = e.target.hash
   if (hash.length > 0) {
+    //e.stopPropagation()
+    //e.preventDefault()
     s.search(_unescapeHash(hash.substr(1)))
     return false
   }
@@ -487,9 +489,11 @@ function _backToSearch () {
 }
 
 function _clickResultItem (e) {
+  console.log('clickresultitem')
   if (e.ctrlKey) {
     // ctrl-click should open the link in a new window
     e.stopPropagation()
+    e.preventDefault()
     const item = $(e.currentTarget).data('item')
     window.open('#id=' + item.id)
     return false
