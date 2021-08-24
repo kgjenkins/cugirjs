@@ -21,7 +21,7 @@ function setupConfig (s) {
     solr2sift: function (doc) {
       // convert solr doc to sift doc (with simpler field names)
 
-      // some fields are escaped json strings, due to solr limitations
+      // some GBL solr fields are escaped json strings, due to solr limitations
       doc.dct_references_s = JSON.parse(doc.dct_references_s || '{}')
       doc.cugir_addl_downloads_s = JSON.parse(doc.cugir_addl_downloads_s || '{}')
 
@@ -52,14 +52,12 @@ function setupConfig (s) {
       return doc2
     },
 
-    // link values of these fields to a search query
+    // automatically link values of these fields to a search query
     linkify: [
       'collection',
       'category',
       'place',
-      'author',
-      'wms',
-      'wfs'
+      'author'
     ],
 
     // field display will be limited to this many characters

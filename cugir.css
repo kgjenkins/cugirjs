@@ -47,21 +47,22 @@ dd { margin:0 0 1em 1em }
 /* cugirjs */
 
 :root {
-  --text-color: #000000;
-  --background-color: #ffffff;
-  --background-dim-color: #ccccff;
+  --text-color: #000;
+  --background-color: #fff;
+  --background-dim-color: #ccf;
   --link-color: #2b7d37;
-  --query-color: #ff8800;
-  --button-color: #006080;
+  --query-color: #f80;
+  --button-color: #068];
   --button-hover-color: #002c3b;
-  --nav-color: #cccccc; /* obsoleted by background-dim-color? */
+  --nav-color: #ccc;
+  --unavailable-color: #f00;
 
-  --map-bbox-color: #222222;
-  --map-bbox-highlight-color: #0000ff;
-  --map-feature-highlight-color: #0000ff;
-  --map-indexmap-color: #0000ff;
-  --map-indexmap-unavailable-color: #ff0000;
-  --map-indexmap-selected-color: #ffff00;
+  --map-bbox-color: #222;
+  --map-bbox-highlight-color: #00f;
+  --map-feature-highlight-color: #00f;
+  --map-indexmap-color: #00f;
+  --map-indexmap-unavailable-color: #f00;
+  --map-indexmap-selected-color: #ff0;
   overflow-y: scroll;
 }
 
@@ -75,7 +76,7 @@ button, .button { color:var(--background-color) ; background:var(--button-color)
    border-radius:0.5em ; padding:3px 1em ; white-space:nowrap }
 button:hover, .button:hover { background:var(--button-hover-color) ; cursor:pointer }
 
-input { background:var(--background-color) ; color:var(--text-color) ; border-color:var(--query-color) }
+input { background:var(--background-color) ; color:var(--text-color) }
 
 #head { position:fixed ; top:0 ; height:108px ; width:98% ; padding:6px 1% ;
    background:var(--background-color) ; color:var(--text-color) ; z-index:99 }
@@ -117,7 +118,7 @@ input { background:var(--background-color) ; color:var(--text-color) ; border-co
 #nav button.next:hover, #nav button.prev:hover { text-decoration:underline }
 #nav button#zoom { float:right }
 
-#results { list-style-type:none ; padding:0 ; margin:0 }
+#results { list-style-type:decimal ; padding:0 0 1em 2.5em ; margin:0 }
 #results > li { padding:2px 0.5em ; xborder-bottom:1px solid #ccc }
 #results > li:hover { background:var(--background-dim-color) ; cursor:pointer }
 #results > li.hover { background:var(--background-dim-color) }

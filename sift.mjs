@@ -14,8 +14,8 @@ export function Sift (options) {
   this.search = _search
   this.rank = _rank
   this.showResult = _showResult
-  this.showDetauls = _showDetails
   this.go = _go
+  this.home = _home
   this.unescapeHash = _unescapeHash
   this.escapeForHash = _escapeForHash
   this.stats = _stats
@@ -141,7 +141,7 @@ function _search (q, qbounds) {
   $('#q').val(q)
   let results = filter(this.data, q)
   results = this.rank(results, qbounds)
-  $('#'+this.results).html(
+  $('#' + this.results).html(
     '<div id="summary"></div>' +
     '<div id="body"></div>'
   )
@@ -253,25 +253,20 @@ function _renderItemBbox (item) {
   return layer
 }
 
-function _showDetails () {
-  _siftMapDetails()
-}
-
 function _itemDetails (item) {
   const details = $('<div class="details">')
   const table = $('<table>').appendTo(details)
-  // TODO after this list, include any other fields found in the item
+  // TODO move to config,
+  // and, after this list, include any other fields found in the item
   const properties = [
     'author',
-    'year',
     'description',
     'collection',
     'place',
     'category',
     'subject',
-    'wms',
-    'wfs',
-    'institution'
+    'year',
+    'filesize'
   ]
   for (let i = 0; i < properties.length; i++) {
     const p = properties[i]
@@ -404,10 +399,12 @@ function _clickLink (e) {
   // intercept hash links (like #category=transportation)
   const hash = e.target.hash
   if (hash.length > 0) {
-    //e.stopPropagation()
-    //e.preventDefault()
-    s.search(_unescapeHash(hash.substr(1)))
-    return false
+    // stop regular link handler
+    // (but note we don't e.stopPropagation() because we want clickResultItem)
+    e.preventDefault()
+    if (!e.target.classList.contains('title')) {
+      s.search(_unescapeHash(hash.substr(1)))
+    }
   }
 }
 
@@ -489,11 +486,8 @@ function _backToSearch () {
 }
 
 function _clickResultItem (e) {
-  console.log('clickresultitem')
   if (e.ctrlKey) {
     // ctrl-click should open the link in a new window
-    e.stopPropagation()
-    e.preventDefault()
     const item = $(e.currentTarget).data('item')
     window.open('#id=' + item.id)
     return false
@@ -926,7 +920,7 @@ function _listenForKeys (e) {
 function _categories () {
   // return a <ul> listing all categories (and number of datasets in each)
   const div = $('<ul id="categories">')
-  const catstat = s.stats(s.data, 'category')
+  const catstat = this.stats(this.data, 'category')
   let categories = Object.keys(catstat)
   categories = categories.sort(function (a, b) {
     if (a < b) return -1
@@ -943,4 +937,15 @@ function _categories () {
       .appendTo(li)
   }
   return div
+}
+
+function _home () {
+  this.go('', 'CUGIRjs home')
+  $('#q').val('')
+  $('#summary').html('')
+  this.map.clear()
+  this.map.leaflet.fitBounds(this.config.homeBounds)
+  $('#left-panel').html(this.config.homeHtml)
+  $('.home')
+    .append(this.categories())
 }

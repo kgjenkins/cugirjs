@@ -11,14 +11,15 @@ $(document).ready(function () {
     resultsDiv: 'left-panel',
     mapDiv: 'map'
   })
-  s.home = home
 
   // assign s to the window so that it is available in dev tools
   window.s = s
 
-  $(document).on('click', 'img#logo', home)
-  $(document).on('click', '#resetButton', home)
-  $(document).on('change', '#limitToMap', updateMapLimit)
+  $(document).on('click', 'img#logo', s.home)
+  $(document).on('click', '#resetButton', s.home)
+  $(document).on('change', '#limitToMap', function () {
+    s.config.limitToMap = $('#limitToMap').is(':checked')
+  })
 
   $(document).on('submit', 'form#search', function (e) {
     const q = $('#q').val()
@@ -28,24 +29,9 @@ $(document).ready(function () {
   })
 
   window.onhashchange = function () {
+    // console.log(window.location.hash)
     // determine if browser back/forward buttons are clicked and if so...
     // interpretHash()
     // maybe look at the leaflet history plugin for ideas
   }
 })
-
-// TODO have the UI set something like s.config.limitToMap
-function updateMapLimit () {
-  s.config.limitToMap = $('#limitToMap').is(':checked')
-}
-
-function home () {
-  s.go('', 'CUGIRjs home')
-  $('#q').val('')
-  $('#summary').html('')
-  s.map.clear()
-  s.map.leaflet.fitBounds(s.config.homeBounds)
-  $('#left-panel').html(s.config.homeHtml)
-  $('.home')
-    .append(s.categories)
-}
