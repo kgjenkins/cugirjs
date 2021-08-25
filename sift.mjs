@@ -4,6 +4,23 @@
 
 import { filter } from './lib/json-filter.mjs'
 
+// rewrite as
+export class Sift {
+  constructor(options) {
+    this.x = options.x
+    ///etc
+  }
+  get myattribute() {
+    return this.myattribute()
+  }
+  mymethod() {
+    return whatever
+  }
+}
+
+// and then call from cugir.js as
+// const s = new Sift(options)
+
 export function Sift (options) {
   // TODO check for required options:
   // config, dataSource, resultsDiv, mapDiv
@@ -120,10 +137,6 @@ function _setupMap (s) {
   }
 
   return map
-}
-
-function _clickMap (e) {
-  console.log('click', e)
 }
 
 function _go (hash, title) {
@@ -605,7 +618,7 @@ function _clickNextButton () {
   }
 }
 
-function clickMap (e) {
+function _clickMap (e) {
   // Does the map show an active item?
   const active = $('#results li.active')
   if (active.length > 0) {
@@ -940,12 +953,12 @@ function _categories () {
 }
 
 function _home () {
-  this.go('', 'CUGIRjs home')
+  s.go('', 'CUGIRjs home')
   $('#q').val('')
   $('#summary').html('')
-  this.map.clear()
-  this.map.leaflet.fitBounds(this.config.homeBounds)
-  $('#left-panel').html(this.config.homeHtml)
+  s.map.clear()
+  s.map.leaflet.fitBounds(s.config.homeBounds)
+  $('#left-panel').html(s.config.homeHtml)
   $('.home')
-    .append(this.categories())
+    .append(s.categories())
 }
