@@ -1,19 +1,33 @@
 /* global $ setupConfig */
-import { Sift } from './sift.mjs'
+//import { Sift } from './sift.mjs'
+import { Siftc } from './siftc.mjs'
 
-let s
-window.cssVar = Sift.cssVar
+//let s
+let sc
+window.cssVar = Siftc.cssVar
 
 $(document).ready(function () {
+  /*
   s = new Sift({
     config: setupConfig(),
     dataSource: 'data/cugir.json',
     resultsDiv: 'left-panel',
     mapDiv: 'map'
   })
+*/
+
+  sc = new Siftc({
+      config: setupConfig(),
+      dataSource: 'data/cugir.json',
+      resultsDiv: 'left-panel',
+      mapDiv: 'map'
+  })
 
   // assign s to the window so that it is available in dev tools
-  window.s = s
+  //window.s = s
+  window.sc = sc
+
+  return
 
   $(document).on('click', 'img#logo', s.home)
   $(document).on('click', '#resetButton', s.home)

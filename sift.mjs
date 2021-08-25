@@ -4,23 +4,6 @@
 
 import { filter } from './lib/json-filter.mjs'
 
-// rewrite as
-export class Sift {
-  constructor(options) {
-    this.x = options.x
-    ///etc
-  }
-  get myattribute() {
-    return this.myattribute()
-  }
-  mymethod() {
-    return whatever
-  }
-}
-
-// and then call from cugir.js as
-// const s = new Sift(options)
-
 export function Sift (options) {
   // TODO check for required options:
   // config, dataSource, resultsDiv, mapDiv
