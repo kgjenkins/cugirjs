@@ -51,7 +51,6 @@ dd { margin:0 0 1em 1em }
   --background-color: #fff;
   --background-dim-color: #ccf;
   --link-color: #2b7d37;
-  --query-color: #f80;
   --button-color: #068;
   --button-hover-color: #002c3b;
   --nav-color: #ddd;
@@ -60,9 +59,9 @@ dd { margin:0 0 1em 1em }
   --map-bbox-color: #222;
   --map-bbox-highlight-color: #00f;
   --map-feature-highlight-color: #00f;
-  --map-indexmap-color: #00f;
+  --map-indexmap-color: #000;
   --map-indexmap-unavailable-color: #f00;
-  --map-indexmap-selected-color: #ff0;
+  --map-indexmap-selected-color: #00f;
   overflow-y: scroll;
 }
 
@@ -101,6 +100,7 @@ input { background:var(--background-color) ; color:var(--text-color) }
 #map { height:100% ; width:100% ; border:2px solid var(--text-color) ; background:var(--background-color) }
 #map:hover { cursor:crosshair }
 .leaflet-bar a { color:#000 } /* not sure why this is needed, but it is */
+.leaflet-interactive { cursor: crosshair ! important }
 
 
 .home { font-size:125% ; text-align:center }
@@ -110,7 +110,7 @@ input { background:var(--background-color) ; color:var(--text-color) }
 .alert { margin:2em ; border:2px solid #f00 ; padding:1em }
 
 #nav { padding:0.3em ; background:var(--nav-color) }
-#nav .q { color:var(--query-color) ; font-weight:bold }
+#nav .q { color:inherit ; font-weight:bold }
 #nav button { color:var(--link-color) ; background:inherit ; border:0 ;
   padding:0 ; margin:0 1em ; font-weight:bold ; font-size:inherit }
 #nav button.prev { position:absolute ; left:0.5em }
@@ -147,12 +147,12 @@ input { background:var(--background-color) ; color:var(--text-color) }
 
 #attr { position:absolute ; right:6px ; top:120px ; max-width:30%;
   background:var(--background-color) ; border:2px solid var(--map-feature-highlight-color) ;
-  box-shadow:0 8px 16px 2px var(--text-color) }
+  box-shadow:0 8px 16px 2px #000 }
 #attr table { width:100% ; margin-bottom:0.5em ; color:var(--text-color) }
 #attr tr.head th { font-weight:bold ; color:var(--background-color) ;
   background:var(--map-feature-highlight-color) ; text-align:center ; overflow-wrap:normal }
-#attr button.close { padding:2px 4px ; font-size:70% ; position:absolute ; top:2px ;
-  right:2px ; background: red }
+#attr button.close { padding:2px 4px ; font-size:70% ; font-weight:bold ; position:absolute ; top:2px ;
+  right:2px ; background: inherit ; border:0 }
 #attr tr:nth-child(2n) { background:var(--nav-color) }
 #attr th { min-width:6em ; text-align:right ; color:var(--text-color) ;
   padding:0 6px 1px ; font-weight:normal ; border-right:1px solid #ccc ; vertical-align:top }

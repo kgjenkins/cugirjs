@@ -90,8 +90,6 @@ function setupConfig (s) {
     // (with a link to view 'more')
     moreLength: 800,
 
-
-
     // MAP STYLES
 
     basemap: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
@@ -130,7 +128,7 @@ function setupConfig (s) {
         fillColor: cssVar('--map-indexmap-color'),
         fillOpacity: 0.3
       },
-      nopreview: {
+      unavailable: {
         color: cssVar('--map-indexmap-unavailable-color'),
         opacity: 1,
         weight: 0.5,
