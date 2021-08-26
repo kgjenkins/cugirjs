@@ -1,8 +1,8 @@
 /* global $ setupConfig */
-//import { Sift } from './sift.mjs'
+// import { Sift } from './sift.mjs'
 import { Siftc } from './siftc.mjs'
 
-//let s
+// let s
 let sc
 window.cssVar = Siftc.cssVar
 
@@ -17,20 +17,18 @@ $(document).ready(function () {
 */
 
   sc = new Siftc({
-      config: setupConfig(),
-      dataSource: 'data/cugir.json',
-      resultsDiv: 'left-panel',
-      mapDiv: 'map'
+    config: setupConfig(),
+    dataSource: 'data/cugir.json',
+    resultsDiv: 'left-panel',
+    mapDiv: 'map'
   })
 
   // assign s to the window so that it is available in dev tools
-  //window.s = s
+  // window.s = s
   window.sc = sc
 
-  return
-
-  $(document).on('click', 'img#logo', s.home)
-  $(document).on('click', '#resetButton', s.home)
+  $(document).on('click', 'img#logo', e => sc.home())
+  $(document).on('click', '#resetButton', e => sc.home())
   $(document).on('change', '#limitToMap', function () {
     s.config.limitToMap = $('#limitToMap').is(':checked')
   })
@@ -41,6 +39,8 @@ $(document).ready(function () {
     s.search(q, qbounds)
     e.preventDefault()
   })
+
+  return
 
   window.onhashchange = function () {
     // console.log(window.location.hash)

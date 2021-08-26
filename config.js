@@ -62,7 +62,7 @@ function setupConfig (s) {
 
     // field display will be limited to this many characters
     // (with a link to view 'more')
-    moreLength: 500,
+    moreLength: 800,
 
 
 
@@ -104,7 +104,7 @@ function setupConfig (s) {
         fillColor: cssVar('--map-indexmap-color'),
         fillOpacity: 0.3
       },
-      unavailable: {
+      nopreview: {
         color: cssVar('--map-indexmap-unavailable-color'),
         opacity: 1,
         weight: 0.5,

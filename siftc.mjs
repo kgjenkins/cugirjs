@@ -8,7 +8,7 @@ import { filter } from './lib/json-filter.mjs'
 // const s = new Sift(options)
 
 export class Siftc {
-  constructor(options) {
+  constructor (options) {
     // TODO check for required options:
     // config, dataSource, resultsDiv, mapDiv
     this.config = options.config
@@ -19,34 +19,28 @@ export class Siftc {
     this.results = options.resultsDiv
 
     this.setupMap()
-    //this.downloadSection = _downloadSection
+    // this.downloadSection = _downloadSection
 
-
-  //  $(document).on('keydown', _listenForKeys)
-  //  $(document).on('click', '#results > li', _clickResultItem)
-  //  $(document).on('click', 'button.more', _showMore)
-  //  $(document).on('click', 'button.prev', _clickPrevButton)
-  //  $(document).on('click', 'button.next', _clickNextButton)
-  //  $(document).on('click', '#backToSearch', _backToSearch)
-}
+    $(document).on('keydown', e => this.listenForKeys(e))
+  }
 
   // indexmap actions
-//  $(document).on('click', '#attr button.close', _clearSelections)
-//  $(document).on('click', '#download-all', _downloadAll)
+  // $(document).on('click', '#attr button.close', _clearSelections)
+  // $(document).on('click', '#download-all', _downloadAll)
 
   _loadData (datasource) {
-    const s = this
+    const that = this
     $.ajax({
       url: datasource,
       dataType: 'json',
       success: function (json, status, xhr) {
-        s.data = []
+        that.data = []
         const docs = json.response.docs
         for (let i = 0; i < docs.length; i++) {
           const doc = docs[i]
-          s.data.push(s.config.solr2sift(doc))
+          that.data.push(that.config.solr2sift(doc))
         }
-        s.interpretHash()
+        that.interpretHash()
       },
       error: function (xhr, status, error) {
         console.log(xhr)
@@ -70,8 +64,8 @@ export class Siftc {
     this.go('', 'CUGIRjs home')
     $('#q').val('')
     $('#summary').html('')
-    // s.map.clear()
-    // s.map.leaflet.fitBounds(s.config.homeBounds)
+    this.map.clear()
+    this.map.leaflet.fitBounds(this.config.homeBounds)
     $('#left-panel').html(this.config.homeHtml)
     $('.home')
       .append(this.categories())
@@ -85,7 +79,7 @@ export class Siftc {
     map.leaflet.fitBounds(this.config.homeBounds)
 
     // add basemap using colorFilter to enhance/balance coloration
-    if (cssVar('--dark')) {
+    if (Siftc.cssVar('--dark')) {
       L.tileLayer.colorFilter(this.config.basemapDark, {
         isBasemap: true,
         maxZoom: 21,
@@ -139,7 +133,7 @@ export class Siftc {
     if (!querybounds) {
       querybounds = this.map.leaflet.getBounds()
     }
-    results = Siftc.rank(results, querybounds)
+    results = Siftc.rank(results, querybounds, this.config.limitToMap)
     $('#' + this.results).html(
       '<div id="summary"></div>' +
       '<div id="body"></div>'
@@ -153,7 +147,7 @@ export class Siftc {
         .addClass('q')
         .text(q)
         .attr('href', '#' + q)
-        .click(this.backToSearch)
+        .click(e => this.backToSearch())
         .appendTo(nav)
     }
     nav.prependTo('#summary')
@@ -189,7 +183,7 @@ export class Siftc {
     }
   }
 
-  static rank (results, bounds) {
+  static rank (results, bounds, limitToBounds = false) {
     const mx1 = bounds.getWest()
     const my1 = bounds.getSouth()
     const mx2 = bounds.getEast()
@@ -210,7 +204,7 @@ export class Siftc {
         // no overlap
 
         // omit from results?
-        if (this.config.limitToMap) continue
+        if (limitToBounds) continue
 
         // rank by distance to map bounds
         item._spatialscore = -1 * Math.sqrt(Math.pow(intersectX, 2) + Math.pow(intersectY, 2))
@@ -328,6 +322,7 @@ export class Siftc {
     $('.prev').remove()
     $('<button class="prev">')
       .text('« previous')
+      .click(e => this.prev())
       .appendTo(nav)
 
     // remove any existing number
@@ -340,15 +335,17 @@ export class Siftc {
     $('.next').remove()
     $('<button class="next">')
       .text('next »')
+      .click(e => this.next())
       .appendTo(nav)
 
     this.map.leaflet.fitBounds(item.bbox, { animate: true, duration: 1, padding: [32, 32] })
     if (item.wms) {
       li.data('layer', this.wmsLayer(item))
     } else if (item.openindexmaps) {
-      li.data('layer', openindexmapsLayer(item))
+      li.data('layer', this.openindexmapsLayer(item))
     } else {
-      const bboxlayer = L.rectangle(item.bbox, this.config.mapStyles.nopreview).addTo(s.map.leaflet)
+      L.rectangle(item.bbox, this.config.mapStyles.nopreview)
+        .addTo(this.map.leaflet)
     }
   }
 
@@ -370,7 +367,7 @@ export class Siftc {
     for (let i = 0; i < properties.length; i++) {
       const p = properties[i]
       const v = item[p]
-      if (!v) continue
+      if (!v || v.length === 0) continue
       const tr = $('<tr>').appendTo(table)
       $('<th>').text(p).appendTo(tr)
       const td = $('<td>').html(this.linkify(p, v)).appendTo(tr)
@@ -389,7 +386,7 @@ export class Siftc {
     tr = $('<tr>').prependTo(table)
     $('<th>').text('download').appendTo(tr)
     td = $('<td>').appendTo(tr)
-    //td.append(this.downloadSection(item))
+    // td.append(this.downloadSection(item))
 
     // ALERT IF NO WMS IMAGE IS AVAILABLE
     if (!item.wms && !item.openindexmaps) {
@@ -402,7 +399,6 @@ export class Siftc {
     return details
   }
   /*
-
 
   function _downloadSection (item) {
     const div = $('<div class="downloads">')
@@ -458,15 +454,17 @@ export class Siftc {
       }
       const div = $('<div>')
       let count = 0
+      const that = this
       for (let i = 0; i < v.length; i++) {
         const vi = v[i]
         if (count++) {
           div.append(', ')
         }
+        const hash = '#' + p + '="' + vi + '"'
         $('<a>')
           .text(vi)
-          .attr('href', '#' + p + '="' + vi + '"')
-          // TODO add click() similar to categories
+          .attr('href', Siftc.escapeForHash(hash))
+          .click(function () { that.search(hash.slice(1)) })
           .appendTo(div)
       }
       return div
@@ -475,40 +473,22 @@ export class Siftc {
     }
 
     let max = this.config.moreLength
-    if (typeof (v) === 'string' && v.length > (max * 1.3)) {
+    if (typeof (v) === 'string' && v.length > (max * 1.2)) {
       // adjust max to chop at a space
       max = v.indexOf(' ', max - 16)
       const more = v.substr(max)
       v = v.substr(0, max) +
-        "<button class='more'>more</button>" +
-        "<span class='more'>" + more + '<span>'
+        '<button class="more" onclick="(function(b){$(b).next().show();$(b).remove()})(this)">more</button>' +
+        '<span class="more">' + more + '<span>'
     }
     return v
   }
 
-  /*
-  function _showMore (e) {
-    $(e.currentTarget).hide()
-    $(e.target).next().show()
-  }
-
-  clickLink (e, x) {
-    // intercept hash links (like #category=transportation)
-    const hash = e.currentTarget.hash
-    if (hash.length > 0) {
-      // stop regular link handler
-      // (but note we don't e.stopPropagation() because we want clickResultItem)
-      e.preventDefault()
-      if (!e.currentTarget.classList.contains('title')) {
-        window.location = hash
-      }
-    }
-  }
-  */
-
   // TODO get rid of this
-  static cssVar = function (name) {
-    const body = window.getComputedStyle(document.querySelector('body'))
+  static cssVar (name) {
+    const body = window.getComputedStyle(
+      document.querySelector('body')
+    )
     return body.getPropertyValue(name)
   }
 
@@ -519,6 +499,7 @@ export class Siftc {
   static escapeForHash (q) {
     const hash = escape(q.replace(/\//g, '//'))
       .replace(/%20/g, '+')
+      .replace(/%23/g, '#')
       .replace(/%3A/g, ':')
       .replace(/%3D/g, '=')
     return hash
@@ -542,16 +523,14 @@ export class Siftc {
     return seen
   }
 
-/*
-  function _backToSearch () {
+  backToSearch () {
     const q = $('#results').data('q')
     const qbounds = $('#results').data('qbounds')
     const scroll = $('#results').data('scroll') - 120
     $('#q').val(q)
-    search(q, qbounds)
+    this.search(q, qbounds)
     $('html').scrollTop(scroll)
   }
-*/
 
   wmsLayer (item) {
     const url = item.wms
@@ -562,16 +541,16 @@ export class Siftc {
       tiled: true,
       maxZoom: 21 // default 18 is not enough
     }
-    if (cssVar('--dark')
-        && url.match(/cugir/)
-        && item.geom_type.match(/point|line|polygon/i)) {
+    if (Siftc.cssVar('--dark') &&
+        url.match(/cugir/) &&
+        item.geom_type.match(/point|line|polygon/i)) {
       options.styles = 'darkmode-' + item.geom_type
     }
     const layer = L.tileLayer.wms(url, options)
     layer.addTo(this.map.leaflet).bringToFront()
     return layer
   }
-/*
+  /*
   function openindexmapsLayer (item) {
     const url = item.openindexmaps
     const layer = new L.GeoJSON.AJAX(url, {
@@ -590,32 +569,35 @@ export class Siftc {
     layer.addTo(s.map.leaflet).bringToFront()
     return layer
   }
+*/
 
-  function _clickPrevButton () {
+  prev () {
+    // go to the previous item in the search results
     const prev = $('#results li.active').prev()
     if (prev) {
       prev.click()
     }
   }
 
-  function _clickNextButton () {
+  next () {
+    // go to the next item in the search results
     const next = $('#results li.active').next()
     if (next) {
       next.click()
     }
   }
-*/
+
   clickMap (e) {
     // Does the map show an active item?
     const active = $('#results li.active')
     if (active.length > 0) {
       // Is it openindexmap, raster, or vector?
       if (active.data('item').openindexmaps) {
-        clickIndexMap(e)
+        this.clickIndexMap(e)
       } else if (active.data('item').geom_type === 'Raster') {
-        clickRasterMap(e)
+        this.clickRasterMap(e)
       } else {
-        clickVectorMap(e)
+        this.clickVectorMap(e)
       }
     } else if ($('#results li').length > 0) {
       // Does the map show result bboxes?
@@ -643,7 +625,7 @@ export class Siftc {
     layer.bringToBack()
   }
 
-/*
+  /*
 
   function clickIndexMap (e) {
     const active = $('#results li.active')
@@ -717,11 +699,13 @@ export class Siftc {
     })
   }
 
-  function _clearSelections () {
+  */
+
+  clearSelections (e) {
     // remove everything from downloads section
     $('.allclear, .subsets').html('')
     // remove selections from map
-    map.eachLayer(function (layer) {
+    this.map.leaflet.eachLayer(function (layer) {
       if (layer.options.isSelection) {
         if (layer.feature && layer.feature.selection) {
           layer.feature.selection.remove()
@@ -734,14 +718,15 @@ export class Siftc {
     $('#attr').remove()
   }
 
-  function clickVectorMap (e) {
+  clickVectorMap (e) {
+    const that = this
     const active = $('#results li.active')
     const item = active.data('item')
 
     // calc generous bbox for the clicked point (+/- 3 pixels)
     // otherwise it is difficult to click a point feature
-    const bounds = map.getBounds()
-    const pixelsize = (bounds._northEast.lat - bounds._southWest.lat) / map.getSize().y
+    const bounds = this.map.leaflet.getBounds()
+    const pixelsize = (bounds._northEast.lat - bounds._southWest.lat) / this.map.leaflet.getSize().y
     const x1 = e.latlng.lng - pixelsize * 3
     const x2 = e.latlng.lng + pixelsize * 3
     const y1 = e.latlng.lat - pixelsize * 3
@@ -775,7 +760,6 @@ export class Siftc {
     url = item.wms + L.Util.getParamString(params)
     */
 
-/*
     $.ajax({
       url: url,
       dataType: 'json',
@@ -802,22 +786,23 @@ export class Siftc {
 
         // remove any other selected features
         // since we only look at one feature's attributes at a time
-        map.eachLayer(function (layer) {
+        that.map.leaflet.eachLayer(function (layer) {
           if (layer.options.isSelection) {
             layer.remove()
           }
         })
 
         // highlight feature and show attributes
+        const style = that.config.mapStyles.featureHighlight
         L.geoJSON(match, {
           // display any points as little circles
           pointToLayer: function (point, latlng) {
             return L.circleMarker(latlng, { color: cssVar('--map-feature-highlight-color') })
           },
-          style: s.config.mapStyles.featureHighlight,
+          style: style,
           isSelection: true
-        }).addTo(s.map.leaflet)
-        showAttributes(properties)
+        }).addTo(that.map.leaflet)
+        that.showAttributes(properties)
       },
       error: function (xhr, status, error) {
         console.log(xhr)
@@ -826,6 +811,8 @@ export class Siftc {
       }
     })
   }
+
+  /*
 
   function clickRasterMap (e) {
     const item = $('#results li.active').data('item')
@@ -879,12 +866,15 @@ export class Siftc {
     })
   }
 
-  function showAttributes (properties) {
+  */
+
+  showAttributes (properties) {
     $('#attr').remove()
     const info = $('<div id="attr">').appendTo('body')
     const table = $('<table>')
       .html('<tr class="head"><th colspan="2">Attributes<button class="close">X</button></th></tr>')
       .appendTo(info)
+    $('.close').click(e => this.clearSelections(e))
     // show all properties
     // custom view for new openindexmaps w/thumbnail, etc
     for (const p in properties) {
@@ -913,33 +903,31 @@ export class Siftc {
     }
   }
 
-  function _listenForKeys (e) {
+  listenForKeys (e) {
     if (e.key === 'Escape') {
-      _clearSelections()
+      this.clearSelections()
     } else if (e.key === 'PageDown') {
-      _clickNextButton()
+      this.next()
     } else if (e.key === 'PageUp') {
-      _clickPrevButton()
+      this.prev()
     } else if (e.key === 'Enter') {
       $('#results li.hover').click()
     }
   }
 
-  */
-
   categories () {
     // return a <ul> listing all categories (and number of datasets in each)
     const div = $('<ul id="categories">')
     const catstat = Siftc.stats(this.data, 'category')
-    let cats = Object.keys(catstat).sort()
-    let that = this
+    const cats = Object.keys(catstat).sort()
+    const that = this
     for (let i = 0; i < cats.length; i++) {
       const li = $('<li>').appendTo(div)
       const hash = '#category="' + cats[i] + '"'
       $('<a>')
         .text(cats[i])
         .attr('href', hash)
-        .click(function(){that.search(hash.slice(1))})
+        .click(function () { that.search(hash.slice(1)) })
         .appendTo(li)
       $('<span class="count">').html('&nbsp;(' + catstat[cats[i]] + ') ')
         .appendTo(li)

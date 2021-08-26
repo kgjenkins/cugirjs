@@ -126,7 +126,7 @@ input { background:var(--background-color) ; color:var(--text-color) }
 #results .brief { max-height:2.8em ; overflow:hidden }
 #results .details { display:none }
 
-#results > li.active { background:var(--background-color) ! important ; border:0 }
+#results > li.active { background:var(--background-color) ! important ; border:0 ; list-style-type:none }
 #results > li.active:hover { cursor:default }
 #results > li.active .brief { display:none }
 #results > li.active .details { display:block }
