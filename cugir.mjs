@@ -30,13 +30,13 @@ $(document).ready(function () {
   $(document).on('click', 'img#logo', e => sc.home())
   $(document).on('click', '#resetButton', e => sc.home())
   $(document).on('change', '#limitToMap', function () {
-    s.config.limitToMap = $('#limitToMap').is(':checked')
+    sc.config.limitToMap = $('#limitToMap').is(':checked')
   })
 
   $(document).on('submit', 'form#search', function (e) {
     const q = $('#q').val()
-    const qbounds = s.map.leaflet.getBounds()
-    s.search(q, qbounds)
+    const qbounds = sc.map.leaflet.getBounds()
+    sc.search(q, qbounds)
     e.preventDefault()
   })
 

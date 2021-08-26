@@ -1,6 +1,6 @@
 // Sift - a search interface for geospatial datasets
 
-/* global $ L */
+/* global $ L leafletPip */
 
 import { filter } from './lib/json-filter.mjs'
 
@@ -352,28 +352,34 @@ export class Siftc {
   itemDetails (item) {
     const details = $('<div class="details">')
     const table = $('<table>').appendTo(details)
-    // TODO move to config,
-    // and, after this list, include any other fields found in the item
-    const properties = [
-      'author',
-      'description',
-      'collection',
-      'place',
-      'category',
-      'subject',
-      'year',
-      'filesize'
-    ]
+    const properties = this.config.firstProperties
+    const hiddenProperties = this.config.hiddenProperties
+
+    // add any other properties found in the item
+    // (unless they start with _)
+    const itemproperties = Object.keys(item)
+    for (let i = 0; i < itemproperties.length; i++) {
+      const p = itemproperties[i]
+      if (properties.indexOf(p) === -1 &&
+          hiddenProperties.indexOf(p) === -1 &&
+          p[0] !== '_') {
+        properties.push(p)
+      }
+    }
     for (let i = 0; i < properties.length; i++) {
       const p = properties[i]
       const v = item[p]
+
+      // skip empty properties
       if (!v || v.length === 0) continue
+
       const tr = $('<tr>').appendTo(table)
-      $('<th>').text(p).appendTo(tr)
-      const td = $('<td>').html(this.linkify(p, v)).appendTo(tr)
-      if (p === 'wms' || p === 'wfs') {
-        td.append(' (layerid=' + item.layerid + ')')
-      }
+
+      // display property name (with underscore replaced with spaces)
+      $('<th>').text(p.replace('_', ' ')).appendTo(tr)
+
+      // display value with linkify() formatting
+      $('<td>').html(this.linkify(p, v)).appendTo(tr)
     }
 
     // METADATA
@@ -469,6 +475,7 @@ export class Siftc {
       }
       return div
     } else if (Array.isArray(v)) {
+      // separate multiple values with commas
       return v.join(', ')
     }
 
@@ -524,11 +531,14 @@ export class Siftc {
   }
 
   backToSearch () {
+    // search with original query and boundas
     const q = $('#results').data('q')
-    const qbounds = $('#results').data('qbounds')
-    const scroll = $('#results').data('scroll') - 120
     $('#q').val(q)
+    const qbounds = $('#results').data('qbounds')
     this.search(q, qbounds)
+
+    // scroll to where we were before
+    const scroll = $('#results').data('scroll') - 160
     $('html').scrollTop(scroll)
   }
 
@@ -619,7 +629,7 @@ export class Siftc {
     const li = layer.options.li.mouseover()
 
     // make sure the result item is visible
-    $('html').scrollTop(li.offset().top - 240)
+    $('html').scrollTop(li.offset().top - 160)
 
     // move to back so that other results can be clicked
     layer.bringToBack()

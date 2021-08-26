@@ -52,6 +52,32 @@ function setupConfig (s) {
       return doc2
     },
 
+    // show these properties first in detail view
+    firstProperties: [
+      'author',
+      'description',
+      'collection',
+      'place',
+      'category',
+      'subject',
+      'year',
+      'filesize'
+    ],
+
+    // hide these properties from detail view
+    // (properties starting with _ will automatically be hidden)
+    hiddenProperties: [
+      'id',
+      'title',
+      'download',
+      'addl_downloads',
+      'metadata',
+      'wms',
+      'wfs',
+      'layerid',
+      'bbox'
+    ],
+
     // automatically link values of these fields to a search query
     linkify: [
       'collection',
