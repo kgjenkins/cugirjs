@@ -152,7 +152,7 @@ input { background:var(--background-color) ; color:var(--text-color) }
 #attr tr.head th { font-weight:bold ; color:var(--background-color) ;
   background:var(--map-feature-highlight-color) ; text-align:center ; overflow-wrap:normal }
 #attr button.close { padding:2px 4px ; font-size:70% ; position:absolute ; top:2px ;
-  right:2px ; background:var(--text-color) }
+  right:2px ; background: red }
 #attr tr:nth-child(2n) { background:var(--nav-color) }
 #attr th { min-width:6em ; text-align:right ; color:var(--text-color) ;
   padding:0 6px 1px ; font-weight:normal ; border-right:1px solid #ccc ; vertical-align:top }

@@ -822,16 +822,15 @@ export class Siftc {
     })
   }
 
-  /*
-
-  function clickRasterMap (e) {
+  clickRasterMap (e) {
+    const that = this
     const item = $('#results li.active').data('item')
-    const bounds = map.getBounds()
+    const bounds = this.map.leaflet.getBounds()
     const x1 = bounds._southWest.lng
     const x2 = bounds._northEast.lng
     const y1 = bounds._southWest.lat
     const y2 = bounds._northEast.lat
-    const size = map.getSize()
+    const size = this.map.leaflet.getSize()
     const params = {
       service: 'WMS',
       version: '1.1.1',
@@ -847,23 +846,22 @@ export class Siftc {
       y: parseInt(e.containerPoint.y)
     }
     const url = item.wms + L.Util.getParamString(params)
-    // url = 'https://alteriseculo.com/proxy/?url=' + encodeURIComponent(url)
     $.ajax({
       url: url,
       dataType: 'json',
       success: function (data, status, xhr) {
         // remove any existing highlighted point
-        map.eachLayer(function (layer) {
+        that.map.leaflet.eachLayer(function (layer) {
           if (layer.options.isSelection) {
             layer.remove()
           }
         })
         // show feature and attributes
         const layer = L.circleMarker(e.latlng, {
-          style: s.config.mapStyles.featureHighlight,
+          style: that.config.mapStyles.featureHighlight,
           isSelection: true,
           color: cssVar('--map-feature-highlight-color')
-        }).addTo(s.map.leaflet)
+        }).addTo(that.map.leaflet)
         const properties = data.features[0].properties
         const value = properties.GRAY_INDEX || properties.PALETTE_INDEX
         layer.bindTooltip('' + value, { permanent: true })
@@ -875,8 +873,6 @@ export class Siftc {
       }
     })
   }
-
-  */
 
   showAttributes (properties) {
     $('#attr').remove()
