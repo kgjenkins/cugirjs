@@ -75,6 +75,7 @@ function setupConfig (s) {
       'wms',
       'wfs',
       'layerid',
+      'openindexmaps',
       'bbox'
     ],
 
@@ -100,46 +101,39 @@ function setupConfig (s) {
 
     mapStyles: {
       bbox: {
-        color: cssVar('--map-bbox-color'),
+        color: '#222', /* dark #fff */
         opacity: 0.3,
         weight: 1,
         fillColor: '#fff',
         fillOpacity: 0,
         isBbox: true
       },
-      bboxHighlight: {
-        color: cssVar('--map-bbox-highlight-color'),
+      highlight: {
+        color: '#00f', /* dark #ff0 */
         opacity: 1,
         weight: 4,
-        fillColor: cssVar('--map-bbox-highlight-color'),
-        fillOpacity: 0.2
-      },
-      featureHighlight: {
-        color: cssVar('--map-feature-highlight-color'),
-        opacity: 1,
-        weight: 4,
-        fillColor: cssVar('--map-feature-highlight-color'),
+        fillColor: '#00f', /* dark #ff0 */
         fillOpacity: 0.4
       },
       indexmap: {
-        color: cssVar('--map-indexmap-color'),
+        color: '#000', /* dark #fff */
         opacity: 1,
         weight: 0.5,
-        fillColor: cssVar('--map-indexmap-color'),
+        fillColor: '#000', /* dark #fff */
         fillOpacity: 0.3
       },
       unavailable: {
-        color: cssVar('--map-indexmap-unavailable-color'),
+        color: '#f00',
         opacity: 1,
         weight: 0.5,
-        fillColor: cssVar('--map-indexmap-unavailable-color'),
+        fillColor: '#f00',
         fillOpacity: 0.3
       },
       indexmapSelected: {
-        color: cssVar('--map-indexmap-selected-color'),
+        color: '#00f', /* dark #ff0 */
         opacity: 1,
         weight: 2,
-        fillColor: cssVar('--map-indexmap-selected-color'),
+        fillColor: '#00f', /* dark #ff0 */
         fillOpacity: 0.3
       }
     }

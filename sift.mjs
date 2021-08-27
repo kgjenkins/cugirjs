@@ -255,7 +255,7 @@ export class Sift {
     item.addClass('hover')
     const bbox = item.data('bbox')
     if (bbox) {
-      bbox.setStyle(this.config.mapStyles.bboxHighlight).bringToFront()
+      bbox.setStyle(this.config.mapStyles.highlight).bringToFront()
     }
   }
 
@@ -653,7 +653,7 @@ export class Sift {
       const layer = L.geoJSON(feature, {
         // display points as little circles
         pointToLayer: function (point, latlng) {
-          return L.circleMarker(latlng, { color: cssVar('--map-feature-highlight-color') })
+          return L.circleMarker(latlng, { color: that.mapStyles.highlight.color })
         },
         style: that.config.mapStyles.indexmapSelected,
         isSelection: true
@@ -671,11 +671,10 @@ export class Sift {
       $('.downloads .alert').remove()
     }
 
+    $('.downloads h2').remove()
     allclear.html('')
     if (subsets.children().length > 0) {
-      if ($('.downloads h2').length === 0) {
-        $('<h2>Selected Downloads:</h2>').insertBefore('.subsets')
-      }
+      $('<h2>Selected Downloads:</h2>').insertBefore('.subsets')
       $('<button id="clear-subsets">Clear selection</button>')
         .appendTo(allclear)
         .on('click', e => that.clearSelections(e))
@@ -805,11 +804,11 @@ export class Sift {
         })
 
         // highlight feature and show attributes
-        const style = that.config.mapStyles.featureHighlight
+        const style = that.config.mapStyles.highlight
         L.geoJSON(match, {
           // display any points as little circles
           pointToLayer: function (point, latlng) {
-            return L.circleMarker(latlng, { color: cssVar('--map-feature-highlight-color') })
+            return L.circleMarker(latlng)
           },
           style: style,
           isSelection: true
@@ -860,9 +859,8 @@ export class Sift {
         })
         // show feature and attributes
         const layer = L.circleMarker(e.latlng, {
-          style: that.config.mapStyles.featureHighlight,
-          isSelection: true,
-          color: cssVar('--map-feature-highlight-color')
+          style: that.config.mapStyles.highlight,
+          isSelection: true
         }).addTo(that.map.leaflet)
         const properties = data.features[0].properties
         const value = properties.GRAY_INDEX || properties.PALETTE_INDEX

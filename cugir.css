@@ -54,18 +54,11 @@ dd { margin:0 0 1em 1em }
   --button-color: #068;
   --button-hover-color: #002c3b;
   --nav-color: #ddd;
-  --unavailable-color: #f00;
-
-  --map-bbox-color: #222;
-  --map-bbox-highlight-color: #00f;
-  --map-feature-highlight-color: #00f;
-  --map-indexmap-color: #000;
-  --map-indexmap-unavailable-color: #f00;
-  --map-indexmap-selected-color: #00f;
+  --map-highlight-color: #00f;
   overflow-y: scroll;
 }
 
-.alert { color:var(--map-indexmap-unavailable-color) ; font-weight:bold }
+.alert { color:#f00 ; font-weight:bold }
 
 a, a:visited { color:var(--link-color) }
 
@@ -146,11 +139,11 @@ input { background:var(--background-color) ; color:var(--text-color) }
 #results .details .downloads button { margin-right:1em ; background:var(--link-color)}
 
 #attr { position:absolute ; right:6px ; top:120px ; max-width:30%;
-  background:var(--background-color) ; border:2px solid var(--map-feature-highlight-color) ;
+  background:var(--background-color) ; border:2px solid var(--map-highlight-color) ;
   box-shadow:0 8px 16px 2px #000 }
 #attr table { width:100% ; margin-bottom:0.5em ; color:var(--text-color) }
 #attr tr.head th { font-weight:bold ; color:var(--background-color) ;
-  background:var(--map-feature-highlight-color) ; text-align:center ; overflow-wrap:normal }
+  background:var(--map-highlight-color) ; text-align:center ; overflow-wrap:normal }
 #attr button.close { padding:2px 4px ; font-size:70% ; font-weight:bold ; position:absolute ; top:2px ;
   right:2px ; background: inherit ; border:0 }
 #attr tr:nth-child(2n) { background:var(--nav-color) }
