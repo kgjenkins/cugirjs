@@ -5,7 +5,6 @@ let s
 window.cssVar = Sift.cssVar
 
 $(document).ready(function () {
-
   s = new Sift({
     config: setupConfig(),
     dataSource: 'data/cugir.json',

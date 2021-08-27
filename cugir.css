@@ -1,125 +1,135 @@
 /* reset */
 
-html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strong, sub, sup, var, b, u, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video { margin:0 ; padding:0 ; border:0 ; font-size:100% ; font:inherit ; vertical-align:baseline }
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strong, sub, sup, var, b, u, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video { margin:0; padding:0; border:0; font-size:100%; font:inherit; vertical-align:baseline }
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display:block }
 body { line-height:normal }
 ol, ul { list-style:none }
 blockquote, q { quotes:none }
-blockquote:before, blockquote:after, q:before, q:after { content:'' ; content:none }
+blockquote:before, blockquote:after, q:before, q:after { content:''; content:none }
 button { font-size:inherit }
-table { border-collapse:collapse ; border-spacing:0 }
+table { border-collapse:collapse; border-spacing:0 }
 
 
 /* general styles */
 
-a { color:#00c ; text-decoration:none }
+a { color:#00c; text-decoration:none }
 a:hover, a:focus { text-decoration:underline }
 a:visited { color:inherit }
 body { font-family:Arial, sans-serif }
-blockquote { margin:0.5em 1em ; padding:0.5em ; border:1px solid #ddd ; background:#eee ; border-radius:4px }
-blockquote blockquote { border:1px solid #ccd ; background:#dde }
-blockquote blockquote blockquote { border:1px solid #cdc ; background:#ded }
+blockquote { margin:0.5em 1em; padding:0.5em; border:1px solid #ddd; background:#eee; border-radius:4px }
+blockquote blockquote { border:1px solid #ccd; background:#dde }
+blockquote blockquote blockquote { border:1px solid #cdc; background:#ded }
 code { font-family:"Lucida Console", monospace }
 em, i { font-style:italic }
 strong, b { font-weight:bold }
-h1,h2,h3,h4,h5,h6 { font-weight:bold ; padding:0 ; margin:0 }
+h1,h2,h3,h4,h5,h6 { font-weight:bold; padding:0; margin:0 }
 h1 { font-size:125% }
-h2 { font-size:115% ; margin-bottom:0.3em }
-h3 { font-size:110% ; margin-bottom:0.3em }
+h2 { font-size:115%; margin-bottom:0.3em }
+h3 { font-size:110%; margin-bottom:0.3em }
 h4 { font-size:108% }
 h5 { font-size:105% }
 h6 { font-size:100% }
 hr { margin:1em 0 }
 img { border:0 }
-input,textarea,select { font-family:Arial, sans-serif ; font-size:100% ; margin:0 ; border:2px inset }
+input,textarea,select { font-family:Arial, sans-serif; font-size:100%; margin:0; border:2px inset }
 input,textarea { padding:1px 2px }
 p { margin:0.5em 0 }
-pre { margin:0.5em 1em ; padding:0.5em ; border:1px solid #ddd ; background:#f8f8ee ; border-radius:4px }
-code { color:#840 ; font-size:85% }
-td, th { vertical-align:baseline ; text-align:left }
+pre { margin:0.5em 1em; padding:0.5em; border:1px solid #ddd; background:#f8f8ee; border-radius:4px }
+code { color:#840; font-size:85% }
+td, th { vertical-align:baseline; text-align:left }
 th { font-weight:bold }
-ul { margin:0 0 1em ; list-style-type:disc ; padding:0 0 0 1em }
-ol { margin:0 0 1em ; list-style-type:decimal ; padding:0 0 0 1em }
-dl { margin:0 0 1em ; list-style-type:disc ; padding:0 0 0 1em }
+ul { margin:0 0 1em; list-style-type:disc; padding:0 0 0 1em }
+ol { margin:0 0 1em; list-style-type:decimal; padding:0 0 0 1em }
+dl { margin:0 0 1em; list-style-type:disc; padding:0 0 0 1em }
 dd { margin:0 0 1em 1em }
 
 
 /* cugirjs */
 
-:root {
-  --text-color: #000;
-  --background-color: #fff;
-  --background-dim-color: #ccf;
-  --link-color: #2b7d37;
-  --button-color: #068;
-  --button-hover-color: #002c3b;
-  --nav-color: #ddd;
-  --map-highlight-color: #00f;
-  overflow-y: scroll;
-}
-
-.alert { color:#f00 ; font-weight:bold }
+.alert { color:#f00; font-weight:bold }
 
 a, a:visited { color:var(--link-color) }
 
-body { padding: 0 ; margin: 0 ; font-family:'Segoe UI', 'BlinkMacSystemFont', 'Arial', sans-serif ;
- background:var(--background-color) ; color:var(--text-color) ; font-size:100% }
-button, .button { color:var(--background-color) ; background:var(--button-color) ; border:0 ;
-   border-radius:0.5em ; padding:3px 1em ; white-space:nowrap }
-button:hover, .button:hover { background:var(--button-hover-color) ; cursor:pointer }
+body { padding: 0; margin: 0; font-family:'Segoe UI', 'BlinkMacSystemFont', 'Arial', sans-serif;
+ background:var(--background-color); color:var(--text-color); font-size:100%;  overflow-y: scroll;
+ --text-color: #000;
+ --background-color: #fff;
+ --background-dim-color: #ccf;
+ --link-color: #2b7d37;
+ --button-color: #068;
+ --button-hover-color: #002c3b;
+ --nav-color: #ddd;
+ --map-highlight-color: #00f;
+}
 
-input { background:var(--background-color) ; color:var(--text-color) }
+body.dark {
+  --text-color: #ddd;
+  --background-color: #000;
+  --background-dim-color: #440;
+  --link-color: #3ada51;
+  --query-color: #f80;
+  --button-color: #ff0;
+  --button-hover-color: #cc0;
+  --nav-color: #444;
+  --map-highlight-color: #ff0;
+}
 
-#head { position:fixed ; top:0 ; height:108px ; width:98% ; padding:6px 1% ;
-   background:var(--background-color) ; color:var(--text-color) ; z-index:99 }
-#head img { vertical-align:middle ; height:100px }
-#head img:hover { cursor:pointer ; opacity:0.7 }
+button, .button { color:var(--background-color); background:var(--button-color); border:0;
+   border-radius:0.5em; padding:3px 1em; white-space:nowrap }
+button:hover, .button:hover { background:var(--button-hover-color); cursor:pointer }
 
-#search { position:absolute ; left:340px ; top:2em ; line-height:2em }
-#search input[type=text] { width:30em ; padding:3px }
-#menu { position:absolute ; top:6px ; right:1em }
-#menu a { background:var(--button-color) ; color:var(--background-color) ; padding:6px 1em ; margin:0 }
+input { background:var(--background-color); color:var(--text-color) }
+
+#head { position:fixed; top:0; height:108px; width:98%; padding:6px 1%;
+   background:var(--background-color); color:var(--text-color); z-index:99 }
+#head img { vertical-align:middle; height:100px }
+#head img:hover { cursor:pointer; opacity:0.7 }
+
+#search { position:absolute; left:340px; top:2em; line-height:2em }
+#search input[type=text] { width:30em; padding:3px }
+#menu { position:absolute; top:6px; right:1em }
+#menu a { background:var(--button-color); color:var(--background-color); padding:6px 1em; margin:0 }
 #menu a:hover { background:var(--button-hover-color) }
 
-#left-panel { position:absolute ; left:0 ; width:49% ; top:120px }
-#summary { position:fixed ; left:0 ; top:120px ; width:49% ; height:1.6em ; background:var(--background-color) ;
-   padding:0.3em 0.5% ; z-index:99 ; text-align:center }
-#body { position:absolute ; top:40px ; left:0 ; width:100% }
+#left-panel { position:absolute; left:0; width:49%; top:120px }
+#summary { position:fixed; left:0; top:120px; width:49%; height:1.6em; background:var(--background-color);
+   padding:0.3em 0.5%; z-index:99; text-align:center }
+#body { position:absolute; top:40px; left:0; width:100% }
 
-#right-panel { position:fixed ; right:0 ; top:120px ; margin:0.3em 0.5% ; padding:0 ; width:49% ;
-  height:75% ; text-align:right }
+#right-panel { position:fixed; right:0; top:120px; margin:0.3em 0.5%; padding:0; width:49%;
+  height:75%; text-align:right }
 #zoom { float:left }
 
-#map { height:100% ; width:100% ; border:2px solid var(--text-color) ; background:var(--background-color) }
+#map { height:100%; width:100%; border:2px solid var(--text-color); background:var(--background-color) }
 #map:hover { cursor:crosshair }
 .leaflet-bar a { color:#000 } /* not sure why this is needed, but it is */
 .leaflet-interactive { cursor: crosshair ! important }
 
 
-.home { font-size:125% ; text-align:center }
-#categories { column-count:3 ; column-width:10em ; list-style:none ; margin-top:1em }
-#categories a { cursor:pointer ; line-height:1.5em ; white-space:nowrap ; font-weight:bold ; margin-left:2em }
-#categories .count { opacity:0.7 ; font-size:85% }
-.alert { margin:2em ; border:2px solid #f00 ; padding:1em }
+.home { font-size:125%; text-align:center }
+#categories { column-count:3; column-width:10em; list-style:none; margin-top:1em }
+#categories a { cursor:pointer; line-height:1.5em; white-space:nowrap; font-weight:bold; margin-left:2em }
+#categories .count { opacity:0.7; font-size:85% }
+.alert { margin:2em; border:2px solid #f00; padding:1em }
 
-#nav { padding:0.3em ; background:var(--nav-color) }
-#nav .q { color:inherit ; font-weight:bold }
-#nav button { color:var(--link-color) ; background:inherit ; border:0 ;
-  padding:0 ; margin:0 1em ; font-weight:bold ; font-size:inherit }
-#nav button.prev { position:absolute ; left:0.5em }
-#nav button.next { position:absolute ; right:0.5em }
+#nav { padding:0.3em; background:var(--nav-color) }
+#nav .q { color:inherit; font-weight:bold }
+#nav button { color:var(--link-color); background:inherit; border:0;
+  padding:0; margin:0 1em; font-weight:bold; font-size:inherit }
+#nav button.prev { position:absolute; left:0.5em }
+#nav button.next { position:absolute; right:0.5em }
 #nav button.next:hover, #nav button.prev:hover { text-decoration:underline }
 #nav button#zoom { float:right }
 
-#results { list-style-type:decimal ; padding:0 0 1em 2.5em ; margin:0 }
-#results > li { padding:2px 0.5em ; xborder-bottom:1px solid #ccc }
-#results > li:hover { background:var(--background-dim-color) ; cursor:pointer }
+#results { list-style-type:decimal; padding:0 0 1em 2.5em; margin:0 }
+#results > li { padding:2px 0.5em; xborder-bottom:1px solid #ccc }
+#results > li:hover { background:var(--background-dim-color); cursor:pointer }
 #results > li.hover { background:var(--background-dim-color) }
-#results a.title { display:block ; font-size:120% ; font-weight:bold ; color:var(--link-color) }
-#results .brief { max-height:2.8em ; overflow:hidden }
+#results a.title { display:block; font-size:120%; font-weight:bold; color:var(--link-color) }
+#results .brief { max-height:2.8em; overflow:hidden }
 #results .details { display:none }
 
-#results > li.active { background:var(--background-color) ! important ; border:0 ; list-style-type:none }
+#results > li.active { background:var(--background-color) ! important; border:0; list-style-type:none }
 #results > li.active:hover { cursor:default }
 #results > li.active .brief { display:none }
 #results > li.active .details { display:block }
@@ -127,28 +137,28 @@ input { background:var(--background-color) ; color:var(--text-color) }
 #results .details a { font-weight:bold }
 #results .details p { margin:0 0 0.5em }
 #results .details table { margin:0.5em 0 }
-#results .details th { width:6em ; text-align:right ; opacity:0.7 ; padding:3px 6px ; font-weight:normal }
+#results .details th { width:6em; text-align:right; opacity:0.7; padding:3px 6px; font-weight:normal }
 #results .details td { padding:3px 6px }
-#results .details button.more { margin:0 0.3em ; padding: 0 0.5em }
+#results .details button.more { margin:0 0.3em; padding: 0 0.5em }
 #results .details span.more { display:none }
 
-#results .details .downloads a { background:var(--button-color) ; border:0 ; color:var(--background-color) ;
-   border-radius:4px ; margin:0 0.5em 0 0 ; padding:3px 1em ; white-space:nowrap ; line-height:2em }
-#results .details .downloads a:hover { background:var(--button-hover-color) ; text-decoration:none }
-#results .details .downloads ul.subsets { list-style:none ; padding:0 ; margin-top:0.5em }
-#results .details .downloads button { margin-right:1em ; background:var(--link-color)}
+#results .details .downloads a { background:var(--button-color); border:0; color:var(--background-color);
+   border-radius:4px; margin:0 0.5em 0 0; padding:3px 1em; white-space:nowrap; line-height:2em }
+#results .details .downloads a:hover { background:var(--button-hover-color); text-decoration:none }
+#results .details .downloads ul.subsets { list-style:none; padding:0; margin-top:0.5em }
+#results .details .downloads button { margin-right:1em; background:var(--link-color)}
 
-#attr { position:absolute ; right:6px ; top:120px ; max-width:30%;
-  background:var(--background-color) ; border:2px solid var(--map-highlight-color) ;
+#attr { position:absolute; right:6px; top:120px; max-width:30%;
+  background:var(--background-color); border:2px solid var(--map-highlight-color);
   box-shadow:0 8px 16px 2px #000 }
-#attr table { width:100% ; margin-bottom:0.5em ; color:var(--text-color) }
-#attr tr.head th { font-weight:bold ; color:var(--background-color) ;
-  background:var(--map-highlight-color) ; text-align:center ; overflow-wrap:normal }
-#attr button.close { padding:2px 4px ; font-size:70% ; font-weight:bold ; position:absolute ; top:2px ;
-  right:2px ; background: inherit ; border:0 }
+#attr table { width:100%; margin-bottom:0.5em; color:var(--text-color) }
+#attr tr.head th { font-weight:bold; color:var(--background-color);
+  background:var(--map-highlight-color); text-align:center; overflow-wrap:normal }
+#attr button.close { padding:2px 4px; font-size:70%; font-weight:bold; position:absolute; top:2px;
+  right:2px; background: inherit; border:0 }
 #attr tr:nth-child(2n) { background:var(--nav-color) }
-#attr th { min-width:6em ; text-align:right ; color:var(--text-color) ;
-  padding:0 6px 1px ; font-weight:normal ; border-right:1px solid #ccc ; vertical-align:top }
-#attr td { padding:0 6px ; border:0 solid var(--background-dim-color) }
+#attr th { min-width:6em; text-align:right; color:var(--text-color);
+  padding:0 6px 1px; font-weight:normal; border-right:1px solid #ccc; vertical-align:top }
+#attr td { padding:0 6px; border:0 solid var(--background-dim-color) }
 #attr td.url { word-break: break-all }
-#attr td img { margin:0.5em ; border:2px solid #000 }
+#attr td img { margin:0.5em; border:2px solid #000 }

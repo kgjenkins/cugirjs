@@ -2,6 +2,7 @@
 
 function setupConfig (s) {
   // this function should only get called after whole document (including css) is ready
+  // TODO After we drop cssVar(), this can just be a simple object assignment
   return {
 
     // limit search results to datasets overlapping current map view?
@@ -91,50 +92,97 @@ function setupConfig (s) {
     // (with a link to view 'more')
     moreLength: 800,
 
-    // MAP STYLES
-
-    basemap: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-    basemapDark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-
     // default zoom to NYS
     homeBounds: [[40.5, -80], [45, -71.8]],
 
-    mapStyles: {
-      bbox: {
-        color: '#222', /* dark #fff */
-        opacity: 0.3,
-        weight: 1,
-        fillColor: '#fff',
-        fillOpacity: 0,
-        isBbox: true
+    // list of available color modes
+    // -- any additional modes should be defined in MapStyle (below)
+    //    and/or in body.modename in the .css file
+    modes: ['default', 'dark'],
+
+    mapStyle: {
+      default: {
+        basemap: {
+          url: 'https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png',
+          options: {
+            isBasemap: true,
+            maxZoom: 21,
+            opacity: 1,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
+            filter: [
+              'brightness:75%',
+              'contrast:200%',
+              'saturate:200%'
+            ]
+          }
+        },
+        bbox: {
+          color: '#222',
+          opacity: 0.3,
+          weight: 1,
+          fillOpacity: 0,
+          isBbox: true
+        },
+        highlight: {
+          color: '#00f',
+          opacity: 1,
+          weight: 4,
+          fillColor: '#00f',
+          fillOpacity: 0.4
+        },
+        indexmap: {
+          color: '#000',
+          opacity: 1,
+          weight: 0.5,
+          fillColor: '#000',
+          fillOpacity: 0.3
+        },
+        unavailable: {
+          color: '#f00',
+          opacity: 1,
+          weight: 0.5,
+          fillColor: '#f00',
+          fillOpacity: 0.3
+        },
+        indexmapSelected: {
+          color: '#00f',
+          opacity: 1,
+          weight: 2,
+          fillColor: '#00f',
+          fillOpacity: 0.3
+        }
       },
-      highlight: {
-        color: '#00f', /* dark #ff0 */
-        opacity: 1,
-        weight: 4,
-        fillColor: '#00f', /* dark #ff0 */
-        fillOpacity: 0.4
-      },
-      indexmap: {
-        color: '#000', /* dark #fff */
-        opacity: 1,
-        weight: 0.5,
-        fillColor: '#000', /* dark #fff */
-        fillOpacity: 0.3
-      },
-      unavailable: {
-        color: '#f00',
-        opacity: 1,
-        weight: 0.5,
-        fillColor: '#f00',
-        fillOpacity: 0.3
-      },
-      indexmapSelected: {
-        color: '#00f', /* dark #ff0 */
-        opacity: 1,
-        weight: 2,
-        fillColor: '#00f', /* dark #ff0 */
-        fillOpacity: 0.3
+      // modes other than default will inherit the default values
+      // and 2nd-order properties (like bbox.color) will be overwritten
+      dark: {
+        basemap: {
+          url: 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png',
+          options: {
+            isBasemap: true,
+            maxZoom: 21,
+            opacity: 1,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
+            filter: [
+              'brightness:250%',
+              'contrast:100%'
+            ]
+          }
+        },
+        bbox: {
+          color: '#fff'
+        },
+        highlight: {
+          color: '#ff0',
+          fillcolor: '#ff0'
+        },
+        indexmap: {
+          color: '#fff',
+          fillColor: '#fff'
+        },
+        indexmapSelected: {
+          color: '#ff0',
+          fillColor: '#ff0'
+        }
       }
     }
   }

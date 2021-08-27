@@ -16,6 +16,7 @@ export class Sift {
     this.results = options.resultsDiv
 
     this.setupMap()
+    this.addModeButton()
 
     $(document).on('keydown', e => this.listenForKeys(e))
   }
@@ -66,35 +67,20 @@ export class Sift {
   setupMap () {
     const map = {}
     map.leaflet = L.map('map')
-
-    // zoom to NYS
     map.leaflet.fitBounds(this.config.homeBounds)
 
-    // add basemap using colorFilter to enhance/balance coloration
-    if (Sift.cssVar('--dark')) {
-      L.tileLayer.colorFilter(this.config.basemapDark, {
-        isBasemap: true,
-        maxZoom: 21,
-        opacity: 1,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
-        filter: [
-          'brightness:250%',
-          'contrast:100%'
-        ]
-      }).addTo(map.leaflet)
-    } else {
-      L.tileLayer.colorFilter(this.config.basemap, {
-        isBasemap: true,
-        maxZoom: 21,
-        opacity: 1,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
-        filter: [
-          'brightness:75%',
-          'contrast:200%',
-          'saturate:200%'
-        ]
-      }).addTo(map.leaflet)
-    }
+    // choose default or dark basemap
+    const basemap = ($('body').hasClass('dark'))
+      ? this.config.mapStyle.dark.basemap
+      : this.config.mapStyle.default.basemap
+
+    // colorFilter allows saturation/contrast/etc adjustment in options
+    L.tileLayer.colorFilter(
+      basemap.url,
+      basemap.options
+    ).addTo(map.leaflet)
+
+    $('body').on('class')
     map.leaflet.on('click', e => this.clickMap(e))
 
     map.clear = function () {
@@ -106,6 +92,18 @@ export class Sift {
     }
 
     this.map = map
+  }
+
+  addModeButton () {
+    $('<a>')
+      .text('Color Mode')
+      .attr('href', '#')
+      .click(function (e) {
+        // TODO cycle through s.config.modes
+        $('body').toggleClass('dark')
+        // TODO swap basemap
+      })
+      .prependTo('#menu')
   }
 
   go (hash, title) {
@@ -224,7 +222,7 @@ export class Sift {
     $('<div class="brief">').text(item.description).appendTo(li)
     this.itemDetails(item).appendTo(li)
     $('<span>').text(item.creator + '. ').prependTo(li.find('.description'))
-    const bboxlayer = L.rectangle(item.bbox, this.config.mapStyles.bbox)
+    const bboxlayer = L.rectangle(item.bbox, this.config.mapStyle.bbox)
       .addTo(this.map.leaflet)
     bboxlayer.options.li = li
     li.data('bbox', bboxlayer)
@@ -241,7 +239,7 @@ export class Sift {
     }
 
     // remove any highlighted result that might have been set by clicking the map
-    const style = this.config.mapStyles.bbox
+    const style = this.config.mapStyle.bbox
     $('#results li.hover').each(function (i, olditem) {
       olditem = $(olditem)
       olditem.removeClass('hover')
@@ -255,7 +253,7 @@ export class Sift {
     item.addClass('hover')
     const bbox = item.data('bbox')
     if (bbox) {
-      bbox.setStyle(this.config.mapStyles.highlight).bringToFront()
+      bbox.setStyle(this.config.mapStyle.highlight).bringToFront()
     }
   }
 
@@ -264,7 +262,7 @@ export class Sift {
     item.removeClass('hover')
     const bbox = item.data('bbox')
     if (bbox) {
-      bbox.setStyle(this.config.mapStyles.bbox)
+      bbox.setStyle(this.config.mapStyle.bbox)
     }
   }
 
@@ -336,7 +334,7 @@ export class Sift {
     } else if (item.openindexmaps) {
       li.data('layer', this.openindexmapsLayer(item))
     } else {
-      L.rectangle(item.bbox, this.config.mapStyles.unavailable)
+      L.rectangle(item.bbox, this.config.mapStyle.unavailable)
         .addTo(this.map.leaflet)
     }
   }
@@ -541,11 +539,14 @@ export class Sift {
       tiled: true,
       maxZoom: 21 // default 18 is not enough
     }
-    if (Sift.cssVar('--dark') &&
-        url.match(/cugir/) &&
+
+    // CUGIR has special darkmode styles
+    if (url.match(/cugir/) &&
+        $('body').hasClass('dark') &&
         item.geom_type.match(/point|line|polygon/i)) {
       options.styles = 'darkmode-' + item.geom_type
     }
+
     const layer = L.tileLayer.wms(url, options)
     layer.addTo(this.map.leaflet).bringToFront()
     return layer
@@ -555,10 +556,10 @@ export class Sift {
     const that = this
     const url = item.openindexmaps
     const layer = new L.GeoJSON.AJAX(url, {
-      style: that.config.mapStyles.indexmap,
+      style: that.config.mapStyle.indexmap,
       onEachFeature: function (feature, layer) {
         if (feature.properties.available === false) {
-          layer.setStyle(that.config.mapStyles.unavailable)
+          layer.setStyle(that.config.mapStyle.unavailable)
         }
         feature.layer = layer
         layer.bindTooltip(
@@ -609,7 +610,7 @@ export class Sift {
     // forget about any previously-clicked item
     const olditem = $('#results li.hover').removeClass('hover')
     if (olditem.length > 0) {
-      olditem.data('bbox').setStyle(this.config.mapStyles.bbox)
+      olditem.data('bbox').setStyle(this.config.mapStyle.bbox)
     }
 
     // highlight the clicked bbox and corresponding item
@@ -653,9 +654,9 @@ export class Sift {
       const layer = L.geoJSON(feature, {
         // display points as little circles
         pointToLayer: function (point, latlng) {
-          return L.circleMarker(latlng, { color: that.mapStyles.highlight.color })
+          return L.circleMarker(latlng, { color: that.mapStyle.highlight.color })
         },
-        style: that.config.mapStyles.indexmapSelected,
+        style: that.config.mapStyle.indexmapSelected,
         isSelection: true
       }).addTo(that.map.leaflet)
       feature.selection = layer
@@ -804,7 +805,7 @@ export class Sift {
         })
 
         // highlight feature and show attributes
-        const style = that.config.mapStyles.highlight
+        const style = that.config.mapStyle.highlight
         L.geoJSON(match, {
           // display any points as little circles
           pointToLayer: function (point, latlng) {
@@ -859,7 +860,7 @@ export class Sift {
         })
         // show feature and attributes
         const layer = L.circleMarker(e.latlng, {
-          style: that.config.mapStyles.highlight,
+          style: that.config.mapStyle.highlight,
           isSelection: true
         }).addTo(that.map.leaflet)
         const properties = data.features[0].properties
