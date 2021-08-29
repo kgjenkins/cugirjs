@@ -59,7 +59,7 @@ body { padding: 0; margin: 0; font-family:'Segoe UI', 'BlinkMacSystemFont', 'Ari
  --button-color: #068;
  --button-hover-color: #002c3b;
  --nav-color: #ddd;
- --map-highlight-color: #00f;
+ --map-highlight-color: #08f;
 }
 
 body.dark {

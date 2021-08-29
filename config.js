@@ -1,4 +1,4 @@
-/* global cssVar */
+/* global */
 
 function setupConfig (s) {
   // this function should only get called after whole document (including css) is ready
@@ -100,6 +100,8 @@ function setupConfig (s) {
     //    and/or in body.modename in the .css file
     modes: ['default', 'dark'],
 
+    mode: 'dark',
+
     mapStyle: {
       default: {
         basemap: {
@@ -124,11 +126,12 @@ function setupConfig (s) {
           isBbox: true
         },
         highlight: {
-          color: '#00f',
+          color: '#08f',
           opacity: 1,
           weight: 4,
-          fillColor: '#00f',
-          fillOpacity: 0.4
+          fillColor: '#08f',
+          fillOpacity: 0.4,
+          radius: 10
         },
         indexmap: {
           color: '#000',
@@ -173,7 +176,7 @@ function setupConfig (s) {
         },
         highlight: {
           color: '#ff0',
-          fillcolor: '#ff0'
+          fillColor: '#ff0'
         },
         indexmap: {
           color: '#fff',

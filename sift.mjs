@@ -9,6 +9,7 @@ export class Sift {
     // TODO check for required options:
     // config, dataSource, resultsDiv, mapDiv
     this.config = options.config
+    $('body').addClass(this.config.mode)
 
     // TODO better way to wait for data to load? Promise?
     this._loadData(options.dataSource)
@@ -68,17 +69,8 @@ export class Sift {
     const map = {}
     map.leaflet = L.map('map')
     map.leaflet.fitBounds(this.config.homeBounds)
-
-    // choose default or dark basemap
-    const basemap = ($('body').hasClass('dark'))
-      ? this.config.mapStyle.dark.basemap
-      : this.config.mapStyle.default.basemap
-
-    // colorFilter allows saturation/contrast/etc adjustment in options
-    L.tileLayer.colorFilter(
-      basemap.url,
-      basemap.options
-    ).addTo(map.leaflet)
+    this.map = map
+    this.setBasemap()
 
     $('body').on('class')
     map.leaflet.on('click', e => this.clickMap(e))
@@ -90,18 +82,63 @@ export class Sift {
       $('#attr').remove()
       $('#zoom').remove()
     }
+  }
 
-    this.map = map
+  setBasemap () {
+    // set the basemap based on the current mode
+
+    // remove current basemap
+    this.map.leaflet.eachLayer(layer => {
+      if (layer.options.isBasemap) {
+        layer.remove()
+      }
+    })
+
+    const basemap = this.getMapStyle('basemap')
+    // colorFilter allows saturation/contrast/etc adjustment in options
+    L.tileLayer.colorFilter(
+      basemap.url,
+      basemap.options
+    ).addTo(this.map.leaflet)
+  }
+
+  getMapStyle (name) {
+    // get the named map style for the current mode
+    let style
+    // clone the default style
+    try {
+      style = { ...this.config.mapStyle.default[name] }
+    } catch (e) {
+      console.log('no default style named ' + name)
+    }
+    const mode = this.config.mode
+    // overwrite default values with any custom values for the mode
+    if (mode !== 'default') {
+      try {
+        const modestyle = this.config.mapStyle[mode][name]
+        for (const p in modestyle) {
+          style[p] = modestyle[p]
+        }
+      } catch (e) {
+        console.log('error getting mode/style ' + mode + '/' + name)
+      }
+    }
+    return style
   }
 
   addModeButton () {
     $('<a>')
       .text('Color Mode')
       .attr('href', '#')
-      .click(function (e) {
-        // TODO cycle through s.config.modes
-        $('body').toggleClass('dark')
-        // TODO swap basemap
+      .click(e => {
+        e.preventDefault()
+        const oldmode = this.config.mode
+        const modes = this.config.modes
+        const newmode = modes[(modes.indexOf(oldmode) + 1) % modes.length]
+        this.config.mode = newmode
+        $('body').removeClass(oldmode).addClass(newmode)
+        this.setBasemap()
+        this.interpretHash()
       })
       .prependTo('#menu')
   }
@@ -222,7 +259,7 @@ export class Sift {
     $('<div class="brief">').text(item.description).appendTo(li)
     this.itemDetails(item).appendTo(li)
     $('<span>').text(item.creator + '. ').prependTo(li.find('.description'))
-    const bboxlayer = L.rectangle(item.bbox, this.config.mapStyle.bbox)
+    const bboxlayer = L.rectangle(item.bbox, this.getMapStyle('bbox'))
       .addTo(this.map.leaflet)
     bboxlayer.options.li = li
     li.data('bbox', bboxlayer)
@@ -239,7 +276,7 @@ export class Sift {
     }
 
     // remove any highlighted result that might have been set by clicking the map
-    const style = this.config.mapStyle.bbox
+    const style = this.getMapStyle('bbox')
     $('#results li.hover').each(function (i, olditem) {
       olditem = $(olditem)
       olditem.removeClass('hover')
@@ -253,7 +290,7 @@ export class Sift {
     item.addClass('hover')
     const bbox = item.data('bbox')
     if (bbox) {
-      bbox.setStyle(this.config.mapStyle.highlight).bringToFront()
+      bbox.setStyle(this.getMapStyle('highlight')).bringToFront()
     }
   }
 
@@ -262,7 +299,7 @@ export class Sift {
     item.removeClass('hover')
     const bbox = item.data('bbox')
     if (bbox) {
-      bbox.setStyle(this.config.mapStyle.bbox)
+      bbox.setStyle(this.getMapStyle('bbox'))
     }
   }
 
@@ -334,7 +371,7 @@ export class Sift {
     } else if (item.openindexmaps) {
       li.data('layer', this.openindexmapsLayer(item))
     } else {
-      L.rectangle(item.bbox, this.config.mapStyle.unavailable)
+      L.rectangle(item.bbox, this.getMapStyle('unavailable'))
         .addTo(this.map.leaflet)
     }
   }
@@ -556,10 +593,10 @@ export class Sift {
     const that = this
     const url = item.openindexmaps
     const layer = new L.GeoJSON.AJAX(url, {
-      style: that.config.mapStyle.indexmap,
+      style: that.getMapStyle('indexmap'),
       onEachFeature: function (feature, layer) {
         if (feature.properties.available === false) {
-          layer.setStyle(that.config.mapStyle.unavailable)
+          layer.setStyle(that.getMapStyle('unavailable'))
         }
         feature.layer = layer
         layer.bindTooltip(
@@ -610,7 +647,7 @@ export class Sift {
     // forget about any previously-clicked item
     const olditem = $('#results li.hover').removeClass('hover')
     if (olditem.length > 0) {
-      olditem.data('bbox').setStyle(this.config.mapStyle.bbox)
+      olditem.data('bbox').setStyle(this.getMapStyle('bbox'))
     }
 
     // highlight the clicked bbox and corresponding item
@@ -654,9 +691,9 @@ export class Sift {
       const layer = L.geoJSON(feature, {
         // display points as little circles
         pointToLayer: function (point, latlng) {
-          return L.circleMarker(latlng, { color: that.mapStyle.highlight.color })
+          return L.circleMarker(latlng, that.getMapStyle('indexmapSelected'))
         },
-        style: that.config.mapStyle.indexmapSelected,
+        style: that.getMapStyle('indexmapSelected'),
         isSelection: true
       }).addTo(that.map.leaflet)
       feature.selection = layer
@@ -776,6 +813,15 @@ export class Sift {
       url: url,
       dataType: 'json',
       success: function (data, status, xhr) {
+        // remove any other selected features
+        // since we only look at one feature's attributes at a time
+        that.map.leaflet.eachLayer(function (layer) {
+          if (layer.options.isSelection) {
+            layer.remove()
+          }
+        })
+        $('#attr').remove()
+
         if (data.features.length === 0) {
           // no features found
           return
@@ -796,16 +842,8 @@ export class Sift {
         }
         const properties = match.properties
 
-        // remove any other selected features
-        // since we only look at one feature's attributes at a time
-        that.map.leaflet.eachLayer(function (layer) {
-          if (layer.options.isSelection) {
-            layer.remove()
-          }
-        })
-
         // highlight feature and show attributes
-        const style = that.config.mapStyle.highlight
+        const style = that.getMapStyle('highlight')
         L.geoJSON(match, {
           // display any points as little circles
           pointToLayer: function (point, latlng) {
@@ -859,12 +897,17 @@ export class Sift {
           }
         })
         // show feature and attributes
-        const layer = L.circleMarker(e.latlng, {
-          style: that.config.mapStyle.highlight,
-          isSelection: true
-        }).addTo(that.map.leaflet)
-        const properties = data.features[0].properties
-        const value = properties.GRAY_INDEX || properties.PALETTE_INDEX
+        const layer = L.circleMarker(e.latlng, that.getMapStyle('highlight'))
+          .addTo(that.map.leaflet)
+        layer.options.isSelection = true
+
+        let value
+        if (data.features.length > 0) {
+          const properties = data.features[0].properties
+          value = properties.GRAY_INDEX || properties.PALETTE_INDEX
+        } else {
+          value = 'out of extent'
+        }
         layer.bindTooltip('' + value, { permanent: true })
       },
       error: function (xhr, status, error) {
