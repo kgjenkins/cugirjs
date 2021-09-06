@@ -1,5 +1,4 @@
-/* eslint-disable */
-let cugirjson = {
+{
   "responseHeader":{
     "status":0,
     "QTime":1,
@@ -11498,4 +11497,6 @@ let cugirjson = {
         "1992",1]},
     "facet_ranges":{},
     "facet_intervals":{},
-    "facet_heatmaps":{}}}
+    "facet_heatmaps":{}
+    }
+  }

@@ -7,14 +7,8 @@
   --background-dim-color: #440;
   --link-color: #3ada51;
   --query-color: #f80;
-  --button-color: #d8de3b;
-  --button-hover-color: #b8be1b;
+  --button-color: #ff0;
+  --button-hover-color: #cc0;
   --nav-color: #444;
-
-  --map-bbox-color: #fff;
-  --map-bbox-highlight-color: #ff0;
-  --map-feature-highlight-color: #ff0;
-  --map-indexmap-color: #fff;
-  --map-indexmap-unavailable-color: #f88;
-  --map-indexmap-selected-color: #ff0;
+  --map-highlight-color: #ff0;
 }
