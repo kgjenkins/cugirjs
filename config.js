@@ -100,7 +100,7 @@ function setupConfig (s) {
     //    and/or in body.modename in the .css file
     modes: ['default', 'dark'],
 
-    mode: 'dark',
+    mode: 'default', // 'dark',
 
     mapStyle: {
       default: {
@@ -121,16 +121,16 @@ function setupConfig (s) {
         bbox: {
           color: '#222',
           opacity: 0.3,
-          weight: 1,
+          weight: 1.5,
           fillOpacity: 0,
           isBbox: true
         },
         highlight: {
-          color: '#08f',
+          color: '#00c',
           opacity: 1,
           weight: 4,
-          fillColor: '#08f',
-          fillOpacity: 0.4,
+          fillColor: '#88f',
+          fillOpacity: 0.3,
           radius: 10
         },
         indexmap: {

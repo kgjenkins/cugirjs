@@ -83,6 +83,7 @@ input { background:var(--background-color); color:var(--text-color) }
 #head { position:fixed; top:0; height:108px; width:98%; padding:6px 1%;
    background:var(--background-color); color:var(--text-color); z-index:99 }
 #head img { vertical-align:middle; height:100px }
+body.dark #head img { filter:brightness(1.7) }
 #head img:hover { cursor:pointer; opacity:0.7 }
 
 #search { position:absolute; left:340px; top:2em; line-height:2em }
