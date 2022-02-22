@@ -516,14 +516,6 @@ export class Sift {
     return v
   }
 
-  // TODO get rid of this
-  static cssVar (name) {
-    const body = window.getComputedStyle(
-      document.querySelector('body')
-    )
-    return body.getPropertyValue(name)
-  }
-
   static unescapeHash (h) {
     return unescape(h).replace(/\+/g, ' ')
   }
