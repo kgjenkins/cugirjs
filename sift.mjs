@@ -198,15 +198,12 @@ export class Sift {
       return
     }
     if (bounds) {
-      const zoomButton = $('<button id="zoom">')
+      $('<button id="zoom">')
         .text('Zoom to search results')
         .click(e =>
           this.map.leaflet.fitBounds(bounds, { animate: true, duration: 1 })
         )
         .prependTo('#right-panel')
-      if ($('#limitToMap').val()) {
-        zoomButton.click()
-      }
     }
   }
 
