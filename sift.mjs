@@ -650,14 +650,16 @@ export class Sift {
     // highlight the clicked bbox and corresponding item
     const layer = this.map.leaflet.getLayerAt(e.layerPoint)
 
-    // trigger mouseover on the item in the result list
-    const li = layer.options.li.mouseover()
+    if (layer !== undefined) {
+      // trigger mouseover on the item in the result list
+      const li = layer.options.li.mouseover()
 
-    // make sure the result item is visible
-    $('html').scrollTop(li.offset().top - 160)
+      // make sure the result item is visible
+      $('html').scrollTop(li.offset().top - 160)
 
-    // move to back so that other results can be clicked
-    layer.bringToBack()
+      // move to back so that other results can be clicked
+      layer.bringToBack()
+    }
   }
 
   clickIndexMap (e) {
