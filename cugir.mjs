@@ -1,12 +1,11 @@
-/* global $ setupConfig */
+/* global $ myConfig */
 import { Sift } from './sift.mjs'
 
 let s
-window.cssVar = Sift.cssVar
 
 $(document).ready(function () {
   s = new Sift({
-    config: setupConfig(),
+    config: myConfig,
     dataSource: 'data/cugir.json',
     resultsDiv: 'left-panel',
     mapDiv: 'map'
