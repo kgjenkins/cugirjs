@@ -953,11 +953,12 @@ export class Sift {
   }
 
   listenForKeys (e) {
+    let id = e.target.id
     if (e.key === 'Escape') {
       this.clearSelections()
-    } else if (e.key === 'PageDown') {
+    } else if (e.key === 'ArrowRight' && id !== 'q' && id !== 'map') {
       this.next()
-    } else if (e.key === 'PageUp') {
+    } else if (e.key === 'ArrowLeft' && id !== 'q' && id !== 'map') {
       this.prev()
     } else if (e.key === 'Enter') {
       $('#results li.hover').click()
