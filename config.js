@@ -100,7 +100,7 @@ function setupConfig (s) {
     //    and/or in body.modename in the .css file
     modes: ['default', 'dark'],
 
-    mode: 'default', // 'dark',
+    mode: 'dark',
 
     mapStyle: {
       default: {
