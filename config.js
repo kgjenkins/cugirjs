@@ -97,7 +97,7 @@ let myConfig = {
   //    and/or in body.modename in the .css file
   modes: ['default', 'dark'],
 
-  mode: 'dark',
+  mode: 'default',
 
   mapStyle: {
     default: {
