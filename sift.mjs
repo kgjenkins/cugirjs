@@ -439,7 +439,7 @@ export class Sift {
       format += ' file'
     }
     if (isIndexMap) {
-      format += ' (index map)'
+      format += ' (index map only)'
     }
     $('<a>')
       .addClass('download')
@@ -590,7 +590,7 @@ export class Sift {
         feature.layer = layer
         layer.bindTooltip(
           feature.properties.label || feature.properties.title,
-          { sticky: true, direction: 'top' }
+          { sticky: true, direction: 'right' }
         )
       }
     })
