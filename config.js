@@ -102,16 +102,16 @@ let myConfig = {
   mapStyle: {
     default: {
       basemap: {
-        url: 'https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png',
+        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         options: {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
           isBasemap: true,
           maxZoom: 21,
           opacity: 1,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
           filter: [
-            'brightness:75%',
-            'contrast:200%',
-            'saturate:200%'
+            'brightness:110%',
+            'contrast:90%',
+            'saturate: 70%'
           ]
         }
       },
@@ -156,15 +156,15 @@ let myConfig = {
     // and 2nd-order properties (like bbox.color) will be overwritten
     dark: {
       basemap: {
-        url: 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png',
+        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         options: {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
           isBasemap: true,
           maxZoom: 21,
           opacity: 1,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://carto.com/location-data-services/basemaps/">Carto</a>',
           filter: [
-            'brightness:250%',
-            'contrast:100%'
+            'invert:100%',
+            'grayscale:100%'
           ]
         }
       },
